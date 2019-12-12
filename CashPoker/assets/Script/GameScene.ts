@@ -171,13 +171,15 @@ export default class GameScene extends cc.Component {
           pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
         );
 
+        let offset = -15;
         if (!targetNode.getComponent(Poker)) {
           Game.placePokerRoot.add(pos, pokerNode);
+          offset = 0;
         }
         pokerNode.setParent(targetNode);
         let poker = pokerNode.getComponent(Poker);
         pokerNode.setPosition(selfPos);
-        let offset = -15;
+
         if (count > this.dispatchCardCount - 8) {
           poker.flipCard(0.1);
           poker.setNormal();
@@ -216,10 +218,12 @@ export default class GameScene extends cc.Component {
       let poker = pokerNode.getComponent(Poker);
       pokerNode.setParent(targetNode);
       pokerNode.setPosition(selfPos);
+      let offset = -30;
       if (!targetNode.getComponent(Poker)) {
         Game.placePokerRoot.add(index, pokerNode);
+        offset = 0;
       }
-      let offset = -30;
+
       poker.flipCard(0.1);
       poker.setNormal();
       pokerNode.group = "top";

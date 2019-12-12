@@ -185,7 +185,7 @@ export default class Poker extends cc.Component {
     Game.placePokerRoot.forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
 
-      if ((poker && poker.getValue() - this.value == 1) || !poker) {
+      if ((poker && Poker.checkBeNext(poker, this)) || !poker) {
         let dis = CMath.Distance(
           this.node.parent.convertToNodeSpaceAR(
             root.parent.convertToWorldSpaceAR(root.position)
@@ -272,7 +272,7 @@ export default class Poker extends cc.Component {
       return;
     }
     this.next = poker;
-    if (this.value - poker.getValue() == 1) {
+    if (Poker.checkBeNext(this, this.next)) {
       this.setNormal();
     } else {
       console.log(" onAddChild call setAllGray:", this.value, this.key);
@@ -283,11 +283,17 @@ export default class Poker extends cc.Component {
     this.updateRootNode(this.key);
   }
 
+  public static checkBeNext(poker: Poker, next: Poker) {
+    if (!next || !poker) return false;
+    return poker.getValue() - next.getValue() == 1;
+  }
+
   onChildRemove() {
     console.log(" onChildRemove:", this.node.childrenCount);
     if (this.node.childrenCount <= this.defualtChildCount && !this.isToRemove) {
       this.next = null;
       Game.placePokerRoot.add(this.key, this.node);
+      this.setNormal();
       if (this.carState == CardState.Back) {
         this.flipCard(0.1);
       } else {
@@ -295,14 +301,13 @@ export default class Poker extends cc.Component {
           this.forward.updateState.call(this.forward);
         }
       }
-      this.setNormal();
     }
   }
 
   updateState() {
     if (
       this.next &&
-      this.value - this.next.getValue() == 1 &&
+      Poker.checkBeNext(this, this.next) &&
       this.next.isNormal()
     ) {
       this.setNormal();
