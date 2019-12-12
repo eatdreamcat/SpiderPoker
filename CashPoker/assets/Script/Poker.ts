@@ -324,7 +324,7 @@ export default class Poker extends cc.Component {
   setAllGray() {
     if (!this.node.parent) return;
 
-    if (this.forward) {
+    if (this.forward && !this.forward.isGray()) {
       this.frontCard.node.color = cc.Color.GRAY;
       this.canMove = false;
       console.log(
@@ -342,6 +342,10 @@ export default class Poker extends cc.Component {
   setNormal() {
     this.frontCard.node.color = cc.Color.WHITE;
     this.canMove = this.carState == CardState.Front;
+  }
+
+  isGray() {
+    return this.frontCard.node.color == cc.Color.GRAY && this.canMove == false;
   }
 
   setCardState(state: CardState) {
