@@ -3695,9 +3695,9 @@ declare namespace cc {
 		convertToNodeSpace(worldPoint: Vec2): Vec2;		
 		/**
 		!#en Converts a Point related to the left bottom corner of the node's bounding box to world space coordinates.
-		This equals to the API behavior of cocos2d-x, you probably want to use convertToWorldSpaceAR instead
+		This equals to the API behavior of cocos2d-x, you probably want to use parent.convertToWorldSpaceAR instead
 		!#zh 将一个相对于节点左下角的坐标位置转换到世界空间坐标系。
-		这个 API 的设计是为了和 cocos2d-x 中行为一致，更多情况下你可能需要使用 convertToWorldSpaceAR
+		这个 API 的设计是为了和 cocos2d-x 中行为一致，更多情况下你可能需要使用 parent.convertToWorldSpaceAR
 		@param nodePoint nodePoint
 		
 		@example 
@@ -3728,10 +3728,10 @@ declare namespace cc {
 		
 		@example 
 		```js
-		var newVec2 = node.convertToWorldSpaceAR(cc.v2(100, 100));
+		var newVec2 = node.parent.convertToWorldSpaceAR(cc.v2(100, 100));
 		``` 
 		*/
-		convertToWorldSpaceAR(nodePoint: Vec2): Vec2;		
+		parent.convertToWorldSpaceAR(nodePoint: Vec2): Vec2;		
 		/**
 		!#en
 		Returns the matrix that transform the node's (local) space coordinates into the parent's space coordinates.<br/>

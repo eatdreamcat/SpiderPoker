@@ -34,10 +34,14 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   PokerDevl: cc.Node = null;
 
+  @property(cc.Node)
+  RemoveNode: cc.Node = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
-  private;
+  private readonly dispatchCardCount = 20;
   onLoad() {
+    Game.removeNode = this.RemoveNode;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -129,7 +133,7 @@ export default class GameScene extends cc.Component {
         }
 
         let selfPos = this.PokerClip.convertToNodeSpaceAR(
-          pokerNode.convertToWorldSpaceAR(pokerNode.position)
+          pokerNode.parent.parent.convertToWorldSpaceAR(pokerNode.position)
         );
         pokerNode.setParent(this.PokerClip);
         pokerNode.setPosition(selfPos);
@@ -151,7 +155,7 @@ export default class GameScene extends cc.Component {
     };
     /** 上面发牌 */
     let func1 = () => {
-      if (count >= 40) {
+      if (count >= this.dispatchCardCount) {
         func2();
         return;
       }
@@ -164,7 +168,7 @@ export default class GameScene extends cc.Component {
       let targetNode = Game.placePokerRoot.get(pos);
       if (targetNode) {
         let selfPos = targetNode.convertToNodeSpaceAR(
-          pokerNode.convertToWorldSpaceAR(pokerNode.position)
+          pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
         );
 
         if (!targetNode.getComponent(Poker)) {
@@ -174,7 +178,7 @@ export default class GameScene extends cc.Component {
         let poker = pokerNode.getComponent(Poker);
         pokerNode.setPosition(selfPos);
         let offset = -15;
-        if (count > 32) {
+        if (count > this.dispatchCardCount - 8) {
           poker.flipCard(0.1);
           poker.setNormal();
         }
@@ -206,7 +210,7 @@ export default class GameScene extends cc.Component {
 
       let pokerNode = this.PokerClip.children[this.PokerClip.childrenCount - 1];
       let selfPos = targetNode.convertToNodeSpaceAR(
-        pokerNode.convertToWorldSpaceAR(pokerNode.position)
+        pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
       );
 
       let poker = pokerNode.getComponent(Poker);

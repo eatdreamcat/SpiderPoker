@@ -8,6 +8,7 @@ class GameMgr {
   }
 
   public placePokerRoot: HashMap<number, cc.Node> = new HashMap();
+  public removeNode: cc.Node;
 }
 
 export const Game = GameMgr.inst;

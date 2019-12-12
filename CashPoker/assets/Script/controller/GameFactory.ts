@@ -33,7 +33,7 @@ class ObjPool {
     if (obj && this._pool.indexOf(obj) === -1) {
       // Remove from parent, but don't cleanup
       obj.removeFromParent(false);
-
+      //obj.setParent(null);
       // Invoke pool handler
       if (this.poolHandlerComps) {
         let handlers = this.poolHandlerComps;
