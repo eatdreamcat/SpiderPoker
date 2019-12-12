@@ -266,6 +266,7 @@ export default class Poker extends cc.Component {
   }
 
   onAddChild(child: cc.Node) {
+    console.log("onAddChild:", this.value, this.key);
     let poker = child.getComponent(Poker);
     if (!poker) {
       console.error(" 没有 Poker类");
@@ -305,41 +306,38 @@ export default class Poker extends cc.Component {
   }
 
   updateState() {
-    if (
-      this.next &&
-      Poker.checkBeNext(this, this.next) &&
-      this.next.isNormal()
-    ) {
-      this.setNormal();
+    if (this.next) {
+      if (Poker.checkBeNext(this, this.next) && this.next.isNormal()) {
+        this.setNormal();
+      } else {
+        this.frontCard.node.color = cc.Color.GRAY;
+        this.canMove = false;
+      }
       if (this.forward) {
         this.forward.updateState.call(this.forward);
       }
     } else {
-      console.log(" updateState call setAllGray:", this.value, this.key);
-      this.setAllGray();
-      return;
+      this.setNormal();
     }
   }
 
   setAllGray() {
-    if (!this.node.parent) return;
-
-    if (this.forward && !this.forward.isGray()) {
-      this.frontCard.node.color = cc.Color.GRAY;
-      this.canMove = false;
+    if (!this.node.parent || this.carState == CardState.Back) return;
+    console.warn(" setGray:", this.value, this.key);
+    this.frontCard.node.color = cc.Color.GRAY;
+    this.canMove = false;
+    if (this.forward) {
       console.log(
         " self call setAllGray:",
         this.forward.getValue(),
         this.forward.getKey()
       );
       this.forward.setAllGray.call(this.forward);
-    } else {
-      this.frontCard.node.color = cc.Color.GRAY;
-      this.canMove = false;
     }
   }
 
   setNormal() {
+    console.log("setNormal:", this.value, ",key:", this.key);
     this.frontCard.node.color = cc.Color.WHITE;
     this.canMove = this.carState == CardState.Front;
   }
@@ -349,6 +347,7 @@ export default class Poker extends cc.Component {
   }
 
   setCardState(state: CardState) {
+    console.log("setCardState:", this.value, this.key);
     this.carState = state;
     this.frontCard.node.scaleX = this.carState == CardState.Front ? 1 : 0;
     this.backCard.node.scaleX = this.carState == CardState.Back ? 1 : 0;
