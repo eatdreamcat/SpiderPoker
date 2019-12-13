@@ -13,7 +13,7 @@ import { gFactory } from "./controller/GameFactory";
 
 const { ccclass, property } = cc._decorator;
 
-enum CardState {
+export enum CardState {
   Front,
   Back
 }
@@ -34,6 +34,7 @@ export default class Poker extends cc.Component {
   private value: number = 0;
 
   private defaultPos: cc.Vec2;
+  private lastPos: cc.Vec2;
   private canMove: boolean = false;
 
   private key: number = -1;
@@ -74,6 +75,10 @@ export default class Poker extends cc.Component {
     return this.value;
   }
 
+  getCardState() {
+    return this.carState;
+  }
+
   onLoad() {
     this.defualtChildCount = this.node.childrenCount;
     console.log(" default children count:", this.defualtChildCount);
@@ -102,6 +107,7 @@ export default class Poker extends cc.Component {
         this.node.parent.convertToWorldSpaceAR(this.node.position)
       );
 
+      // Game.addStep([this.node], [this.node.getParent()], [this.node.position]);
       this.isToRemove = true;
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
@@ -109,26 +115,33 @@ export default class Poker extends cc.Component {
       let dir = this.value % 2 == 1 ? 1 : -1;
 
       this.canMove = false;
+      this.node.group = "top";
+
       this.node.runAction(
         cc.sequence(
-          cc.delayTime(this.value / 20),
-          cc.spawn(
-            cc.sequence(
-              cc
-                .repeat(cc.moveBy(0.1, dir * 10, 30), 15)
-                .easing(cc.easeQuinticActionOut()),
-              cc
-                .repeat(cc.moveBy(0.1, dir * 10, -40), 20)
-                .easing(cc.easeQuinticActionIn()),
-              cc.callFunc(() => {
-                console.log("done!");
-                //gFactory.putPoker(this.node);
-                this.node.active = false;
-              }, this)
+          cc.delayTime(this.value / 50),
+          cc.sequence(
+            cc.repeat(
+              cc.spawn(
+                cc
+                  .moveBy(0.01, dir * 1.5, 25)
+                  .easing(cc.easeQuinticActionOut()),
+                cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
+              ),
+
+              30
             ),
-            cc
-              .repeat(cc.rotateBy(0.3, dir * 360), 50)
-              .easing(cc.easeQuinticActionOut())
+            cc.repeat(
+              cc.spawn(
+                cc.moveBy(0.01, dir * 2, -25).easing(cc.easeQuinticActionIn()),
+                cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
+              ),
+              150
+            ),
+            cc.callFunc(() => {
+              console.log("done!");
+              gFactory.putPoker(this.node);
+            }, this)
           )
         )
       );
@@ -139,8 +152,16 @@ export default class Poker extends cc.Component {
     this.defaultPos = pos ? pos : this.node.position.clone();
   }
 
+  setLastPosition(pos?: cc.Vec2) {
+    this.lastPos = pos ? pos : this.node.position.clone();
+  }
+
   getDefaultPosition() {
-    return this.defaultPos;
+    return this.defaultPos.clone();
+  }
+
+  getLastPosition() {
+    return this.lastPos.clone();
   }
 
   setKey(key: number) {
@@ -276,6 +297,7 @@ export default class Poker extends cc.Component {
       this.isCheck = true;
       if (valua == 13) {
         this.emitCheckDone();
+        Game.clearStep();
       } else {
         if (this.forward) {
           this.forward.check.call(this.forward, valua + 1);
@@ -300,11 +322,17 @@ export default class Poker extends cc.Component {
       console.error(" 没有 Poker类");
       return;
     }
+    poker.forward = this;
     this.next = poker;
     if (Poker.checkBeNext(this, this.next)) {
       this.setNormal();
     } else {
-      console.log(" onAddChild call setAllGray:", this.value, this.key);
+      console.log(
+        " onAddChild call setAllGray:",
+        this.value,
+        ",key:",
+        this.key
+      );
       this.setAllGray();
     }
 
@@ -350,14 +378,15 @@ export default class Poker extends cc.Component {
   }
 
   setAllGray() {
-    if (!this.node.parent || this.carState == CardState.Back) return;
-    console.warn(" setGray:", this.value, this.key);
+    if (!this.node.parent) return;
+    console.warn(" setGray:", this.value, ",key:", this.key);
     this.frontCard.node.color = cc.Color.GRAY;
     this.canMove = false;
     if (this.forward) {
       console.log(
         " self call setAllGray:",
         this.forward.getValue(),
+        ",key:",
         this.forward.getKey()
       );
       this.forward.setAllGray.call(this.forward);
@@ -380,9 +409,18 @@ export default class Poker extends cc.Component {
     this.frontCard.node.scaleX = this.carState == CardState.Front ? 1 : 0;
     this.backCard.node.scaleX = this.carState == CardState.Back ? 1 : 0;
     this.canMove = this.carState == CardState.Front;
+
+    if (this.canMove) {
+      if (this.next && !Poker.checkBeNext(this, this.next)) {
+        this.canMove = false;
+      }
+    }
+
     if (this.canMove) {
       this.frontCard.node.color = cc.Color.WHITE;
       this.setDefaultPosition();
+    } else {
+      this.frontCard.node.color = cc.Color.GRAY;
     }
   }
 
@@ -453,6 +491,7 @@ export default class Poker extends cc.Component {
       this.forward = poker;
       this.setKey(poker.getKey());
     } else {
+      this.forward = null;
       this.setKey(parseInt(parent.name));
     }
   }

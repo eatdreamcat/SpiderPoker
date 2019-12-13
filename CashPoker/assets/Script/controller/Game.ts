@@ -1,15 +1,16 @@
 import { HashMap } from "../utils/HashMap";
-import Poker from "../Poker";
+import Poker, { CardState } from "../Poker";
 
-interface StepInfo {
+export interface StepFunc {
+  callback: Function;
+  target: any;
+  args: any[];
+}
+export interface StepInfo {
   node: cc.Node[];
   lastParent: cc.Node[];
   lastPos: cc.Vec2[];
-  func?: {
-    callback: Function;
-    target: any;
-    args: any[];
-  }[];
+  func?: StepFunc[];
 }
 
 class GameMgr {
@@ -28,11 +29,7 @@ class GameMgr {
     node: cc.Node[],
     lastParent: cc.Node[],
     lastPos: cc.Vec2[],
-    func?: {
-      callback: Function;
-      target: any;
-      args: any[];
-    }[]
+    func?: StepFunc[]
   ) {
     this.stepInfoArray.push({
       node: node,
@@ -42,36 +39,68 @@ class GameMgr {
     });
   }
 
+  clearStep() {
+    this.stepInfoArray.length = 0;
+  }
+
   public backStep() {
-    if (this.stepInfoArray.length <= 0) return;
+    if (this.stepInfoArray.length <= 0) {
+      console.warn(" no cache step!");
+      return;
+    }
     let step = this.stepInfoArray.pop();
     while (step.node.length > 0) {
       let node = step.node.pop();
       let parent = step.lastParent.pop();
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
+
+      if (parent.name == "PokerClip") {
+        let selfPos = parent.convertToNodeSpaceAR(
+          node.getParent().convertToWorldSpaceAR(node.position)
+        );
+        node.setPosition(selfPos);
+      } else {
+        node.setPosition(pos);
+      }
+
       node.setParent(parent);
-      node.setPosition(pos);
+
       node.group = "top";
+
       if (func && func.callback && func.target) {
         func.callback.apply(func.target, func.args);
       }
+
       let poker = node.getComponent(Poker);
-      if (step)
-        if (poker) {
-          poker.node.runAction(
-            cc.sequence(
-              cc.moveTo(
-                0.1,
-                poker.getDefaultPosition().x,
-                poker.getDefaultPosition().y
-              ),
-              cc.callFunc(() => {
-                node.group = "default";
-              }, this)
-            )
-          );
+
+      if (poker) {
+        let returnPos =
+          parent.name == "PokerClip"
+            ? poker.getLastPosition()
+            : poker.getDefaultPosition();
+        if (!parent.getComponent(Poker)) {
+          returnPos.y = 0;
+        } else if (
+          (parent.getComponent(Poker).getForward() &&
+            parent
+              .getComponent(Poker)
+              .getForward()
+              .getCardState() == CardState.Back) ||
+          !parent.getComponent(Poker).getForward() ||
+          parent.getComponent(Poker).getCardState() == CardState.Back
+        ) {
+          returnPos.y = -15;
         }
+        poker.node.runAction(
+          cc.sequence(
+            cc.moveTo(0.1, returnPos.x, returnPos.y),
+            cc.callFunc(() => {
+              node.group = "default";
+            }, this)
+          )
+        );
+      }
     }
   }
 }

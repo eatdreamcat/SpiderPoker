@@ -1,5 +1,5 @@
 import { gFactory } from "./controller/GameFactory";
-import { Game } from "./controller/Game";
+import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
 
 const { ccclass, property } = cc._decorator;
@@ -139,6 +139,7 @@ export default class GameScene extends cc.Component {
         let selfPos = this.PokerClip.convertToNodeSpaceAR(
           pokerNode.parent.parent.convertToWorldSpaceAR(pokerNode.position)
         );
+        let poker = pokerNode.getComponent(Poker);
         pokerNode.setParent(this.PokerClip);
         pokerNode.setPosition(selfPos);
         pokerNode.group = "top";
@@ -147,6 +148,7 @@ export default class GameScene extends cc.Component {
             cc.moveTo(0.1, targetPos.x, targetPos.y),
             cc.callFunc(() => {
               pokerNode.group = "default";
+              poker.setLastPosition();
               func2();
             }, this)
           )
@@ -206,11 +208,17 @@ export default class GameScene extends cc.Component {
     func1();
   }
 
+  onPokerClipAddChild() {}
+
   dispatchPoker() {
-    if (!this.canDispatchPoker) {
+    if (this.PokerClip.childrenCount <= 0 || !this.canDispatchPoker) {
       return;
     }
 
+    let nodes: cc.Node[] = [];
+    let parents: cc.Node[] = [];
+    let poses: cc.Vec2[] = [];
+    let funcs: StepFunc[] = [];
     Game.placePokerRoot.forEach((index: number, targetNode: cc.Node) => {
       if (this.PokerClip.childrenCount <= 0) return;
 
@@ -220,8 +228,18 @@ export default class GameScene extends cc.Component {
       );
 
       let poker = pokerNode.getComponent(Poker);
+      nodes.push(pokerNode);
+      parents.push(pokerNode.getParent());
+      poses.push(pokerNode.position.clone());
+      funcs.push({
+        callback: poker.flipCard,
+        args: [0.1],
+        target: poker
+      });
+
       pokerNode.setParent(targetNode);
       pokerNode.setPosition(selfPos);
+
       let offset = -30;
       if (!targetNode.getComponent(Poker)) {
         Game.placePokerRoot.add(index, pokerNode);
@@ -242,7 +260,7 @@ export default class GameScene extends cc.Component {
       );
     });
 
-    this.canDispatchPoker = this.PokerClip.childrenCount > 0;
+    Game.addStep(nodes, parents, poses, funcs);
   }
 
   start() {}
