@@ -110,22 +110,26 @@ export default class Poker extends cc.Component {
 
       this.canMove = false;
       this.node.runAction(
-        cc.spawn(
-          cc.sequence(
+        cc.sequence(
+          cc.delayTime(this.value / 20),
+          cc.spawn(
+            cc.sequence(
+              cc
+                .repeat(cc.moveBy(0.1, dir * 10, 30), 15)
+                .easing(cc.easeQuinticActionOut()),
+              cc
+                .repeat(cc.moveBy(0.1, dir * 10, -40), 20)
+                .easing(cc.easeQuinticActionIn()),
+              cc.callFunc(() => {
+                console.log("done!");
+                //gFactory.putPoker(this.node);
+                this.node.active = false;
+              }, this)
+            ),
             cc
-              .repeat(cc.moveBy(0.1, dir * 15, 50), 15)
-              .easing(cc.easeQuinticActionOut()),
-            cc
-              .repeat(cc.moveBy(0.1, dir * 10, -40), 20)
-              .easing(cc.easeQuinticActionIn()),
-            cc.callFunc(() => {
-              console.log("done!");
-              gFactory.putPoker(this.node);
-            }, this)
-          ),
-          cc
-            .repeat(cc.rotateBy(0.3, dir * 360), 50)
-            .easing(cc.easeQuinticActionOut())
+              .repeat(cc.rotateBy(0.3, dir * 360), 50)
+              .easing(cc.easeQuinticActionOut())
+          )
         )
       );
     }, this.value / 1000);
@@ -133,6 +137,10 @@ export default class Poker extends cc.Component {
 
   setDefaultPosition(pos?: cc.Vec2) {
     this.defaultPos = pos ? pos : this.node.position.clone();
+  }
+
+  getDefaultPosition() {
+    return this.defaultPos;
   }
 
   setKey(key: number) {
@@ -221,6 +229,26 @@ export default class Poker extends cc.Component {
     let selfPos = root.convertToNodeSpaceAR(
       this.node.parent.convertToWorldSpaceAR(this.node.position)
     );
+    if (this.forward && this.forward.carState == CardState.Back) {
+      Game.addStep(
+        [this.node],
+        [this.node.getParent()],
+        [this.node.position.clone()],
+        [
+          {
+            callback: this.forward.flipCard,
+            args: [0.1],
+            target: this.forward
+          }
+        ]
+      );
+    } else {
+      Game.addStep(
+        [this.node],
+        [this.node.getParent()],
+        [this.node.position.clone()]
+      );
+    }
 
     this.node.setParent(root);
     this.node.setPosition(selfPos);
@@ -359,7 +387,7 @@ export default class Poker extends cc.Component {
   }
 
   isNormal() {
-    return this.carState == CardState.Front;
+    return this.carState == CardState.Front && this.canMove;
   }
 
   flipCard(duration: number = 1) {

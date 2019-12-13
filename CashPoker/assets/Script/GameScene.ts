@@ -37,9 +37,12 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   RemoveNode: cc.Node = null;
 
+  @property(cc.Button)
+  BackButton: cc.Button = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
-  private readonly dispatchCardCount = 20;
+  private readonly dispatchCardCount = 38;
   onLoad() {
     Game.removeNode = this.RemoveNode;
     celerx.ready();
@@ -69,6 +72,7 @@ export default class GameScene extends cc.Component {
     this.nextStep(LOAD_STEP.GUIDE);
 
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
+    this.BackButton.node.on(cc.Node.EventType.TOUCH_START, Game.backStep, Game);
   }
 
   celerStart() {
