@@ -57,7 +57,8 @@ export const Pokers = [
 ];
 
 export const enum ACTION_TAG {
-  FLIP_CARD_REPOS,
+  FLIP_CARD_REPOS_ON_ADD,
+  FLIP_CARD_REPOS_ON_REMOVE,
   BACK_STEP,
   DEV_POKER,
   RE_DEV_POKER

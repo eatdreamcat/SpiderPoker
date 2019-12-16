@@ -282,7 +282,6 @@ export default class GameScene extends cc.Component {
     let nodes: cc.Node[] = [];
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
-    let funcs: StepFunc[] = [];
 
     let children = this.PokerFlipRoot.children.concat().reverse();
     let i = 0;
@@ -293,19 +292,14 @@ export default class GameScene extends cc.Component {
 
       let poker = child.getComponent(Poker);
       nodes.push(child);
-      parents.push(child.getParent());
+      parents.push(this.PokerFlipRoot);
       poses.push(child.position.clone());
-      funcs.push({
-        callback: poker.flipCard,
-        args: [0.1],
-        target: poker
-      });
 
       child.setParent(this.PokerDevl);
       child.setPosition(selfPos);
 
       poker.setDefaultPosition(cc.v2(0, 0));
-      poker.setFlipPos(cc.v2(0, 0));
+
       poker.flipCard(0.1, false);
       child.group = "top";
       this.scheduleOnce(() => {
@@ -322,6 +316,7 @@ export default class GameScene extends cc.Component {
       }, 0);
       i++;
     }
+    Game.addStep(nodes, parents, poses);
   }
 
   devPoker() {
@@ -374,7 +369,7 @@ export default class GameScene extends cc.Component {
           }, this)
         );
         action.setTag(ACTION_TAG.DEV_POKER);
-        pokerNode.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+        pokerNode.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
         pokerNode.runAction(action);
       }, 0.05);
     }
@@ -427,20 +422,28 @@ export default class GameScene extends cc.Component {
       ];
 
       let action2 = cc.moveTo(0.1, 30, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+      child2.group = "default";
+      child2.stopActionByTag(ACTION_TAG.BACK_STEP);
 
       let child3 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 3
       ];
 
       let action3 = cc.moveTo(0.1, 0, 0);
-      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+      child3.group = "default";
+      child3.stopActionByTag(ACTION_TAG.BACK_STEP);
     }
   }
 
@@ -451,8 +454,9 @@ export default class GameScene extends cc.Component {
       ];
 
       let action1 = cc.moveTo(0.1, 60, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
 
@@ -461,8 +465,9 @@ export default class GameScene extends cc.Component {
       ];
 
       let action2 = cc.moveTo(0.1, 30, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
 
@@ -471,8 +476,9 @@ export default class GameScene extends cc.Component {
       ];
 
       let action3 = cc.moveTo(0.1, 0, 0);
-      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
     }

@@ -104,7 +104,10 @@ class GameMgr {
         }
 
         let action = cc.sequence(
-          cc.delayTime(count / 20),
+          cc.delayTime(count / 500),
+          cc.callFunc(() => {
+            poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+          }, this),
           cc.moveTo(0.1, returnPos.x, returnPos.y),
           cc.callFunc(() => {
             node.group = "default";
