@@ -48,53 +48,53 @@ class AudioController {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.audioID["bgm"] = this.play("normal_bgm", true, 1.5, true);
-    console.log("this.audioID bgm = ", this.audioID["bgm"] === null);
-    gEventMgr.on(
-      GlobalEvent.PLAY_KILL_EFFECT,
-      () => {
-        this.audioID["fruit_break"] = this.play("fruit_break", false, 2.5);
-        cc.audioEngine.setFinishCallback(
-          this.audioID["fruit_break"],
-          function() {
-            this.audioID["fruit_break"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // this.audioID["bgm"] = this.play("normal_bgm", true, 1.5, true);
+    // console.log("this.audioID bgm = ", this.audioID["bgm"] === null);
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_KILL_EFFECT,
+    //   () => {
+    //     this.audioID["fruit_break"] = this.play("fruit_break", false, 2.5);
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["fruit_break"],
+    //       function() {
+    //         this.audioID["fruit_break"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_30_BGM,
-      () => {
-        if (this.audioID["bgm"] != null) {
-          this.stop(this.audioID["bgm"]);
-        }
-        this.audioID["time_counting"] = this.play("time_counting", true, 3);
-        this.audioID["bgm"] = this.play("bgm_30secs", true, 1.5, true);
-        if (
-          this.audioID["specialA_bgm"] != null ||
-          this.audioID["specialB_bgm"] != null
-        ) {
-          cc.audioEngine.pause(this.audioID["bgm"]);
-        }
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_30_BGM,
+    //   () => {
+    //     if (this.audioID["bgm"] != null) {
+    //       this.stop(this.audioID["bgm"]);
+    //     }
+    //     this.audioID["time_counting"] = this.play("time_counting", true, 3);
+    //     this.audioID["bgm"] = this.play("bgm_30secs", true, 1.5, true);
+    //     if (
+    //       this.audioID["specialA_bgm"] != null ||
+    //       this.audioID["specialB_bgm"] != null
+    //     ) {
+    //       cc.audioEngine.pause(this.audioID["bgm"]);
+    //     }
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.GAME_RESTART,
-      () => {
-        if (this.audioID["bgm"] != null) {
-          this.stop(this.audioID["bgm"]);
-        }
-        if (this.audioID["time_counting"] != null) {
-          this.stop(this.audioID["time_counting"]);
-        }
-        this.audioID["bgm"] = this.play("normal_bgm", true, 1.5, true);
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.GAME_RESTART,
+    //   () => {
+    //     if (this.audioID["bgm"] != null) {
+    //       this.stop(this.audioID["bgm"]);
+    //     }
+    //     if (this.audioID["time_counting"] != null) {
+    //       this.stop(this.audioID["time_counting"]);
+    //     }
+    //     this.audioID["bgm"] = this.play("normal_bgm", true, 1.5, true);
+    //   },
+    //   this
+    // );
 
     // gEventMgr.on(
     //   GlobalEvent.PLAY_LETSGO,
@@ -110,47 +110,47 @@ class AudioController {
     //   this
     // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_BIU,
-      () => {
-        this.audioID["biu"] = this.play("biu", false, 0.5);
-        cc.audioEngine.setFinishCallback(
-          this.audioID["biu"],
-          function() {
-            this.audioID["biu"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_BIU,
+    //   () => {
+    //     this.audioID["biu"] = this.play("biu", false, 0.5);
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["biu"],
+    //       function() {
+    //         this.audioID["biu"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_TOUCH,
-      () => {
-        this.audioID["touch"] = this.play("touch");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["touch"],
-          function() {
-            this.audioID["touch"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_TOUCH,
+    //   () => {
+    //     this.audioID["touch"] = this.play("touch");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["touch"],
+    //       function() {
+    //         this.audioID["touch"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_PLACE,
-      () => {
-        this.audioID["lay"] = this.play("lay");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["lay"],
-          function() {
-            this.audioID["lay"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_PLACE,
+    //   () => {
+    //     this.audioID["lay"] = this.play("lay");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["lay"],
+    //       function() {
+    //         this.audioID["lay"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
     // gEventMgr.on(
     //   GlobalEvent.PLAY_TEXT,
@@ -166,179 +166,179 @@ class AudioController {
     //   this
     // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_SPECIAL_A_BGM,
-      (play: boolean) => {
-        console.log(" SpecialA_bgm:", play);
-        if (play) {
-          if (this.audioID["bgm"] != null) {
-            cc.audioEngine.pause(this.audioID["bgm"]);
-          }
-          this.audioID["SpecialA_bgm"] = this.play("SpecialA_bgm", true);
-        } else {
-          if (this.audioID["bgm"] != null) {
-            cc.audioEngine.resume(this.audioID["bgm"]);
-          }
-          if (this.audioID["SpecialA_bgm"] != null) {
-            cc.audioEngine.stop(this.audioID["SpecialA_bgm"]);
-            this.audioID["SpecialA_bgm"] = null;
-          }
-        }
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_SPECIAL_A_BGM,
+    //   (play: boolean) => {
+    //     console.log(" SpecialA_bgm:", play);
+    //     if (play) {
+    //       if (this.audioID["bgm"] != null) {
+    //         cc.audioEngine.pause(this.audioID["bgm"]);
+    //       }
+    //       this.audioID["SpecialA_bgm"] = this.play("SpecialA_bgm", true);
+    //     } else {
+    //       if (this.audioID["bgm"] != null) {
+    //         cc.audioEngine.resume(this.audioID["bgm"]);
+    //       }
+    //       if (this.audioID["SpecialA_bgm"] != null) {
+    //         cc.audioEngine.stop(this.audioID["SpecialA_bgm"]);
+    //         this.audioID["SpecialA_bgm"] = null;
+    //       }
+    //     }
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_SPECIAL_B_BGM,
-      (play: boolean) => {
-        console.log(" SpecialB_bgm:", play);
-        if (play) {
-          if (this.audioID["bgm"] != null) {
-            cc.audioEngine.pause(this.audioID["bgm"]);
-          }
-          this.audioID["SpecialB_bgm"] = this.play("SpecialB_bgm", true);
-        } else {
-          if (this.audioID["bgm"] != null) {
-            cc.audioEngine.resume(this.audioID["bgm"]);
-          }
-          if (this.audioID["SpecialB_bgm"] != null) {
-            cc.audioEngine.stop(this.audioID["SpecialB_bgm"]);
-            this.audioID["SpecialB_bgm"] = null;
-          }
-        }
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_SPECIAL_B_BGM,
+    //   (play: boolean) => {
+    //     console.log(" SpecialB_bgm:", play);
+    //     if (play) {
+    //       if (this.audioID["bgm"] != null) {
+    //         cc.audioEngine.pause(this.audioID["bgm"]);
+    //       }
+    //       this.audioID["SpecialB_bgm"] = this.play("SpecialB_bgm", true);
+    //     } else {
+    //       if (this.audioID["bgm"] != null) {
+    //         cc.audioEngine.resume(this.audioID["bgm"]);
+    //       }
+    //       if (this.audioID["SpecialB_bgm"] != null) {
+    //         cc.audioEngine.stop(this.audioID["SpecialB_bgm"]);
+    //         this.audioID["SpecialB_bgm"] = null;
+    //       }
+    //     }
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_OVER,
-      () => {
-        if (this.audioID["time_counting"] != null) {
-          this.stop(this.audioID["time_counting"]);
-        }
-        this.audioID["over"] = this.play("over");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["over"],
-          function() {
-            this.audioID["over"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_OVER,
+    //   () => {
+    //     if (this.audioID["time_counting"] != null) {
+    //       this.stop(this.audioID["time_counting"]);
+    //     }
+    //     this.audioID["over"] = this.play("over");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["over"],
+    //       function() {
+    //         this.audioID["over"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_OVER_NO_PLACE,
-      () => {
-        if (this.audioID["bgm"] != null) {
-          this.stop(this.audioID["bgm"]);
-        }
-        this.audioID["over_no_place"] = this.play("over_no_place");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["over_no_place"],
-          function() {
-            this.audioID["over_no_place"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_OVER_NO_PLACE,
+    //   () => {
+    //     if (this.audioID["bgm"] != null) {
+    //       this.stop(this.audioID["bgm"]);
+    //     }
+    //     this.audioID["over_no_place"] = this.play("over_no_place");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["over_no_place"],
+    //       function() {
+    //         this.audioID["over_no_place"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_LAY_FAIL,
-      () => {
-        this.audioID["lay_fail"] = this.play("lay_fail");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["lay_fail"],
-          function() {
-            this.audioID["lay_fail"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_LAY_FAIL,
+    //   () => {
+    //     this.audioID["lay_fail"] = this.play("lay_fail");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["lay_fail"],
+    //       function() {
+    //         this.audioID["lay_fail"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_OVER_TIME_UP,
-      () => {
-        if (this.audioID["bgm"] != null) {
-          this.stop(this.audioID["bgm"]);
-        }
-        this.audioID["frezon"] = this.play("frezon");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["frezon"],
-          function() {
-            this.audioID["frezon"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_OVER_TIME_UP,
+    //   () => {
+    //     if (this.audioID["bgm"] != null) {
+    //       this.stop(this.audioID["bgm"]);
+    //     }
+    //     this.audioID["frezon"] = this.play("frezon");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["frezon"],
+    //       function() {
+    //         this.audioID["frezon"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_OVER_TAB,
-      () => {
-        this.audioID["over_biu"] = this.play("over_biu");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["over_biu"],
-          function() {
-            this.audioID["over_biu"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_OVER_TAB,
+    //   () => {
+    //     this.audioID["over_biu"] = this.play("over_biu");
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["over_biu"],
+    //       function() {
+    //         this.audioID["over_biu"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_SCORE,
-      (isPlay: boolean) => {
-        if (isPlay) {
-          this.audioID["score"] = this.play("score", true, 1);
-        } else if (this.audioID["score"] != null) {
-          this.stop(this.audioID["score"]);
-          this.audioID["score"] = null;
-        }
-      },
-      this
-    );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_SCORE,
+    //   (isPlay: boolean) => {
+    //     if (isPlay) {
+    //       this.audioID["score"] = this.play("score", true, 1);
+    //     } else if (this.audioID["score"] != null) {
+    //       this.stop(this.audioID["score"]);
+    //       this.audioID["score"] = null;
+    //     }
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_SPECIAL_A,
-      () => {
-        console.log(
-          " specialA -----------------------------",
-          this.audioID["specialA"]
-        );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_SPECIAL_A,
+    //   () => {
+    //     console.log(
+    //       " specialA -----------------------------",
+    //       this.audioID["specialA"]
+    //     );
 
-        this.audioID["specialA"] = this.play("specialA", false, 1.5);
-        cc.audioEngine.setFinishCallback(
-          this.audioID["specialA"],
-          function() {
-            this.audioID["specialA"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    //     this.audioID["specialA"] = this.play("specialA", false, 1.5);
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["specialA"],
+    //       function() {
+    //         this.audioID["specialA"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
 
-    gEventMgr.on(
-      GlobalEvent.PLAY_SPECIAL_B,
-      () => {
-        console.log(
-          " specialB -----------------------------",
-          this.audioID["specialB"]
-        );
+    // gEventMgr.on(
+    //   GlobalEvent.PLAY_SPECIAL_B,
+    //   () => {
+    //     console.log(
+    //       " specialB -----------------------------",
+    //       this.audioID["specialB"]
+    //     );
 
-        this.audioID["specialB"] = this.play("specialB", false, 1.5);
-        cc.audioEngine.setFinishCallback(
-          this.audioID["specialB"],
-          function() {
-            this.audioID["specialB"] = null;
-          }.bind(this)
-        );
-      },
-      this
-    );
+    //     this.audioID["specialB"] = this.play("specialB", false, 1.5);
+    //     cc.audioEngine.setFinishCallback(
+    //       this.audioID["specialB"],
+    //       function() {
+    //         this.audioID["specialB"] = null;
+    //       }.bind(this)
+    //     );
+    //   },
+    //   this
+    // );
   }
 
   stop(audioID: number, clipName?: string) {

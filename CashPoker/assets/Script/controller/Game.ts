@@ -1,5 +1,6 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState } from "../Poker";
+import { ACTION_TAG } from "../Pokers";
 
 export interface StepFunc {
   callback: Function;
@@ -21,6 +22,7 @@ class GameMgr {
   }
 
   public placePokerRoot: HashMap<number, cc.Node> = new HashMap();
+  public cyclePokerRoot: HashMap<number, cc.Node> = new HashMap();
   public removeNode: cc.Node;
 
   private stepInfoArray: StepInfo[] = [];
@@ -49,13 +51,15 @@ class GameMgr {
       return;
     }
     let step = this.stepInfoArray.pop();
+    let count = 0;
     while (step.node.length > 0) {
+      count++;
       let node = step.node.pop();
       let parent = step.lastParent.pop();
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
 
-      if (parent.name == "PokerClip") {
+      if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot") {
         let selfPos = parent.convertToNodeSpaceAR(
           node.getParent().convertToWorldSpaceAR(node.position)
         );
@@ -69,6 +73,7 @@ class GameMgr {
       node.group = "top";
 
       if (func && func.callback && func.target) {
+        console.log("call func !");
         func.callback.apply(func.target, func.args);
       }
 
@@ -78,9 +83,14 @@ class GameMgr {
         let returnPos =
           parent.name == "PokerClip"
             ? poker.getLastPosition()
+            : parent.name == "PokerFlipRoot"
+            ? poker.getFlipPos()
             : poker.getDefaultPosition();
         if (!parent.getComponent(Poker)) {
-          returnPos.y = 0;
+          if (parent.name != "PokerFlipRoot") {
+            returnPos.x = 0;
+            returnPos.y = 0;
+          }
         } else if (
           (parent.getComponent(Poker).getForward() &&
             parent
@@ -92,14 +102,17 @@ class GameMgr {
         ) {
           returnPos.y = -15;
         }
-        poker.node.runAction(
-          cc.sequence(
-            cc.moveTo(0.1, returnPos.x, returnPos.y),
-            cc.callFunc(() => {
-              node.group = "default";
-            }, this)
-          )
+
+        let action = cc.sequence(
+          cc.delayTime(count / 20),
+          cc.moveTo(0.1, returnPos.x, returnPos.y),
+          cc.callFunc(() => {
+            node.group = "default";
+            poker.setDefaultPosition();
+          }, this)
         );
+        action.setTag(ACTION_TAG.BACK_STEP);
+        poker.node.runAction(action);
       }
     }
   }
