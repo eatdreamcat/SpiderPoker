@@ -1,5 +1,6 @@
 import { Game } from "./controller/Game";
 import { gFactory } from "./controller/GameFactory";
+import { OFFSET_Y } from "./Pokers";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -274,7 +275,7 @@ export default class Poker extends cc.Component {
 
     if (this.node.childrenCount > this.defualtChildCount) return false;
     let index = -1;
-    Game.cyclePokerRoot.forEach((key: number, node: cc.Node) => {
+    Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
       let poker = node.getComponent(Poker);
       if (poker) {
         if (Poker.checkRecycled(poker, this)) {
@@ -342,10 +343,9 @@ export default class Poker extends cc.Component {
   checkCanPlace(): number {
     let distance = this.placeLimit;
     let index = -1;
-    Game.placePokerRoot.forEach((key: number, root: cc.Node) => {
-      if (this.node.name == root.name) return;
-
+    Game.getPlacePokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
+      if (this.node.name == root.name && poker) return;
 
       if (poker && poker.getKey() == this.getKey()) return;
 
@@ -372,7 +372,9 @@ export default class Poker extends cc.Component {
   checkCanRecycled() {
     let distance = this.placeLimit;
     let index = -1;
-    Game.cyclePokerRoot.forEach((key: number, root: cc.Node) => {
+    if (this.cycled) return index;
+    if (this.node.childrenCount > this.defualtChildCount) return index;
+    Game.getCycledPokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
 
       if (
@@ -409,9 +411,10 @@ export default class Poker extends cc.Component {
       this.defualtChildCount
     );
 
+    if (this.cycled) return;
     if (this.node.childrenCount <= this.defualtChildCount) {
       console.warn("update poker root:", index, ", value:", this.value);
-      Game.placePokerRoot.add(index, this.node);
+      Game.addPlacePokerRoot(index, this.node);
       this.check(1);
     } else {
       if (this.next) {
@@ -429,11 +432,12 @@ export default class Poker extends cc.Component {
   }
 
   placeToNewRoot(index: number) {
-    let root = Game.placePokerRoot.get(index);
+    let root = Game.getPlacePokerRoot().get(index);
 
     let selfPos = root.convertToNodeSpaceAR(
       this.node.parent.convertToWorldSpaceAR(this.node.position)
     );
+
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],
@@ -460,7 +464,7 @@ export default class Poker extends cc.Component {
 
     let offset = 0;
     if (root.getComponent(Poker)) {
-      offset = -30;
+      offset = OFFSET_Y;
     }
     this.node.runAction(
       cc.sequence(
@@ -475,7 +479,7 @@ export default class Poker extends cc.Component {
   placeToNewCycleNode(index: number) {
     this.setRecycle(true);
 
-    let root = Game.cyclePokerRoot.get(index);
+    let root = Game.getCycledPokerRoot().get(index);
 
     let selfPos = root.convertToNodeSpaceAR(
       this.node.parent.convertToWorldSpaceAR(this.node.position)
@@ -490,7 +494,7 @@ export default class Poker extends cc.Component {
     this.node.setPosition(selfPos);
     this.setKey(null);
     this.setNext(null);
-    Game.cyclePokerRoot.add(index, this.node);
+    Game.addCycledPokerRoot(index, this.node);
     this.node.group = "top";
     this.node.runAction(
       cc.sequence(
@@ -541,10 +545,11 @@ export default class Poker extends cc.Component {
     if (this.cycled) {
       console.log("----------------------- cycled -----------------");
       poker.setRecycle(true);
-      let index = Game.cyclePokerRoot.keyOf(this.node);
+      let index = Game.getCycledPokerRoot().keyOf(this.node);
       if (index != null) {
-        Game.cyclePokerRoot.add(index, child);
+        Game.addCycledPokerRoot(index, child);
       }
+      return;
     }
 
     poker.setRecycle(false);
@@ -583,14 +588,27 @@ export default class Poker extends cc.Component {
   }
 
   onChildRemove(child: cc.Node) {
-    console.log(" onChildRemove:", this.node.childrenCount);
+    console.log(
+      " onChildRemove:",
+      this.node.childrenCount,
+      ", value:",
+      this.value,
+      ",key:",
+      this.key,
+      "cycled:",
+      this.cycled
+    );
 
     this.setNext(null);
     if (this.cycled) {
       console.log(" onChildRemove cycled ------------");
-      let index = Game.cyclePokerRoot.keyOf(child);
+      let poker = child.getComponent(Poker);
+      let index = Game.getCycledPokerRoot().keyOf(child);
       if (index != null) {
-        Game.cyclePokerRoot.add(index, this.node);
+        Game.addCycledPokerRoot(index, this.node);
+      }
+      if (poker) {
+        poker.setRecycle(false);
       }
       return;
     }
@@ -602,7 +620,7 @@ export default class Poker extends cc.Component {
         ",value:",
         this.value
       );
-      Game.placePokerRoot.add(this.key, this.node);
+      Game.addPlacePokerRoot(this.key, this.node);
       this.setNormal();
       if (this.carState == CardState.Back) {
         this.flipCard(0.1);
@@ -731,9 +749,9 @@ export default class Poker extends cc.Component {
   start() {}
 
   update(dt: number) {
-    if (Game.placePokerRoot.keyOf(this.node) != null) {
+    if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
       this.frontCard.node.color = this.canMove ? cc.Color.GREEN : cc.Color.RED;
-    } else if (Game.cyclePokerRoot.keyOf(this.node) == null) {
+    } else if (Game.getCycledPokerRoot().keyOf(this.node) == null) {
       this.frontCard.node.color = this.canMove ? cc.Color.WHITE : cc.Color.GRAY;
     }
   }

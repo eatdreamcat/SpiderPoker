@@ -1,6 +1,6 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState } from "../Poker";
-import { ACTION_TAG } from "../Pokers";
+import { ACTION_TAG, OFFSET_Y } from "../Pokers";
 
 export interface StepFunc {
   callback: Function;
@@ -21,8 +21,8 @@ class GameMgr {
     return this._inst ? this._inst : (this._inst = new GameMgr());
   }
 
-  public placePokerRoot: HashMap<number, cc.Node> = new HashMap();
-  public cyclePokerRoot: HashMap<number, cc.Node> = new HashMap();
+  private placePokerRoot: HashMap<number, cc.Node> = new HashMap();
+  private cyclePokerRoot: HashMap<number, cc.Node> = new HashMap();
   public removeNode: cc.Node;
 
   private stepInfoArray: StepInfo[] = [];
@@ -39,6 +39,34 @@ class GameMgr {
       lastPos: lastPos,
       func: func
     });
+  }
+
+  getPlacePokerRoot() {
+    return this.placePokerRoot;
+  }
+
+  getCycledPokerRoot() {
+    return this.cyclePokerRoot;
+  }
+
+  addPlacePokerRoot(key: number, node: cc.Node) {
+    this.placePokerRoot.add(key, node);
+    if (this.placePokerRoot.length > 7) {
+      console.error(
+        " place Poker Root over size!!!!!:",
+        this.placePokerRoot.length
+      );
+    }
+  }
+
+  addCycledPokerRoot(key: number, node: cc.Node) {
+    this.cyclePokerRoot.add(key, node);
+    if (this.cyclePokerRoot.length > 4) {
+      console.error(
+        " cycled Poker root over size!!!!!:",
+        this.cyclePokerRoot.length
+      );
+    }
   }
 
   clearStep() {
@@ -91,16 +119,8 @@ class GameMgr {
             returnPos.x = 0;
             returnPos.y = 0;
           }
-        } else if (
-          (parent.getComponent(Poker).getForward() &&
-            parent
-              .getComponent(Poker)
-              .getForward()
-              .getCardState() == CardState.Back) ||
-          !parent.getComponent(Poker).getForward() ||
-          parent.getComponent(Poker).getCardState() == CardState.Back
-        ) {
-          returnPos.y = -15;
+        } else {
+          returnPos.y = OFFSET_Y;
         }
 
         let action = cc.sequence(

@@ -18,7 +18,7 @@ export default class RecycleRoot extends cc.Component {
     if (poker) {
       poker.setNext(null);
     }
-    Game.cyclePokerRoot.add(parseInt(this.node.name), child);
+    Game.addCycledPokerRoot(parseInt(this.node.name), child);
   }
 
   onChildRemove(child: cc.Node) {
@@ -26,13 +26,13 @@ export default class RecycleRoot extends cc.Component {
     if (poker) {
       poker.setRecycle(false);
     }
-    Game.cyclePokerRoot.add(parseInt(this.node.name), this.node);
+    Game.addCycledPokerRoot(parseInt(this.node.name), this.node);
   }
 
   start() {}
 
   update(dt: number) {
-    Game.cyclePokerRoot.forEach((key: number, node: cc.Node) => {
+    Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
       let poker = node.getComponent(Poker);
       if (poker) {
         poker.frontCard.node.color = cc.Color.YELLOW;

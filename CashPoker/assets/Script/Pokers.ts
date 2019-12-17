@@ -63,3 +63,6 @@ export const enum ACTION_TAG {
   DEV_POKER,
   RE_DEV_POKER
 }
+
+export const OFFSET_Y = -30;
+export const OFFSET_X = 0;

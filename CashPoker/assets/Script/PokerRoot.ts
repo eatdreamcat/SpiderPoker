@@ -15,7 +15,7 @@ export default class PokerRoot extends cc.Component {
 
   onChildRemove() {
     console.warn(" PokerRoot update root node");
-    Game.placePokerRoot.add(parseInt(this.node.name), this.node);
+    Game.addPlacePokerRoot(parseInt(this.node.name), this.node);
   }
 
   onAddChild(child: cc.Node) {
@@ -33,13 +33,13 @@ export default class PokerRoot extends cc.Component {
       this.setNewRoot(poker.getNext());
     } else {
       console.warn("PokerRoot setNewRoot:", poker.getValue());
-      Game.placePokerRoot.add(parseInt(this.node.name), poker.node);
+      Game.addPlacePokerRoot(parseInt(this.node.name), poker.node);
       poker.setNormal();
     }
   }
 
   update(dt: number) {
-    if (Game.placePokerRoot.keyOf(this.node) != null) {
+    if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
       this.node.color = cc.Color.RED;
     } else {
       this.node.color = cc.Color.WHITE;

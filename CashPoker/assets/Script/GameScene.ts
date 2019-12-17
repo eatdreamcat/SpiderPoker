@@ -1,7 +1,7 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
-import { Pokers, ACTION_TAG } from "./Pokers";
+import { Pokers, ACTION_TAG, OFFSET_Y } from "./Pokers";
 
 const { ccclass, property } = cc._decorator;
 const celerx = require("./utils/celerx");
@@ -75,11 +75,11 @@ export default class GameScene extends cc.Component {
     );
 
     for (let child of this.PlaceRoot.children) {
-      Game.placePokerRoot.add(parseInt(child.name), child);
+      Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
     for (let child of this.CycleRoot.children) {
-      Game.cyclePokerRoot.add(parseInt(child.name), child);
+      Game.addCycledPokerRoot(parseInt(child.name), child);
     }
 
     this.nextStep(LOAD_STEP.GUIDE);
@@ -233,15 +233,15 @@ export default class GameScene extends cc.Component {
         (totalCount - count).toString()
       );
 
-      let targetNode = Game.placePokerRoot.get(pokerPos[count - 1]);
+      let targetNode = Game.getPlacePokerRoot().get(pokerPos[count - 1]);
       if (targetNode) {
         let selfPos = targetNode.convertToNodeSpaceAR(
           pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
         );
 
-        let offset = -15;
+        let offset = OFFSET_Y;
         if (!targetNode.getComponent(Poker)) {
-          Game.placePokerRoot.add(pokerPos[count - 1], pokerNode);
+          Game.addPlacePokerRoot(pokerPos[count - 1], pokerNode);
           offset = 0;
         }
         pokerNode.setParent(targetNode);
@@ -496,7 +496,7 @@ export default class GameScene extends cc.Component {
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
     let funcs: StepFunc[] = [];
-    Game.placePokerRoot.forEach((index: number, targetNode: cc.Node) => {
+    Game.getPlacePokerRoot().forEach((index: number, targetNode: cc.Node) => {
       if (this.PokerClip.childrenCount <= 0) return;
 
       let pokerNode = this.PokerClip.children[this.PokerClip.childrenCount - 1];
@@ -508,6 +508,7 @@ export default class GameScene extends cc.Component {
       nodes.push(pokerNode);
       parents.push(pokerNode.getParent());
       poses.push(pokerNode.position.clone());
+
       funcs.push({
         callback: poker.flipCard,
         args: [0.1],
@@ -517,9 +518,9 @@ export default class GameScene extends cc.Component {
       pokerNode.setParent(targetNode);
       pokerNode.setPosition(selfPos);
 
-      let offset = -30;
+      let offset = OFFSET_Y;
       if (!targetNode.getComponent(Poker)) {
-        Game.placePokerRoot.add(index, pokerNode);
+        Game.addPlacePokerRoot(index, pokerNode);
         offset = 0;
       }
 
