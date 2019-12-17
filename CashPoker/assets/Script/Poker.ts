@@ -415,7 +415,7 @@ export default class Poker extends cc.Component {
     if (this.node.childrenCount <= this.defualtChildCount) {
       console.warn("update poker root:", index, ", value:", this.value);
       Game.addPlacePokerRoot(index, this.node);
-      this.check(1);
+      //this.check(1);
     } else {
       if (this.next) {
         console.log(
