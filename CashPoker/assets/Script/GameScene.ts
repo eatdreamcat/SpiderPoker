@@ -311,7 +311,7 @@ export default class GameScene extends cc.Component {
           }, this)
         );
         action.setTag(ACTION_TAG.RE_DEV_POKER);
-        child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS);
+        child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
         child.runAction(action);
       }, 0);
       i++;
@@ -356,11 +356,11 @@ export default class GameScene extends cc.Component {
       pokerNode.setPosition(selfPos);
 
       let offset = i * 30;
-      poker.setDefaultPosition(cc.v2(offset, 0));
 
       pokerNode.group = "top";
       this.scheduleOnce(() => {
         poker.setFlipPos(cc.v2(offset, 0));
+        poker.setDefaultPosition(cc.v2(offset, 0));
         let action = cc.sequence(
           cc.delayTime(i / 20),
           cc.moveTo(0.1, offset, 0),
@@ -459,6 +459,7 @@ export default class GameScene extends cc.Component {
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
 
       let child2 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 2
@@ -470,6 +471,7 @@ export default class GameScene extends cc.Component {
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(30, 0));
 
       let child3 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 3
@@ -481,6 +483,7 @@ export default class GameScene extends cc.Component {
       child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
     }
   }
 

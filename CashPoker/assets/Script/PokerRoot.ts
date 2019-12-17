@@ -1,16 +1,6 @@
 import { Game } from "./controller/Game";
 import Poker from "./Poker";
 
-// Learn TypeScript:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/reference/attributes.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/life-cycle-callbacks.html
-//  - [English] http://www.cocos2d-x.org/docs/creator/manual/en/scripting/life-cycle-callbacks.html
-
 const { ccclass, property } = cc._decorator;
 
 @ccclass
@@ -24,6 +14,7 @@ export default class PokerRoot extends cc.Component {
   start() {}
 
   onChildRemove() {
+    console.warn(" PokerRoot update root node");
     Game.placePokerRoot.add(parseInt(this.node.name), this.node);
   }
 
@@ -41,6 +32,7 @@ export default class PokerRoot extends cc.Component {
     if (poker.getNext()) {
       this.setNewRoot(poker.getNext());
     } else {
+      console.warn("PokerRoot setNewRoot:", poker.getValue());
       Game.placePokerRoot.add(parseInt(this.node.name), poker.node);
       poker.setNormal();
     }
