@@ -338,6 +338,9 @@ export default class GameScene extends cc.Component {
 
     for (let i = 0; i < 3; i++) {
       let pokerNode = this.PokerDevl.children[this.PokerDevl.childrenCount - 1];
+      if (!pokerNode) {
+        break;
+      }
       let selfPos = this.PokerFlipRoot.convertToNodeSpaceAR(
         pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
       );
