@@ -52,6 +52,7 @@ export default class GameScene extends cc.Component {
   private readonly dispatchCardCount = 28;
 
   private devTime: number = 10;
+  private devOffset: number = 0;
   onLoad() {
     Game.removeNode = this.RemoveNode;
     celerx.ready();
@@ -336,11 +337,14 @@ export default class GameScene extends cc.Component {
 
     let oldChildren = this.PokerFlipRoot.children.concat();
 
+    let count = 3;
+
     for (let i = 0; i < 3; i++) {
       let pokerNode = this.PokerDevl.children[this.PokerDevl.childrenCount - 1];
       if (!pokerNode) {
         break;
       }
+      count--;
       let selfPos = this.PokerFlipRoot.convertToNodeSpaceAR(
         pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
       );
@@ -358,15 +362,16 @@ export default class GameScene extends cc.Component {
       pokerNode.setParent(this.PokerFlipRoot);
       pokerNode.setPosition(selfPos);
 
-      let offset = i * 30;
+      //let offset = i * 30 + this.devOffset;
 
       pokerNode.group = "top";
       this.scheduleOnce(() => {
-        poker.setFlipPos(cc.v2(offset, 0));
-        poker.setDefaultPosition(cc.v2(offset, 0));
+        // poker.setFlipPos(cc.v2(offset, 0));
+        // poker.setDefaultPosition(cc.v2(offset, 0));
+        let pos = poker.getFlipPos();
         let action = cc.sequence(
           cc.delayTime(i / 20),
-          cc.moveTo(0.1, offset, 0),
+          cc.moveTo(0.1, pos.x, pos.y),
           cc.callFunc(() => {
             pokerNode.group = "default";
           }, this)
@@ -377,7 +382,9 @@ export default class GameScene extends cc.Component {
       }, 0.05);
     }
 
-    for (let child of oldChildren) {
+    let length = Math.max(0, oldChildren.length - count);
+    for (let i = 0; i < length; i++) {
+      let child = oldChildren[i];
       child.x = 0;
       if (child.getNumberOfRunningActions() > 0) {
         child.group = "default";
@@ -393,7 +400,7 @@ export default class GameScene extends cc.Component {
     let childIndex = this.PokerFlipRoot.children.indexOf(child);
     let poker = child.getComponent(Poker);
     if (poker) {
-      if (!poker.isNormal()) {
+      if (!poker.isFront()) {
         poker.flipCard(0.1, false, () => {
           poker.setCanMove(childIndex + 1 == this.PokerFlipRoot.childrenCount);
         });
@@ -420,6 +427,20 @@ export default class GameScene extends cc.Component {
 
   updateFlipPokerPosOnAdd() {
     if (this.PokerFlipRoot.childrenCount >= 3) {
+      let child1 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 1
+      ];
+
+      let action1 = cc.moveTo(0.1, 60, 0);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.runAction(action1);
+      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
+      child1.group = "default";
+      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
+
       let child2 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 2
       ];
@@ -430,7 +451,7 @@ export default class GameScene extends cc.Component {
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(30, 0));
       child2.group = "default";
       child2.stopActionByTag(ACTION_TAG.BACK_STEP);
 

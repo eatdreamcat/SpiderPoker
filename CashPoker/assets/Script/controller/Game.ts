@@ -95,15 +95,14 @@ class GameMgr {
       } else {
         node.setPosition(pos);
       }
-
-      node.setParent(parent);
-
-      node.group = "top";
-
       if (func && func.callback && func.target) {
         console.log("call func !");
         func.callback.apply(func.target, func.args);
       }
+
+      node.setParent(parent);
+
+      node.group = "top";
 
       let poker = node.getComponent(Poker);
 
@@ -120,7 +119,12 @@ class GameMgr {
             returnPos.y = 0;
           }
         } else {
-          returnPos.y = OFFSET_Y;
+          if (parent.getComponent(Poker).isCycled()) {
+            returnPos.x = 0;
+            returnPos.y = 0;
+          } else {
+            returnPos.y = OFFSET_Y;
+          }
         }
 
         let action = cc.sequence(

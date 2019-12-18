@@ -61,7 +61,6 @@ export default class Poker extends cc.Component {
 
   private isCheck: boolean = false;
 
-  private isToRemove: boolean = false;
   private cycled: boolean = false;
 
   private readonly placeLimit: number = 75;
@@ -95,7 +94,6 @@ export default class Poker extends cc.Component {
     }
     this.setCardState(CardState.Back);
     this.initEvent();
-    this.isToRemove = false;
   }
 
   getPokerColor() {
@@ -173,7 +171,7 @@ export default class Poker extends cc.Component {
       );
 
       // Game.addStep([this.node], [this.node.getParent()], [this.node.position]);
-      this.isToRemove = true;
+
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
 
@@ -244,6 +242,12 @@ export default class Poker extends cc.Component {
     if (key && key.toString() == "NaN") {
       this.node.getChildByName("Label").getComponent(cc.Label).string +=
         "value:" + this.value.toString();
+    } else {
+      this.node.getChildByName("Label").getComponent(cc.Label).string =
+        "next:" +
+        (this.next ? this.next.getValue() : "null") +
+        ", key:" +
+        this.key;
     }
     if (this.next && this.next.getKey() != this.key) {
       this.next.setKey(key);
@@ -376,7 +380,7 @@ export default class Poker extends cc.Component {
     if (this.node.childrenCount > this.defualtChildCount) return index;
     Game.getCycledPokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
-
+      if (this.node.name == root.name && poker) return;
       if (
         (poker && Poker.checkRecycled(poker, this)) ||
         (!poker && this.value == 1)
@@ -441,7 +445,7 @@ export default class Poker extends cc.Component {
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],
-        [this.node.getParent()],
+        [this.forward.node],
         [this.node.position.clone()],
         [
           {
@@ -476,6 +480,10 @@ export default class Poker extends cc.Component {
     );
   }
 
+  isCycled() {
+    return this.cycled;
+  }
+
   placeToNewCycleNode(index: number) {
     this.setRecycle(true);
 
@@ -484,11 +492,27 @@ export default class Poker extends cc.Component {
     let selfPos = root.convertToNodeSpaceAR(
       this.node.parent.convertToWorldSpaceAR(this.node.position)
     );
-    Game.addStep(
-      [this.node],
-      [this.node.getParent()],
-      [this.node.position.clone()]
-    );
+
+    if (this.forward && this.forward.carState == CardState.Back) {
+      Game.addStep(
+        [this.node],
+        [this.forward.node],
+        [this.node.position.clone()],
+        [
+          {
+            callback: this.forward.flipCard,
+            args: [0.1],
+            target: this.forward
+          }
+        ]
+      );
+    } else {
+      Game.addStep(
+        [this.node],
+        [this.node.getParent()],
+        [this.node.position.clone()]
+      );
+    }
 
     this.node.setParent(root);
     this.node.setPosition(selfPos);
@@ -572,7 +596,9 @@ export default class Poker extends cc.Component {
 
   public static checkBeNext(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-    return true;
+    if (window["ChectOpen"] && CC_DEBUG) {
+      return true;
+    }
     return (
       poker.getValue() - next.getValue() == 1 &&
       poker.getPokerColor() != next.getPokerColor()
@@ -581,6 +607,10 @@ export default class Poker extends cc.Component {
 
   public static checkRecycled(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
+    if (window["ChectOpen"] && CC_DEBUG) {
+      return poker != next;
+    }
+
     return (
       poker.getValue() - next.getValue() == -1 &&
       poker.getPokerType() == next.getPokerType()
@@ -613,7 +643,7 @@ export default class Poker extends cc.Component {
       return;
     }
 
-    if (this.node.childrenCount <= this.defualtChildCount && !this.isToRemove) {
+    if (this.node.childrenCount <= this.defualtChildCount) {
       console.warn(
         "onChildRemove update poker root:",
         this.key,
@@ -699,6 +729,10 @@ export default class Poker extends cc.Component {
     return this.carState == CardState.Front && this.canMove;
   }
 
+  isFront() {
+    return this.carState == CardState.Front;
+  }
+
   flipCard(duration: number = 1, canMove: boolean = true, callback?: Function) {
     if (
       this.frontCard.node.getNumberOfRunningActions() > 0 ||
@@ -761,8 +795,6 @@ export default class Poker extends cc.Component {
       this.setForward(null);
       return;
     }
-
-    if (this.isToRemove) return;
 
     let poker = parent.getComponent(Poker);
     if (poker) {
