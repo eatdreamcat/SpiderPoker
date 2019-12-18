@@ -1,7 +1,7 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
-import { Pokers, ACTION_TAG, OFFSET_Y } from "./Pokers";
+import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex } from "./Pokers";
 
 const { ccclass, property } = cc._decorator;
 const celerx = require("./utils/celerx");
@@ -142,10 +142,23 @@ export default class GameScene extends cc.Component {
 
   startGame() {
     let pokers = Pokers.concat();
+    let pokerIndex = PokerIndex.concat();
+    let weightDiv = pokerIndex.length;
+
     while (pokers.length > 0) {
-      let i = pokers.splice(Math.floor(CMath.getRandom() * pokers.length), 1);
+      let curIndex = this.PokerDevl.childrenCount;
+      let pokerWeight =
+        1 - (weightDiv - pokerIndex.indexOf(curIndex)) / pokerIndex.length;
+
+      console.warn("PokerWeight:", pokerWeight);
+      let totalWeight = pokers.length;
+
+      let i = pokers.splice(
+        Math.floor(CMath.getRandom(pokerWeight, 1) * totalWeight),
+        1
+      );
       let pokerNode = gFactory.getPoker(i);
-      pokerNode.name = this.PokerDevl.childrenCount.toString();
+      pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
       pokerNode.y = -this.PokerDevl.childrenCount * 0.3;
       this.PokerDevl.addChild(pokerNode);
