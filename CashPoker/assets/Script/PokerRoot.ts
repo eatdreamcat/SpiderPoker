@@ -39,10 +39,10 @@ export default class PokerRoot extends cc.Component {
   }
 
   update(dt: number) {
-    if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
-      this.node.color = cc.Color.RED;
-    } else {
-      this.node.color = cc.Color.WHITE;
-    }
+    // if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
+    //   this.node.color = cc.Color.RED;
+    // } else {
+    //   this.node.color = cc.Color.WHITE;
+    // }
   }
 }

@@ -2,6 +2,8 @@ import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
 import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex } from "./Pokers";
+import { gEventMgr } from "./controller/EventManager";
+import { GlobalEvent } from "./controller/EventName";
 
 const { ccclass, property } = cc._decorator;
 const celerx = require("./utils/celerx");
@@ -47,12 +49,16 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   PokerFlipRoot: cc.Node = null;
 
+  @property(cc.SpriteAtlas)
+  BackButtonAtlas: cc.SpriteAtlas = null;
+  @property(cc.SpriteAtlas)
+  DrawButtonAtlas: cc.SpriteAtlas = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
 
   private devTime: number = 10;
-  private devOffset: number = 0;
   onLoad() {
     Game.removeNode = this.RemoveNode;
     celerx.ready();
@@ -107,7 +113,64 @@ export default class GameScene extends cc.Component {
       },
       this
     );
+
+    this.BackButton.node
+      .getChildByName("Background")
+      .getComponent(
+        cc.Sprite
+      ).spriteFrame = this.BackButtonAtlas.getSpriteFrame("btn_backgray");
+    this.BackButton.interactable = false;
     this.BackButton.node.on(cc.Node.EventType.TOUCH_START, Game.backStep, Game);
+
+    gEventMgr.on(
+      GlobalEvent.UPDATE_BACK_BTN_ICON,
+      () => {
+        this.BackButton.interactable = Game.canBackStep();
+        if (this.BackButton.interactable) {
+          this.BackButton.node
+            .getChildByName("Background")
+            .getComponent(
+              cc.Sprite
+            ).spriteFrame = this.BackButtonAtlas.getSpriteFrame("btn_back");
+        } else {
+          this.BackButton.node
+            .getChildByName("Background")
+            .getComponent(
+              cc.Sprite
+            ).spriteFrame = this.BackButtonAtlas.getSpriteFrame("btn_backgray");
+        }
+      },
+      this
+    );
+    gEventMgr.on(
+      GlobalEvent.UPDATE_DRAW_ICON,
+      () => {
+        switch (Game.getFreeDrawTimes()) {
+          case 1:
+            this.PokerDevl.getComponent(
+              cc.Sprite
+            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_1");
+            break;
+          case 2:
+            this.PokerDevl.getComponent(
+              cc.Sprite
+            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_2");
+            break;
+          case 3:
+            this.PokerDevl.getComponent(
+              cc.Sprite
+            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_3");
+            break;
+          default:
+            this.PokerDevl.getComponent(
+              cc.Sprite
+            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("draw_20");
+            break;
+        }
+      },
+      this
+    );
+    gEventMgr.on(GlobalEvent.UPDATE_SCORE, () => {}, this);
   }
 
   celerStart() {
@@ -144,23 +207,31 @@ export default class GameScene extends cc.Component {
     let pokers = Pokers.concat();
     let pokerIndex = PokerIndex.concat();
     let weightDiv = pokerIndex.length;
-
     while (pokers.length > 0) {
-      let curIndex = this.PokerDevl.childrenCount;
+      let curIndex = pokers.length - 1;
       let pokerWeight =
         1 - (weightDiv - pokerIndex.indexOf(curIndex)) / pokerIndex.length;
 
-      console.warn("PokerWeight:", pokerWeight);
       let totalWeight = pokers.length;
 
-      let i = pokers.splice(
-        Math.floor(CMath.getRandom(pokerWeight, 1) * totalWeight),
-        1
+      let random = CMath.getRandom(CMath.getRandom(0, pokerWeight), 1);
+      let randomIndex = Math.floor(random * totalWeight);
+
+      let i = pokers.splice(randomIndex, 1);
+      console.warn(
+        "randomIndex:",
+        randomIndex,
+        ", poker:",
+        i,
+        ",pokerWeight:",
+        pokerWeight,
+        ",random:",
+        random
       );
       let pokerNode = gFactory.getPoker(i);
       pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
-      pokerNode.y = -this.PokerDevl.childrenCount * 0.3;
+      pokerNode.y = 0;
       this.PokerDevl.addChild(pokerNode);
     }
 
@@ -206,35 +277,40 @@ export default class GameScene extends cc.Component {
     let pokerPos = [
       0,
       1,
+      2,
+      3,
+      4,
+      5,
+      6,
+
       1,
       2,
+      3,
+      4,
+      5,
+      6,
+
       2,
-      2,
-      3,
-      3,
-      3,
       3,
       4,
+      5,
+      6,
+
+      3,
       4,
+      5,
+      6,
+
       4,
-      4,
-      4,
-      5,
-      5,
-      5,
-      5,
-      5,
       5,
       6,
+      5,
       6,
-      6,
-      6,
-      6,
-      6,
+
       6
     ];
 
-    let pokerFlips = [0, 2, 5, 9, 14, 20, 27];
+    let pokerFlips = [0, 7, 13, 18, 22, 25, 27];
     /** 上面发牌 */
     let func1 = () => {
       if (count++ >= this.dispatchCardCount) {
@@ -263,7 +339,7 @@ export default class GameScene extends cc.Component {
         pokerNode.setPosition(selfPos);
 
         pokerNode.group = "top";
-        if (pokerFlips.indexOf(count - 1) >= 0) {
+        if (pokerFlips.indexOf(count - 1) >= 0 || true) {
           poker.flipCard(0.1);
           poker.setNormal();
         }
@@ -339,6 +415,11 @@ export default class GameScene extends cc.Component {
       return;
     }
     if (this.PokerDevl.childrenCount <= 0) {
+      if (Game.getFreeDrawTimes() > 0) {
+        Game.addFreeDrawTimes(-1);
+      } else {
+        Game.addScore(-20);
+      }
       this.recyclePoker();
       return;
     }
@@ -392,7 +473,7 @@ export default class GameScene extends cc.Component {
         action.setTag(ACTION_TAG.DEV_POKER);
         pokerNode.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
         pokerNode.runAction(action);
-      }, 0.05);
+      }, 0.1);
     }
 
     let length = Math.max(0, oldChildren.length - count);
@@ -444,13 +525,13 @@ export default class GameScene extends cc.Component {
         this.PokerFlipRoot.childrenCount - 1
       ];
 
-      let action1 = cc.moveTo(0.1, 60, 0);
+      let action1 = cc.moveTo(0.1, 120, 0);
       action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
+      child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
       child1.group = "default";
       child1.stopActionByTag(ACTION_TAG.BACK_STEP);
 
@@ -458,13 +539,13 @@ export default class GameScene extends cc.Component {
         this.PokerFlipRoot.childrenCount - 2
       ];
 
-      let action2 = cc.moveTo(0.1, 30, 0);
+      let action2 = cc.moveTo(0.1, 60, 0);
       action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(30, 0));
+      child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
       child2.group = "default";
       child2.stopActionByTag(ACTION_TAG.BACK_STEP);
 
@@ -490,25 +571,25 @@ export default class GameScene extends cc.Component {
         this.PokerFlipRoot.childrenCount - 1
       ];
 
-      let action1 = cc.moveTo(0.1, 60, 0);
+      let action1 = cc.moveTo(0.1, 120, 0);
       action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
+      child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
 
       let child2 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 2
       ];
 
-      let action2 = cc.moveTo(0.1, 30, 0);
+      let action2 = cc.moveTo(0.1, 60, 0);
       action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(30, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(30, 0));
+      child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
 
       let child3 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 3

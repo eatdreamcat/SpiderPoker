@@ -32,13 +32,13 @@ export default class RecycleRoot extends cc.Component {
   start() {}
 
   update(dt: number) {
-    Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
-      let poker = node.getComponent(Poker);
-      if (poker) {
-        poker.frontCard.node.color = cc.Color.YELLOW;
-      } else {
-        node.color = cc.Color.YELLOW;
-      }
-    });
+    // Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
+    //   let poker = node.getComponent(Poker);
+    //   if (poker) {
+    //     poker.frontCard.node.color = cc.Color.YELLOW;
+    //   } else {
+    //     node.color = cc.Color.YELLOW;
+    //   }
+    // });
   }
 }

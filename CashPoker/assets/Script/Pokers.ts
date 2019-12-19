@@ -94,6 +94,16 @@ export const PokerIndex = [
   26,
   25,
   27,
+  28,
+  29,
+  50,
+  49,
+  46,
+  43,
+  40,
+  37,
+  34,
+  31,
   30,
   33,
   36,
@@ -101,23 +111,7 @@ export const PokerIndex = [
   42,
   45,
   48,
-  51,
-  31,
-  34,
-  37,
-  40,
-  43,
-  46,
-  49,
-  50,
-  32,
-  35,
-  38,
-  41,
-  44,
-  47,
-  28,
-  29
+  51
 ];
 
 export const enum ACTION_TAG {
@@ -128,5 +122,5 @@ export const enum ACTION_TAG {
   RE_DEV_POKER
 }
 
-export const OFFSET_Y = -40;
+export const OFFSET_Y = -70;
 export const OFFSET_X = 0;

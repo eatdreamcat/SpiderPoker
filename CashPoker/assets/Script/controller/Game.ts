@@ -1,6 +1,8 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState } from "../Poker";
 import { ACTION_TAG, OFFSET_Y } from "../Pokers";
+import { gEventMgr } from "./EventManager";
+import { GlobalEvent } from "./EventName";
 
 export interface StepFunc {
   callback: Function;
@@ -27,6 +29,29 @@ class GameMgr {
 
   private stepInfoArray: StepInfo[] = [];
 
+  private score: number = 0;
+  private freeDrawTimes: number = 3;
+
+  public addScore(score: number) {
+    this.score += score;
+    this.score = Math.max(this.score, 0);
+    gEventMgr.emit(GlobalEvent.UPDATE_SCORE);
+  }
+
+  public getScore() {
+    return this.score;
+  }
+
+  public addFreeDrawTimes(times: number) {
+    this.freeDrawTimes += times;
+    this.freeDrawTimes = Math.max(this.freeDrawTimes, 0);
+    gEventMgr.emit(GlobalEvent.UPDATE_DRAW_ICON);
+  }
+
+  public getFreeDrawTimes() {
+    return this.freeDrawTimes;
+  }
+
   public addStep(
     node: cc.Node[],
     lastParent: cc.Node[],
@@ -39,6 +64,7 @@ class GameMgr {
       lastPos: lastPos,
       func: func
     });
+    gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
   }
 
   getPlacePokerRoot() {
@@ -79,6 +105,7 @@ class GameMgr {
       return;
     }
     let step = this.stepInfoArray.pop();
+    gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
     let count = 0;
     while (step.node.length > 0) {
       count++;
@@ -142,6 +169,10 @@ class GameMgr {
         poker.node.runAction(action);
       }
     }
+  }
+
+  public canBackStep() {
+    return this.stepInfoArray.length > 0;
   }
 }
 

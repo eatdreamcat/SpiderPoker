@@ -783,11 +783,11 @@ export default class Poker extends cc.Component {
   start() {}
 
   update(dt: number) {
-    if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
-      this.frontCard.node.color = this.canMove ? cc.Color.ORANGE : cc.Color.RED;
-    } else if (Game.getCycledPokerRoot().keyOf(this.node) == null) {
-      this.frontCard.node.color = this.canMove ? cc.Color.WHITE : cc.Color.GRAY;
-    }
+    // if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
+    //   this.frontCard.node.color = this.canMove ? cc.Color.ORANGE : cc.Color.RED;
+    // } else if (Game.getCycledPokerRoot().keyOf(this.node) == null) {
+    //   this.frontCard.node.color = this.canMove ? cc.Color.WHITE : cc.Color.GRAY;
+    // }
   }
 
   onSetParent(parent: cc.Node) {
