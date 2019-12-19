@@ -63,7 +63,7 @@ export default class Poker extends cc.Component {
 
   private cycled: boolean = false;
 
-  private readonly placeLimit: number = 75;
+  private readonly placeLimit: number = 100;
 
   reuse() {
     let pokerInfo: string = arguments[0][0][0];
@@ -450,7 +450,13 @@ export default class Poker extends cc.Component {
         [
           {
             callback: this.forward.flipCard,
-            args: [0.1],
+            args: [
+              0.1,
+              false,
+              () => {
+                Game.addFlipCounts(-1);
+              }
+            ],
             target: this.forward
           }
         ]
@@ -501,7 +507,13 @@ export default class Poker extends cc.Component {
         [
           {
             callback: this.forward.flipCard,
-            args: [0.1],
+            args: [
+              0.1,
+              false,
+              () => {
+                Game.addFlipCounts(-1);
+              }
+            ],
             target: this.forward
           }
         ]
@@ -654,6 +666,7 @@ export default class Poker extends cc.Component {
       this.setNormal();
       if (this.carState == CardState.Back) {
         this.flipCard(0.1);
+        Game.addFlipCounts(1);
       } else {
         if (this.forward) {
           this.forward.updateState.call(this.forward);

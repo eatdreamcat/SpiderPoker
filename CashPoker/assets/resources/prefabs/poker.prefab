@@ -108,8 +108,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 153,
-      "height": 210
+      "width": 141,
+      "height": 198
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -292,7 +292,7 @@
       "__id__": 1
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_level": 2,
     "_components": [
       {
@@ -305,14 +305,14 @@
     "_opacity": 255,
     "_color": {
       "__type__": "cc.Color",
-      "r": 0,
+      "r": 27,
       "g": 0,
-      "b": 0,
+      "b": 244,
       "a": 255
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 105,
+      "width": 169.42000000000002,
       "height": 20
     },
     "_anchorPoint": {
@@ -323,7 +323,7 @@
     "_position": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 65.5,
+      "y": 74.8,
       "z": 0
     },
     "_scale": {
@@ -355,9 +355,9 @@
     },
     "_enabled": true,
     "_useOriginalSize": false,
-    "_string": "",
-    "_N$string": "",
-    "_fontSize": 20,
+    "_string": "debug",
+    "_N$string": "debug",
+    "_fontSize": 30,
     "_lineHeight": 20,
     "_enableWrapText": true,
     "_N$file": null,
@@ -367,7 +367,7 @@
     "_N$horizontalAlign": 1,
     "_N$verticalAlign": 1,
     "_N$fontFamily": "Arial",
-    "_N$overflow": 2,
+    "_N$overflow": 3,
     "_N$cacheMode": 0,
     "_id": ""
   },

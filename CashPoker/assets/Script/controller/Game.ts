@@ -13,6 +13,7 @@ export interface StepInfo {
   node: cc.Node[];
   lastParent: cc.Node[];
   lastPos: cc.Vec2[];
+  scores?: number[];
   func?: StepFunc[];
 }
 
@@ -31,11 +32,22 @@ class GameMgr {
 
   private score: number = 0;
   private freeDrawTimes: number = 3;
+  private flipCounts: number = 0;
+
+  private gameStart: boolean = false;
+
+  public start() {
+    this.gameStart = true;
+  }
+
+  public isGameStarted() {
+    return this.gameStart;
+  }
 
   public addScore(score: number) {
     this.score += score;
     this.score = Math.max(this.score, 0);
-    gEventMgr.emit(GlobalEvent.UPDATE_SCORE);
+    gEventMgr.emit(GlobalEvent.UPDATE_SCORE, score);
   }
 
   public getScore() {
@@ -52,17 +64,33 @@ class GameMgr {
     return this.freeDrawTimes;
   }
 
+  public addFlipCounts(count: number) {
+    if (!this.isGameStarted()) return;
+    this.flipCounts += count;
+    this.flipCounts = Math.max(this.flipCounts, 0);
+    console.log(
+      "-----------------------------------flipCounts:",
+      this.flipCounts
+    );
+  }
+
+  public getFlipCounts() {
+    return this.flipCounts;
+  }
+
   public addStep(
     node: cc.Node[],
     lastParent: cc.Node[],
     lastPos: cc.Vec2[],
-    func?: StepFunc[]
+    func?: StepFunc[],
+    scores?: number[]
   ) {
     this.stepInfoArray.push({
       node: node,
       lastParent: lastParent,
       lastPos: lastPos,
-      func: func
+      func: func,
+      scores: scores
     });
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
   }
@@ -113,6 +141,9 @@ class GameMgr {
       let parent = step.lastParent.pop();
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
+      let score = step.scores ? step.scores.pop() : 0;
+
+      Game.addScore(score);
 
       if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot") {
         let selfPos = parent.convertToNodeSpaceAR(

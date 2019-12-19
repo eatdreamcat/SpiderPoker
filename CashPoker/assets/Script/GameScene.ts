@@ -54,12 +54,22 @@ export default class GameScene extends cc.Component {
   @property(cc.SpriteAtlas)
   DrawButtonAtlas: cc.SpriteAtlas = null;
 
+  @property(cc.Label)
+  TimeLabel: cc.Label = null;
+
+  @property(cc.Label)
+  ScoreLabel: cc.Label = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
 
   private devTime: number = 10;
+
+  private gameTime = 300;
   onLoad() {
+    this.TimeLabel.string = CMath.TimeFormat(this.gameTime);
+    this.ScoreLabel.string = "0";
     Game.removeNode = this.RemoveNode;
     celerx.ready();
     CMath.randomSeed = Math.random();
@@ -170,7 +180,14 @@ export default class GameScene extends cc.Component {
       },
       this
     );
-    gEventMgr.on(GlobalEvent.UPDATE_SCORE, () => {}, this);
+
+    gEventMgr.on(
+      GlobalEvent.UPDATE_SCORE,
+      (score: number) => {
+        this.ScoreLabel.string = Game.getScore().toString();
+      },
+      this
+    );
   }
 
   celerStart() {
@@ -214,7 +231,8 @@ export default class GameScene extends cc.Component {
 
       let totalWeight = pokers.length;
 
-      let random = CMath.getRandom(CMath.getRandom(0, pokerWeight), 1);
+      let random = CMath.getRandom(0, 1);
+      //CMath.getRandom(0, 1) / 2 + CMath.getRandom(0, pokerWeight) / 2;
       let randomIndex = Math.floor(random * totalWeight);
 
       let i = pokers.splice(randomIndex, 1);
@@ -369,6 +387,18 @@ export default class GameScene extends cc.Component {
       return;
     }
 
+    let scores = [];
+    if (Game.getFreeDrawTimes() > 0) {
+      Game.addFreeDrawTimes(-1);
+    } else {
+      if (Game.getScore() >= 20) {
+        scores.push(20);
+      } else {
+        scores.push(Game.getScore());
+      }
+      Game.addScore(-20);
+    }
+
     let nodes: cc.Node[] = [];
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
@@ -406,7 +436,7 @@ export default class GameScene extends cc.Component {
       }, 0);
       i++;
     }
-    Game.addStep(nodes, parents, poses);
+    Game.addStep(nodes, parents, poses, null, scores);
   }
 
   devPoker() {
@@ -415,11 +445,6 @@ export default class GameScene extends cc.Component {
       return;
     }
     if (this.PokerDevl.childrenCount <= 0) {
-      if (Game.getFreeDrawTimes() > 0) {
-        Game.addFreeDrawTimes(-1);
-      } else {
-        Game.addScore(-20);
-      }
       this.recyclePoker();
       return;
     }
