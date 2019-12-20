@@ -161,6 +161,7 @@ class GameMgr {
       } else {
         node.setPosition(pos);
       }
+
       if (func && func.callback && func.target) {
         console.log("call func !");
         func.callback.apply(func.target, func.args);
@@ -189,7 +190,11 @@ class GameMgr {
             returnPos.x = 0;
             returnPos.y = 0;
           } else {
-            returnPos.y = OFFSET_Y;
+            if (func.callback == parent.getComponent(Poker).flipCard) {
+              returnPos.y = OFFSET_Y / 3;
+            } else {
+              returnPos.y = OFFSET_Y;
+            }
           }
         }
 

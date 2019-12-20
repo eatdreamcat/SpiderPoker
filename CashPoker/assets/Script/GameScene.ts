@@ -347,7 +347,7 @@ export default class GameScene extends cc.Component {
           pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
         );
 
-        let offset = OFFSET_Y;
+        let offset = OFFSET_Y / 3;
         if (!targetNode.getComponent(Poker)) {
           Game.addPlacePokerRoot(pokerPos[count - 1], pokerNode);
           offset = 0;
