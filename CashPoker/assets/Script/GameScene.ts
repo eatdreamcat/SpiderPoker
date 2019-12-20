@@ -65,10 +65,10 @@ export default class GameScene extends cc.Component {
   private readonly dispatchCardCount = 28;
 
   private devTime: number = 10;
+  private backTime: number = 10;
 
-  private gameTime = 300;
   onLoad() {
-    this.TimeLabel.string = CMath.TimeFormat(this.gameTime);
+    this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
     Game.removeNode = this.RemoveNode;
     celerx.ready();
@@ -116,6 +116,7 @@ export default class GameScene extends cc.Component {
     this.PokerDevl.on(
       cc.Node.EventType.TOUCH_START,
       () => {
+        if (Game.isTimeOver()) return;
         if (this.devTime >= 0.3) {
           this.devPoker();
           this.devTime = 0;
@@ -130,7 +131,15 @@ export default class GameScene extends cc.Component {
         cc.Sprite
       ).spriteFrame = this.BackButtonAtlas.getSpriteFrame("btn_backgray");
     this.BackButton.interactable = false;
-    this.BackButton.node.on(cc.Node.EventType.TOUCH_START, Game.backStep, Game);
+    this.BackButton.node.on(
+      cc.Node.EventType.TOUCH_START,
+      () => {
+        if (Game.isTimeOver() || this.backTime < 0.5) return;
+        this.backTime = 0;
+        Game.backStep();
+      },
+      Game
+    );
 
     gEventMgr.on(
       GlobalEvent.UPDATE_BACK_BTN_ICON,
@@ -501,8 +510,6 @@ export default class GameScene extends cc.Component {
 
       pokerNode.group = "top";
       this.scheduleOnce(() => {
-        // poker.setFlipPos(cc.v2(offset, 0));
-        // poker.setDefaultPosition(cc.v2(offset, 0));
         let pos = poker.getFlipPos();
         let action = cc.sequence(
           cc.delayTime(i / 20),
@@ -514,7 +521,7 @@ export default class GameScene extends cc.Component {
         action.setTag(ACTION_TAG.DEV_POKER);
         pokerNode.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
         pokerNode.runAction(action);
-      }, 0.1);
+      }, 0);
     }
 
     let length = Math.max(0, oldChildren.length - count);
@@ -561,15 +568,20 @@ export default class GameScene extends cc.Component {
   }
 
   updateFlipPokerPosOnAdd() {
+    console.log(
+      "this.PokerFlipRoot.childrenCount :",
+      this.PokerFlipRoot.childrenCount
+    );
     if (this.PokerFlipRoot.childrenCount >= 3) {
       let child1 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 1
       ];
 
       let action1 = cc.moveTo(0.1, 120, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      // child1.stopAllActions();
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
       child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
@@ -584,6 +596,7 @@ export default class GameScene extends cc.Component {
       action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      // child2.stopAllActions();
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
       child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
@@ -598,6 +611,7 @@ export default class GameScene extends cc.Component {
       action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
       child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      // child3.stopAllActions();
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
       child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
@@ -647,6 +661,7 @@ export default class GameScene extends cc.Component {
   }
 
   dispatchPoker() {
+    if (Game.isTimeOver()) return;
     if (this.PokerClip.childrenCount <= 0 || !this.canDispatchPoker) {
       return;
     }
@@ -704,5 +719,10 @@ export default class GameScene extends cc.Component {
 
   update(dt: number) {
     this.devTime += dt;
+    this.backTime += dt;
+    if (Game.isGameStarted()) {
+      Game.addGameTime(-dt);
+      this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+    }
   }
 }

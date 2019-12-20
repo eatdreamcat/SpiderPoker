@@ -36,6 +36,25 @@ class GameMgr {
 
   private gameStart: boolean = false;
 
+  private gameTime = 300;
+
+  public getGameTime() {
+    return this.gameTime;
+  }
+
+  public addGameTime(time: number) {
+    if (CC_DEBUG) return;
+    this.gameTime += time;
+    this.gameTime = Math.max(this.gameTime, 0);
+    if (this.gameTime <= 0) {
+      this.gameStart = false;
+    }
+  }
+
+  public isTimeOver() {
+    return this.gameTime <= 0;
+  }
+
   public start() {
     this.gameStart = true;
   }
@@ -202,6 +221,7 @@ class GameMgr {
           cc.delayTime(count / 500),
           cc.callFunc(() => {
             poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+            poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
           }, this),
           cc.moveTo(0.1, returnPos.x, returnPos.y),
           cc.callFunc(() => {

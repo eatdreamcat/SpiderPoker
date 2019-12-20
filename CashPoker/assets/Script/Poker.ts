@@ -1,6 +1,6 @@
 import { Game } from "./controller/Game";
 import { gFactory } from "./controller/GameFactory";
-import { OFFSET_Y } from "./Pokers";
+import { OFFSET_Y, ACTION_TAG } from "./Pokers";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -143,6 +143,7 @@ export default class Poker extends cc.Component {
   }
 
   onLoad() {
+    this.node.getChildByName("Label").active = false; // CC_DEBUG;
     this.defualtChildCount = this.node.childrenCount;
     console.log(" default children count:", this.defualtChildCount);
     this.setCardState(CardState.Back);
@@ -272,6 +273,7 @@ export default class Poker extends cc.Component {
     );
     console.log(this.frontCard.spriteFrame);
     e.bubbles = !this.isNormal();
+    if (Game.isTimeOver()) return;
     if (!Game.isGameStarted()) Game.start();
   }
 
@@ -304,6 +306,7 @@ export default class Poker extends cc.Component {
 
   onMove(e: cc.Event.EventTouch) {
     e.bubbles = false;
+    if (Game.isTimeOver()) return;
     if (!this.canMove) return;
     this.node.group = "top";
     let move = e.getDelta();
@@ -318,6 +321,7 @@ export default class Poker extends cc.Component {
 
   onMoveEnd(e: cc.Event.EventTouch) {
     e.bubbles = false;
+    if (Game.isTimeOver()) return;
     if (this.defaultPos && this.canMove) {
       let placeIndex = this.checkCanPlace();
       if (placeIndex >= 0) {
@@ -332,14 +336,19 @@ export default class Poker extends cc.Component {
           this.node.group = "default";
           this.placeToNewCycleNode(recycleIndex);
         } else if (!this.checkAutoRecycle()) {
-          this.node.runAction(
-            cc.sequence(
-              cc.moveTo(0.1, this.defaultPos.x, this.defaultPos.y),
-              cc.callFunc(() => {
-                this.node.group = "default";
-              }, this)
-            )
-          );
+          if (CMath.Distance(this.node.position, this.defaultPos) < 5) {
+            this.node.setPosition(this.defaultPos);
+            if (!this.next) this.shake();
+          } else {
+            this.node.runAction(
+              cc.sequence(
+                cc.moveTo(0.1, this.defaultPos.x, this.defaultPos.y),
+                cc.callFunc(() => {
+                  this.node.group = "default";
+                }, this)
+              )
+            );
+          }
         }
       }
     }
@@ -443,6 +452,19 @@ export default class Poker extends cc.Component {
       this.node.parent.convertToWorldSpaceAR(this.node.position)
     );
 
+    let score = 0;
+    if (this.isCycled()) {
+      score = -(13 - this.value) * 10;
+    }
+
+    let socre2 = 0;
+    if (this.node.getParent().name == "PokerFlipRoot") {
+      socre2 = 20;
+    }
+
+    Game.addScore(score);
+    Game.addScore(socre2);
+
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],
@@ -461,13 +483,15 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20]
+        [-20 - score - socre2]
       );
     } else {
       Game.addStep(
         [this.node],
         [this.node.getParent()],
-        [this.node.position.clone()]
+        [this.node.position.clone()],
+        [],
+        [-score - socre2]
       );
     }
 
@@ -502,7 +526,12 @@ export default class Poker extends cc.Component {
     );
 
     let score = (13 - this.value) * 10;
+    let socre2 = 0;
+    if (this.node.getParent().name == "PokerFlipRoot") {
+      socre2 = 20;
+    }
     Game.addScore(score);
+    Game.addScore(socre2);
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],
@@ -521,7 +550,7 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20 - score]
+        [-20 - score - socre2]
       );
     } else {
       Game.addStep(
@@ -529,19 +558,21 @@ export default class Poker extends cc.Component {
         [this.node.getParent()],
         [this.node.position.clone()],
         [],
-        [-score]
+        [-score - socre2]
       );
     }
 
     this.node.setParent(root);
     this.node.setPosition(selfPos);
+    let distance = CMath.Distance(selfPos, cc.v2(0, 0));
+    let time = distance / 2500;
     this.setKey(null);
     this.setNext(null);
     Game.addCycledPokerRoot(index, this.node);
     this.node.group = "top";
     this.node.runAction(
       cc.sequence(
-        cc.moveTo(0.1, 0, 0),
+        cc.moveTo(time, 0, 0),
         cc.callFunc(() => {
           this.node.group = "default";
           this.setDefaultPosition();
@@ -567,6 +598,24 @@ export default class Poker extends cc.Component {
     } else {
       this.isCheck = false;
     }
+  }
+
+  shake() {
+    let pos = this.getDefaultPosition();
+    let shake = cc.sequence(
+      cc.repeat(
+        cc.sequence(
+          cc.moveTo(0.02, pos.x - 10, pos.y),
+          cc.moveTo(0.04, pos.x + 20, pos.y),
+          cc.moveTo(0.02, pos.x - 10, pos.y)
+        ),
+        5
+      ),
+      cc.moveTo(0.01, pos.x, pos.y)
+    );
+    shake.setTag(ACTION_TAG.SHAKE);
+    this.node.stopActionByTag(ACTION_TAG.SHAKE);
+    this.node.runAction(shake);
   }
 
   emitCheckDone() {

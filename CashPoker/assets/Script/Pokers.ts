@@ -119,7 +119,8 @@ export const enum ACTION_TAG {
   FLIP_CARD_REPOS_ON_REMOVE,
   BACK_STEP,
   DEV_POKER,
-  RE_DEV_POKER
+  RE_DEV_POKER,
+  SHAKE
 }
 
 export const OFFSET_Y = -70;
