@@ -357,7 +357,7 @@ export default class GameScene extends cc.Component {
         pokerNode.setPosition(selfPos);
 
         pokerNode.group = "top";
-        if (pokerFlips.indexOf(count - 1) >= 0 || true) {
+        if (pokerFlips.indexOf(count - 1) >= 0) {
           poker.flipCard(0.1);
           poker.setNormal();
         }
@@ -388,8 +388,10 @@ export default class GameScene extends cc.Component {
     }
 
     let scores = [];
+    let drawTimesCost = 0;
     if (Game.getFreeDrawTimes() > 0) {
       Game.addFreeDrawTimes(-1);
+      drawTimesCost = 1;
     } else {
       if (Game.getScore() >= 20) {
         scores.push(20);
@@ -436,7 +438,21 @@ export default class GameScene extends cc.Component {
       }, 0);
       i++;
     }
-    Game.addStep(nodes, parents, poses, null, scores);
+    Game.addStep(
+      nodes,
+      parents,
+      poses,
+      [
+        {
+          callback: () => {
+            Game.addFreeDrawTimes(drawTimesCost);
+          },
+          target: this,
+          args: []
+        }
+      ],
+      scores
+    );
   }
 
   devPoker() {

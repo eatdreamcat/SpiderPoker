@@ -272,6 +272,7 @@ export default class Poker extends cc.Component {
     );
     console.log(this.frontCard.spriteFrame);
     e.bubbles = !this.isNormal();
+    if (!Game.isGameStarted()) Game.start();
   }
 
   checkAutoRecycle() {
@@ -459,7 +460,8 @@ export default class Poker extends cc.Component {
             ],
             target: this.forward
           }
-        ]
+        ],
+        [-20]
       );
     } else {
       Game.addStep(
@@ -499,6 +501,8 @@ export default class Poker extends cc.Component {
       this.node.parent.convertToWorldSpaceAR(this.node.position)
     );
 
+    let score = (13 - this.value) * 10;
+    Game.addScore(score);
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],
@@ -516,13 +520,16 @@ export default class Poker extends cc.Component {
             ],
             target: this.forward
           }
-        ]
+        ],
+        [-20 - score]
       );
     } else {
       Game.addStep(
         [this.node],
         [this.node.getParent()],
-        [this.node.position.clone()]
+        [this.node.position.clone()],
+        [],
+        [-score]
       );
     }
 
@@ -667,6 +674,7 @@ export default class Poker extends cc.Component {
       if (this.carState == CardState.Back) {
         this.flipCard(0.1);
         Game.addFlipCounts(1);
+        Game.addScore(20);
       } else {
         if (this.forward) {
           this.forward.updateState.call(this.forward);

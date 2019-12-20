@@ -45,8 +45,10 @@ class GameMgr {
   }
 
   public addScore(score: number) {
+    if (score == 0) return;
     this.score += score;
     this.score = Math.max(this.score, 0);
+    console.log("------------------- score:", this.score, score);
     gEventMgr.emit(GlobalEvent.UPDATE_SCORE, score);
   }
 
@@ -72,6 +74,12 @@ class GameMgr {
       "-----------------------------------flipCounts:",
       this.flipCounts
     );
+    if (this.flipCounts >= 21) {
+      console.error(
+        "-----------------------------------flipCounts:",
+        this.flipCounts
+      );
+    }
   }
 
   public getFlipCounts() {
@@ -141,7 +149,7 @@ class GameMgr {
       let parent = step.lastParent.pop();
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
-      let score = step.scores ? step.scores.pop() : 0;
+      let score = step.scores && step.scores.length > 0 ? step.scores.pop() : 0;
 
       Game.addScore(score);
 
