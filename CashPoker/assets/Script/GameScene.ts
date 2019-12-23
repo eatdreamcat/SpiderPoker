@@ -91,6 +91,10 @@ export default class GameScene extends cc.Component {
   private devTime: number = 10;
   private backTime: number = 10;
 
+  private score: number = 0;
+  private showScore: number = 0;
+  private scoreStep: number = 0;
+
   onLoad() {
     this.Stop.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
@@ -106,6 +110,10 @@ export default class GameScene extends cc.Component {
         self.celerStart();
       }.bind(this)
     );
+
+    celerx.provideScore(() => {
+      return parseInt(Game.getScore().toString());
+    });
 
     CC_DEBUG && this.celerStart();
 
@@ -156,6 +164,17 @@ export default class GameScene extends cc.Component {
         ) {
           this.LightAnimation.node.active = true;
           this.LightAnimation.play();
+        }
+      },
+      this
+    );
+
+    this.PokerDevl.on(
+      cc.Node.EventType.CHILD_ADDED,
+      (child: cc.Node) => {
+        let poker = child.getComponent(Poker);
+        if (poker) {
+          poker.setRecycle(false);
         }
       },
       this
@@ -215,6 +234,7 @@ export default class GameScene extends cc.Component {
       },
       this
     );
+
     gEventMgr.on(
       GlobalEvent.UPDATE_DRAW_ICON,
       () => {
@@ -246,8 +266,52 @@ export default class GameScene extends cc.Component {
 
     gEventMgr.on(
       GlobalEvent.UPDATE_SCORE,
-      (score: number) => {
-        this.ScoreLabel.string = Game.getScore().toString();
+      (score: number, pos: cc.Vec2) => {
+        console.log(" score change: ", score, ",pos:", pos);
+
+        this.scoreStep = Math.max(score / 20, this.scoreStep);
+
+        let targetPos = CMath.ConvertToNodeSpaceAR(
+          this.ScoreLabel.node,
+          this.RemoveNode
+        );
+
+        if (score > 0) {
+          let scoreLabel = gFactory.getAddScore("/" + score.toString());
+          scoreLabel.setParent(this.RemoveNode);
+          scoreLabel.setPosition(pos);
+
+          scoreLabel.runAction(
+            cc.sequence(
+              cc.scaleTo(0, 0),
+              cc.scaleTo(0.15, 1.2),
+              cc.delayTime(0.25),
+              cc.scaleTo(0.1, 1.0),
+              cc.moveTo(0.25, targetPos.x, targetPos.y),
+              cc.callFunc(() => {
+                this.showScore = Game.getScore();
+                gFactory.putAddScore(scoreLabel);
+              })
+            )
+          );
+        } else {
+          let scoreLabel = gFactory.getSubScore("/" + score.toString());
+          scoreLabel.setParent(this.RemoveNode);
+          scoreLabel.setPosition(pos);
+          scoreLabel.runAction(
+            cc.sequence(
+              cc.scaleTo(0, 0),
+              cc.scaleTo(0.15, 1.2),
+              cc.delayTime(0.25),
+              cc.scaleTo(0.1, 1.0),
+              cc.moveTo(0.25, targetPos.x, targetPos.y),
+              cc.callFunc(() => {
+                this.showScore = Game.getScore();
+                gFactory.putSubScore(scoreLabel);
+              })
+            )
+          );
+        }
       },
       this
     );
@@ -331,8 +395,9 @@ export default class GameScene extends cc.Component {
           targetPos = cc.v2(child.x, child.y);
         }
 
-        let selfPos = this.PokerClip.convertToNodeSpaceAR(
-          pokerNode.parent.parent.convertToWorldSpaceAR(pokerNode.position)
+        let selfPos = CMath.ConvertToNodeSpaceAR(
+          this.PokerClip,
+          pokerNode.parent.parent
         );
         let poker = pokerNode.getComponent(Poker);
         pokerNode.setParent(this.PokerClip);
@@ -414,9 +479,7 @@ export default class GameScene extends cc.Component {
 
       let targetNode = Game.getPlacePokerRoot().get(pokerPos[count - 1]);
       if (targetNode) {
-        let selfPos = targetNode.convertToNodeSpaceAR(
-          pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
-        );
+        let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, targetNode);
 
         let offset = OFFSET_Y / 3;
         if (!targetNode.getComponent(Poker)) {
@@ -464,6 +527,7 @@ export default class GameScene extends cc.Component {
 
     let scores = [];
     let drawTimesCost = 0;
+    let pos = CMath.ConvertToNodeSpaceAR(this.PokerDevl, this.RemoveNode);
     if (Game.getFreeDrawTimes() > 0) {
       Game.addFreeDrawTimes(-1);
       drawTimesCost = 1;
@@ -473,7 +537,8 @@ export default class GameScene extends cc.Component {
       } else {
         scores.push(Game.getScore());
       }
-      Game.addScore(-20);
+
+      Game.addScore(-20, pos);
     }
 
     let nodes: cc.Node[] = [];
@@ -484,9 +549,7 @@ export default class GameScene extends cc.Component {
     let children = this.PokerFlipRoot.children.concat().reverse();
     let i = 0;
     for (let child of children) {
-      let selfPos = this.PokerDevl.convertToNodeSpaceAR(
-        child.parent.convertToWorldSpaceAR(child.position)
-      );
+      let selfPos = CMath.ConvertToNodeSpaceAR(child, this.PokerDevl);
 
       let poker = child.getComponent(Poker);
       nodes.push(child);
@@ -527,7 +590,8 @@ export default class GameScene extends cc.Component {
           args: []
         }
       ],
-      scores
+      scores,
+      [pos]
     );
   }
 
@@ -556,9 +620,8 @@ export default class GameScene extends cc.Component {
         break;
       }
       count--;
-      let selfPos = this.PokerFlipRoot.convertToNodeSpaceAR(
-        pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
-      );
+
+      let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, this.PokerFlipRoot);
 
       let poker = pokerNode.getComponent(Poker);
       nodes.push(pokerNode);
@@ -618,6 +681,7 @@ export default class GameScene extends cc.Component {
           poker.setCanMove(childIndex + 1 == this.PokerFlipRoot.childrenCount);
         });
       }
+      poker.setRecycle(false);
     }
     if (childIndex >= 1) {
       this.PokerFlipRoot.children[childIndex - 1]
@@ -745,9 +809,8 @@ export default class GameScene extends cc.Component {
       if (this.PokerClip.childrenCount <= 0) return;
 
       let pokerNode = this.PokerClip.children[this.PokerClip.childrenCount - 1];
-      let selfPos = targetNode.convertToNodeSpaceAR(
-        pokerNode.parent.convertToWorldSpaceAR(pokerNode.position)
-      );
+
+      let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, targetNode);
 
       let poker = pokerNode.getComponent(Poker);
       nodes.push(pokerNode);
@@ -801,6 +864,16 @@ export default class GameScene extends cc.Component {
           this.TimeAnimation.node.active = true;
           this.TimeAnimation.play();
         }
+      }
+
+      if (this.score < this.showScore) {
+        this.score += this.scoreStep;
+        this.score = Math.min(this.score, this.showScore);
+        this.ScoreLabel.string = this.score.toString();
+      } else if (this.score > this.showScore) {
+        this.score -= this.scoreStep;
+        this.score = Math.max(this.score, this.showScore);
+        this.ScoreLabel.string = this.score.toString();
       }
     }
   }

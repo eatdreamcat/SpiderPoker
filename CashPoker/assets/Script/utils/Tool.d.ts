@@ -27,6 +27,15 @@ interface CMath {
   isInRange(val: cc.Vec2, min: cc.Vec2, max: cc.Vec2): boolean;
 
   TimeFormat(val: number): string;
+
+  GetWorldPosition(node: cc.Node): cc.Vec2;
+
+  /**
+   *
+   * @param node 转换的节点
+   * @param spaceNode 目标坐标空间节点
+   */
+  ConvertToNodeSpaceAR(node: cc.Node, spaceNode: cc.Node): cc.Vec2;
 }
 
 // interface celerx {

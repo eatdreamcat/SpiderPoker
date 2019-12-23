@@ -77,6 +77,18 @@ CMath.getRandom = function(min, max) {
   return result;
 };
 
+CMath.GetWorldPosition = function(node) {
+  if (!node || !node.getParent || !node.getParent()) return cc.v2(0, 0);
+  let parent = node.getParent();
+  return parent.convertToWorldSpaceAR(node.position);
+};
+
+CMath.ConvertToNodeSpaceAR = function(node, spaceNode) {
+  if (!spaceNode) return cc.v2(0, 0);
+  let worldPos = CMath.GetWorldPosition(node);
+  return spaceNode.convertToNodeSpaceAR(worldPos);
+};
+
 if (CC_DEBUG) {
   cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, event => {
     switch (event.keyCode) {

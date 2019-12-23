@@ -167,10 +167,7 @@ export default class Poker extends cc.Component {
     if (this.key != key || !this.isCheck) return;
 
     this.scheduleOnce(() => {
-      let selfPos = Game.removeNode.convertToNodeSpaceAR(
-        this.node.parent.convertToWorldSpaceAR(this.node.position)
-      );
-
+      let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       // Game.addStep([this.node], [this.node.getParent()], [this.node.position]);
 
       this.node.setParent(Game.removeNode);
@@ -278,7 +275,10 @@ export default class Poker extends cc.Component {
   }
 
   checkAutoRecycle() {
-    if (this.cycled) return false;
+    if (this.cycled) {
+      console.log(" poker is recycled !!!");
+      return false;
+    }
 
     if (this.node.childrenCount > this.defualtChildCount) return false;
     let index = -1;
@@ -287,12 +287,10 @@ export default class Poker extends cc.Component {
       if (poker) {
         if (Poker.checkRecycled(poker, this)) {
           index = key;
-          return;
         }
       } else {
         if (this.value == 1) {
           index = key;
-          return;
         }
       }
     });
@@ -369,9 +367,7 @@ export default class Poker extends cc.Component {
         (!poker && this.value == 13)
       ) {
         let dis = CMath.Distance(
-          this.node.parent.convertToNodeSpaceAR(
-            root.parent.convertToWorldSpaceAR(root.position)
-          ),
+          CMath.ConvertToNodeSpaceAR(root, this.node.parent),
           this.node.position
         );
         if (dis < distance) {
@@ -397,9 +393,7 @@ export default class Poker extends cc.Component {
         (!poker && this.value == 1)
       ) {
         let dis = CMath.Distance(
-          this.node.parent.convertToNodeSpaceAR(
-            root.parent.convertToWorldSpaceAR(root.position)
-          ),
+          CMath.ConvertToNodeSpaceAR(root, this.node.parent),
           this.node.position
         );
         if (dis < distance) {
@@ -449,9 +443,7 @@ export default class Poker extends cc.Component {
   placeToNewRoot(index: number) {
     let root = Game.getPlacePokerRoot().get(index);
 
-    let selfPos = root.convertToNodeSpaceAR(
-      this.node.parent.convertToWorldSpaceAR(this.node.position)
-    );
+    let selfPos = CMath.ConvertToNodeSpaceAR(this.node, root);
 
     let score = 0;
     if (this.isCycled()) {
@@ -463,8 +455,13 @@ export default class Poker extends cc.Component {
       socre2 = 20;
     }
 
-    Game.addScore(score);
-    Game.addScore(socre2);
+    let scorePos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
+
+    Game.addScore(score, scorePos);
+    Game.addScore(
+      socre2,
+      CMath.ConvertToNodeSpaceAR(this.node.getParent(), Game.removeNode)
+    );
 
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
@@ -484,7 +481,8 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20 - score - socre2]
+        [-20 - score - socre2],
+        [scorePos]
       );
     } else {
       Game.addStep(
@@ -492,7 +490,8 @@ export default class Poker extends cc.Component {
         [this.node.getParent()],
         [this.node.position.clone()],
         [],
-        [-score - socre2]
+        [-score - socre2],
+        [scorePos]
       );
     }
 
@@ -520,9 +519,7 @@ export default class Poker extends cc.Component {
   placeToNewCycleNode(index: number) {
     let root = Game.getCycledPokerRoot().get(index);
 
-    let selfPos = root.convertToNodeSpaceAR(
-      this.node.parent.convertToWorldSpaceAR(this.node.position)
-    );
+    let selfPos = CMath.ConvertToNodeSpaceAR(this.node, root);
 
     let score = (13 - this.value) * 10;
     let socre2 = 0;
@@ -535,9 +532,13 @@ export default class Poker extends cc.Component {
       socre2 = 0;
     }
 
+    let scorePos = CMath.ConvertToNodeSpaceAR(root, Game.removeNode);
     this.setRecycle(true);
-    Game.addScore(score);
-    Game.addScore(socre2);
+    Game.addScore(score, scorePos);
+    Game.addScore(
+      socre2,
+      CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
+    );
 
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
@@ -557,7 +558,8 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20 - score - socre2]
+        [-20 - score - socre2],
+        [scorePos]
       );
     } else {
       Game.addStep(
@@ -565,7 +567,8 @@ export default class Poker extends cc.Component {
         [this.node.getParent()],
         [this.node.position.clone()],
         [],
-        [-score - socre2]
+        [-score - socre2],
+        [scorePos]
       );
     }
 
@@ -608,6 +611,7 @@ export default class Poker extends cc.Component {
   }
 
   shake() {
+    this.node.group = "default";
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
       cc.repeat(
@@ -730,7 +734,10 @@ export default class Poker extends cc.Component {
       if (this.carState == CardState.Back) {
         this.flipCard(0.1);
         Game.addFlipCounts(1);
-        Game.addScore(20);
+        Game.addScore(
+          20,
+          CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
+        );
       } else {
         if (this.forward) {
           this.forward.updateState.call(this.forward);

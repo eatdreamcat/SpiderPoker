@@ -14,6 +14,7 @@ export interface StepInfo {
   lastParent: cc.Node[];
   lastPos: cc.Vec2[];
   scores?: number[];
+  scoresPos?: cc.Vec2[];
   func?: StepFunc[];
 }
 
@@ -67,12 +68,12 @@ class GameMgr {
     return this.gameStart;
   }
 
-  public addScore(score: number) {
+  public addScore(score: number, pos: cc.Vec2 = cc.v2(-200, 700)) {
     if (score == 0) return;
     this.score += score;
     this.score = Math.max(this.score, 0);
     console.log("------------------- score:", this.score, score);
-    gEventMgr.emit(GlobalEvent.UPDATE_SCORE, score);
+    gEventMgr.emit(GlobalEvent.UPDATE_SCORE, score, pos);
   }
 
   public getScore() {
@@ -114,14 +115,16 @@ class GameMgr {
     lastParent: cc.Node[],
     lastPos: cc.Vec2[],
     func?: StepFunc[],
-    scores?: number[]
+    scores?: number[],
+    scorePos?: cc.Vec2[]
   ) {
     this.stepInfoArray.push({
       node: node,
       lastParent: lastParent,
       lastPos: lastPos,
       func: func,
-      scores: scores
+      scores: scores,
+      scoresPos: scorePos
     });
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
   }
@@ -173,13 +176,19 @@ class GameMgr {
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
       let score = step.scores && step.scores.length > 0 ? step.scores.pop() : 0;
+      let scorePos =
+        step.scoresPos && step.scoresPos.length > 0
+          ? step.scoresPos.pop()
+          : null;
 
-      Game.addScore(score);
+      if (scorePos) {
+        Game.addScore(score, scorePos);
+      } else {
+        Game.addScore(score);
+      }
 
       if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot") {
-        let selfPos = parent.convertToNodeSpaceAR(
-          node.getParent().convertToWorldSpaceAR(node.position)
-        );
+        let selfPos = CMath.ConvertToNodeSpaceAR(node, parent);
         node.setPosition(selfPos);
       } else {
         node.setPosition(pos);

@@ -17,7 +17,7 @@
     "_parent": null,
     "_children": [],
     "_active": true,
-    "_level": 2,
+    "_level": 1,
     "_components": [
       {
         "__id__": 2
@@ -55,8 +55,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 1,
-      "y": 1,
+      "x": 0,
+      "y": 0,
       "z": 1
     },
     "_rotationX": 0,
@@ -70,7 +70,7 @@
     },
     "_skewX": 0,
     "_skewY": 0,
-    "groupIndex": 0,
+    "groupIndex": 1,
     "_id": ""
   },
   {
@@ -108,6 +108,9 @@
       "__id__": 1
     },
     "_enabled": true,
+    "Score": {
+      "__id__": 2
+    },
     "_id": ""
   },
   {
@@ -116,7 +119,7 @@
       "__id__": 1
     },
     "asset": {
-      "__id__": 0
+      "__uuid__": "8001a9d6-21a5-4745-935b-3a68cb11429d"
     },
     "fileId": "96os7UNLJHXLTvEYO1QqzW",
     "sync": false
