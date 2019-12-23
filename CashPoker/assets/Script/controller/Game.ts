@@ -43,7 +43,7 @@ class GameMgr {
   }
 
   public addGameTime(time: number) {
-    if (CC_DEBUG) return;
+    if (window["noTime"]) return;
     this.gameTime += time;
     this.gameTime = Math.max(this.gameTime, 0);
     if (this.gameTime <= 0) {
@@ -57,6 +57,10 @@ class GameMgr {
 
   public start() {
     this.gameStart = true;
+  }
+
+  public setPause(pause: boolean) {
+    this.gameStart = !pause;
   }
 
   public isGameStarted() {
@@ -209,7 +213,11 @@ class GameMgr {
             returnPos.x = 0;
             returnPos.y = 0;
           } else {
-            if (func.callback == parent.getComponent(Poker).flipCard) {
+            if (
+              func &&
+              func.callback &&
+              func.callback == parent.getComponent(Poker).flipCard
+            ) {
               returnPos.y = OFFSET_Y / 3;
             } else {
               returnPos.y = OFFSET_Y;

@@ -91,7 +91,9 @@ class ObjPool {
 enum Step {
   INIT = 0,
   POKER = 1 << 2,
-  DONE = POKER
+  AddScore = 1 << 3,
+  SubScore = 1 << 4,
+  DONE = POKER | AddScore | SubScore
 }
 
 class GameFactory {
@@ -103,9 +105,16 @@ class GameFactory {
 
   private step: Step = Step.INIT;
   private doneCallback: Function;
-  init(callback: Function, poker?: cc.Prefab) {
+  init(
+    callback: Function,
+    poker?: cc.Prefab,
+    addScoreLabel?: cc.Prefab,
+    subScoreLabel?: cc.Prefab
+  ) {
     this.doneCallback = callback;
     this.initPoker(300, poker);
+    this.initAddScore(10, addScoreLabel);
+    this.initSubScore(10, subScoreLabel);
   }
 
   private nextStep(step: Step) {
@@ -141,6 +150,74 @@ class GameFactory {
 
   putPoker(poker: cc.Node) {
     this.PokerPool.get("Poker").put(poker);
+  }
+
+  private addScorePool: HashMap<string, ObjPool> = new HashMap();
+  initAddScore(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.addScorePool.add("AddScore", new ObjPool(prefab, initCount));
+      self.nextStep(Step.AddScore);
+    } else {
+      cc.loader.loadRes(
+        "prefabs/AddScoreLabel",
+        cc.Prefab,
+        (err, prefabRes) => {
+          if (err) {
+            console.error(err);
+          } else {
+            //let cube = cc.instantiate(prefab);
+            self.addScorePool.add(
+              "AddScore",
+              new ObjPool(prefabRes, initCount)
+            );
+            self.nextStep(Step.AddScore);
+          }
+        }
+      );
+    }
+  }
+
+  getAddScore(...args): cc.Node {
+    return this.addScorePool.get("AddScore").get(args);
+  }
+
+  putAddScore(poker: cc.Node) {
+    this.addScorePool.get("AddScore").put(poker);
+  }
+
+  private subScorePool: HashMap<string, ObjPool> = new HashMap();
+  initSubScore(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.subScorePool.add("SubScore", new ObjPool(prefab, initCount));
+      self.nextStep(Step.SubScore);
+    } else {
+      cc.loader.loadRes(
+        "prefabs/SubScoreLabel",
+        cc.Prefab,
+        (err, prefabRes) => {
+          if (err) {
+            console.error(err);
+          } else {
+            //let cube = cc.instantiate(prefab);
+            self.subScorePool.add(
+              "SubScore",
+              new ObjPool(prefabRes, initCount)
+            );
+            self.nextStep(Step.SubScore);
+          }
+        }
+      );
+    }
+  }
+
+  getSubScore(...args): cc.Node {
+    return this.subScorePool.get("SubScore").get(args);
+  }
+
+  putSubScore(poker: cc.Node) {
+    this.subScorePool.get("SubScore").put(poker);
   }
 }
 

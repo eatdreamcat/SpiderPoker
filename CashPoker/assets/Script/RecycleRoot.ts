@@ -22,10 +22,10 @@ export default class RecycleRoot extends cc.Component {
   }
 
   onChildRemove(child: cc.Node) {
-    let poker = child.getComponent(Poker);
-    if (poker) {
-      poker.setRecycle(false);
-    }
+    // let poker = child.getComponent(Poker);
+    // if (poker) {
+    //   poker.setRecycle(false);
+    // }
     Game.addCycledPokerRoot(parseInt(this.node.name), this.node);
   }
 

@@ -271,7 +271,7 @@ export default class Poker extends cc.Component {
       this.frontCard.node.opacity,
       this.frontCard.node.active
     );
-    console.log(this.frontCard.spriteFrame);
+
     e.bubbles = !this.isNormal();
     if (Game.isTimeOver()) return;
     if (!Game.isGameStarted()) Game.start();
@@ -322,6 +322,7 @@ export default class Poker extends cc.Component {
   onMoveEnd(e: cc.Event.EventTouch) {
     e.bubbles = false;
     if (Game.isTimeOver()) return;
+
     if (this.defaultPos && this.canMove) {
       let placeIndex = this.checkCanPlace();
       if (placeIndex >= 0) {
@@ -386,7 +387,7 @@ export default class Poker extends cc.Component {
   checkCanRecycled() {
     let distance = this.placeLimit;
     let index = -1;
-    if (this.cycled) return index;
+
     if (this.node.childrenCount > this.defualtChildCount) return index;
     Game.getCycledPokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
@@ -517,8 +518,6 @@ export default class Poker extends cc.Component {
   }
 
   placeToNewCycleNode(index: number) {
-    this.setRecycle(true);
-
     let root = Game.getCycledPokerRoot().get(index);
 
     let selfPos = root.convertToNodeSpaceAR(
@@ -530,8 +529,16 @@ export default class Poker extends cc.Component {
     if (this.node.getParent().name == "PokerFlipRoot") {
       socre2 = 20;
     }
+
+    if (this.isCycled()) {
+      score = 0;
+      socre2 = 0;
+    }
+
+    this.setRecycle(true);
     Game.addScore(score);
     Game.addScore(socre2);
+
     if (this.forward && this.forward.carState == CardState.Back) {
       Game.addStep(
         [this.node],

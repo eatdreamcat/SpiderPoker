@@ -43,6 +43,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Button)
   BackButton: cc.Button = null;
 
+  @property(cc.Button)
+  PauseButton: cc.Button = null;
+
   @property(cc.Node)
   CycleRoot: cc.Node = null;
 
@@ -60,6 +63,27 @@ export default class GameScene extends cc.Component {
   @property(cc.Label)
   ScoreLabel: cc.Label = null;
 
+  @property(cc.Font)
+  SmallOrg: cc.Font = null;
+
+  @property(cc.Prefab)
+  SubScoreLabel: cc.Prefab = null;
+
+  @property(cc.Prefab)
+  AddScoreLabel: cc.Prefab = null;
+
+  @property(cc.Animation)
+  TimeAnimation: cc.Animation = null;
+
+  @property(cc.Animation)
+  LightAnimation: cc.Animation = null;
+
+  @property(cc.Node)
+  Stop: cc.Node = null;
+
+  @property(cc.Animation)
+  FlipAnimation: cc.Animation = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
@@ -68,8 +92,11 @@ export default class GameScene extends cc.Component {
   private backTime: number = 10;
 
   onLoad() {
+    this.Stop.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
+    this.TimeAnimation.node.active = false;
+    this.LightAnimation.node.active = false;
     Game.removeNode = this.RemoveNode;
     celerx.ready();
     CMath.randomSeed = Math.random();
@@ -88,7 +115,9 @@ export default class GameScene extends cc.Component {
       function() {
         this.nextStep(LOAD_STEP.PREFABS);
       }.bind(this),
-      this.Poker
+      this.Poker,
+      this.AddScoreLabel,
+      this.SubScoreLabel
     );
 
     for (let child of this.PlaceRoot.children) {
@@ -102,11 +131,36 @@ export default class GameScene extends cc.Component {
     this.nextStep(LOAD_STEP.GUIDE);
 
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
+
+    this.PauseButton.node.on(
+      cc.Node.EventType.TOUCH_START,
+      () => {
+        this.Stop.active = true;
+        Game.setPause(true);
+      },
+      this
+    );
+
     this.PokerFlipRoot.on(
       cc.Node.EventType.CHILD_ADDED,
       this.onPokerFlipAddChild,
       this
     );
+
+    this.PokerDevl.on(
+      cc.Node.EventType.CHILD_REMOVED,
+      () => {
+        if (
+          !this.LightAnimation.node.active &&
+          this.PokerDevl.childrenCount <= 0
+        ) {
+          this.LightAnimation.node.active = true;
+          this.LightAnimation.play();
+        }
+      },
+      this
+    );
+
     this.PokerFlipRoot.on(
       cc.Node.EventType.CHILD_REMOVED,
       this.onPokerFlipRemoveChild,
@@ -343,12 +397,20 @@ export default class GameScene extends cc.Component {
       if (count++ >= this.dispatchCardCount) {
         //func2();
         this.canDispatchPoker = true;
+        this.LightAnimation.node.active = true;
+        this.LightAnimation.play();
         return;
       }
 
       let pokerNode = this.PokerDevl.getChildByName(
         (totalCount - count).toString()
       );
+
+      if (!pokerNode) {
+        console.error(" poker node invaild!");
+        console.log(this.PokerDevl);
+        return;
+      }
 
       let targetNode = Game.getPlacePokerRoot().get(pokerPos[count - 1]);
       if (targetNode) {
@@ -396,6 +458,10 @@ export default class GameScene extends cc.Component {
       return;
     }
 
+    if (this.LightAnimation.node.active) {
+      this.LightAnimation.node.active = false;
+    }
+
     let scores = [];
     let drawTimesCost = 0;
     if (Game.getFreeDrawTimes() > 0) {
@@ -413,6 +479,7 @@ export default class GameScene extends cc.Component {
     let nodes: cc.Node[] = [];
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
+    this.FlipAnimation.play();
 
     let children = this.PokerFlipRoot.children.concat().reverse();
     let i = 0;
@@ -431,18 +498,18 @@ export default class GameScene extends cc.Component {
 
       poker.setDefaultPosition(cc.v2(0, 0));
 
-      poker.flipCard(0.1, false);
+      poker.flipCard(0, false);
       child.group = "top";
       this.scheduleOnce(() => {
         let action = cc.sequence(
-          cc.delayTime(i / 100),
-          cc.moveTo(0.1, 0, 0),
+          /*cc.delayTime(i / 100),*/
+          cc.moveTo(0, 0, 0),
           cc.callFunc(() => {
             child.group = "default";
           }, this)
         );
         action.setTag(ACTION_TAG.RE_DEV_POKER);
-        child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+        child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
         child.runAction(action);
       }, 0);
       i++;
@@ -539,6 +606,10 @@ export default class GameScene extends cc.Component {
 
   onPokerFlipAddChild(child: cc.Node) {
     console.log(" onPokerFlipAddChild:", this.PokerFlipRoot.childrenCount);
+    if (this.LightAnimation.node.active) {
+      this.LightAnimation.node.active = false;
+    }
+
     let childIndex = this.PokerFlipRoot.children.indexOf(child);
     let poker = child.getComponent(Poker);
     if (poker) {
@@ -722,7 +793,15 @@ export default class GameScene extends cc.Component {
     this.backTime += dt;
     if (Game.isGameStarted()) {
       Game.addGameTime(-dt);
-      this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+      let gameTime = Game.getGameTime();
+      this.TimeLabel.string = CMath.TimeFormat(gameTime);
+      if (gameTime <= 60) {
+        this.TimeLabel.font = this.SmallOrg;
+        if (!this.TimeAnimation.node.active) {
+          this.TimeAnimation.node.active = true;
+          this.TimeAnimation.play();
+        }
+      }
     }
   }
 }
