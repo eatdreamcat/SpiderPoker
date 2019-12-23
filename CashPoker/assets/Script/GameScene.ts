@@ -95,12 +95,27 @@ export default class GameScene extends cc.Component {
   private showScore: number = 0;
   private scoreStep: number = 0;
 
-  onLoad() {
+  init() {
     this.Stop.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
     this.TimeAnimation.node.active = false;
     this.LightAnimation.node.active = false;
+    for (let child of this.PlaceRoot.children) {
+      Game.addPlacePokerRoot(parseInt(child.name), child);
+    }
+
+    for (let child of this.CycleRoot.children) {
+      Game.addCycledPokerRoot(parseInt(child.name), child);
+    }
+  }
+
+  restart() {
+    this.init();
+    this.startGame();
+  }
+
+  onLoad() {
     Game.removeNode = this.RemoveNode;
     celerx.ready();
     CMath.randomSeed = Math.random();
@@ -119,6 +134,8 @@ export default class GameScene extends cc.Component {
 
     // init prefabs
 
+    this.init();
+
     gFactory.init(
       function() {
         this.nextStep(LOAD_STEP.PREFABS);
@@ -127,14 +144,6 @@ export default class GameScene extends cc.Component {
       this.AddScoreLabel,
       this.SubScoreLabel
     );
-
-    for (let child of this.PlaceRoot.children) {
-      Game.addPlacePokerRoot(parseInt(child.name), child);
-    }
-
-    for (let child of this.CycleRoot.children) {
-      Game.addCycledPokerRoot(parseInt(child.name), child);
-    }
 
     this.nextStep(LOAD_STEP.GUIDE);
 
@@ -315,6 +324,25 @@ export default class GameScene extends cc.Component {
       },
       this
     );
+
+    gEventMgr.on(GlobalEvent.OPEN_RESULT, this.openResult, this);
+
+    gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
+    cc.loader.loadRes("prefabs/Result");
+  }
+
+  openResult() {
+    this.Stop.active = false;
+    if (this.node.getChildByName("Result")) return;
+    cc.loader.loadRes("prefabs/Result", cc.Prefab, (err, result) => {
+      if (err) {
+        celerx.submitScore(Game.getScore());
+      } else {
+        let resultLayer = cc.instantiate(result);
+        resultLayer.name = "Result";
+        this.node.addChild(resultLayer);
+      }
+    });
   }
 
   celerStart() {

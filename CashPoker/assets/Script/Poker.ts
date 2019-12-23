@@ -1,6 +1,8 @@
 import { Game } from "./controller/Game";
 import { gFactory } from "./controller/GameFactory";
 import { OFFSET_Y, ACTION_TAG } from "./Pokers";
+import { gEventMgr } from "./controller/EventManager";
+import { GlobalEvent } from "./controller/EventName";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -106,6 +108,7 @@ export default class Poker extends cc.Component {
 
   unuse() {
     this.node.targetOff(this);
+    gEventMgr.targetOff(this);
     this.cycled = false;
   }
 
@@ -160,6 +163,15 @@ export default class Poker extends cc.Component {
     this.node.on(cc.Node.EventType.TOUCH_END, this.onMoveEnd, this);
 
     this.node.on("check-done", this.onCheckDone, this);
+
+    gEventMgr.on(
+      GlobalEvent.REMOVE_POKER,
+      () => {
+        gFactory.putPoker(this.node);
+        Game.addRemovePokerCount(1);
+      },
+      this
+    );
   }
 
   onCheckDone(key: number) {

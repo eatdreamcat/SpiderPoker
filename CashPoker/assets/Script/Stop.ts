@@ -1,4 +1,6 @@
 import { Game } from "./controller/Game";
+import { gEventMgr } from "./controller/EventManager";
+import { GlobalEvent } from "./controller/EventName";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -32,7 +34,10 @@ export default class Stop extends cc.Component {
     this.Help.node.on(cc.Node.EventType.TOUCH_END, this.ShowHelp, this);
   }
 
-  endNow() {}
+  endNow() {
+    Game.calTimeBonus();
+    gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+  }
 
   ShowHelp() {}
 

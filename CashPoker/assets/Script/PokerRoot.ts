@@ -14,8 +14,10 @@ export default class PokerRoot extends cc.Component {
   start() {}
 
   onChildRemove() {
-    console.warn(" PokerRoot update root node");
-    Game.addPlacePokerRoot(parseInt(this.node.name), this.node);
+    if (Game.isGameStarted()) {
+      console.warn(" PokerRoot update root node");
+      Game.addPlacePokerRoot(parseInt(this.node.name), this.node);
+    }
   }
 
   onAddChild(child: cc.Node) {

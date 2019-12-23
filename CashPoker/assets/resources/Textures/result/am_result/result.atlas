@@ -1,0 +1,41 @@
+
+result.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+am_kingb
+  rotate: false
+  xy: 2, 2
+  size: 225, 224
+  orig: 225, 224
+  offset: 0, 0
+  index: -1
+am_kingr
+  rotate: false
+  xy: 2, 228
+  size: 226, 224
+  orig: 226, 224
+  offset: 0, 0
+  index: -1
+am_queenb
+  rotate: false
+  xy: 441, 247
+  size: 208, 205
+  orig: 208, 205
+  offset: 0, 0
+  index: -1
+am_queenr
+  rotate: false
+  xy: 230, 247
+  size: 209, 205
+  orig: 209, 205
+  offset: 0, 0
+  index: -1
+am_soli
+  rotate: false
+  xy: 2, 454
+  size: 893, 560
+  orig: 893, 560
+  offset: 0, 0
+  index: -1

@@ -32,12 +32,15 @@ class GameMgr {
   private stepInfoArray: StepInfo[] = [];
 
   private score: number = 0;
+  private timeBonus: number = 0;
   private freeDrawTimes: number = 3;
   private flipCounts: number = 0;
 
   private gameStart: boolean = false;
 
   private gameTime = 300;
+
+  public removePokerCount = 0;
 
   public getGameTime() {
     return this.gameTime;
@@ -49,7 +52,22 @@ class GameMgr {
     this.gameTime = Math.max(this.gameTime, 0);
     if (this.gameTime <= 0) {
       this.gameStart = false;
+
+      gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
+  }
+
+  public calTimeBonus() {
+    if (this.gameTime >= 300 || this.gameTime <= 0) return;
+    this.timeBonus =
+      (((this.flipCounts + 7) * 2) / (300 - this.gameTime)) *
+      20 *
+      (this.flipCounts + 7);
+    Game.addScore(this.timeBonus);
+  }
+
+  public getTimeBonus() {
+    return this.timeBonus;
   }
 
   public isTimeOver() {
@@ -58,6 +76,29 @@ class GameMgr {
 
   public start() {
     this.gameStart = true;
+  }
+
+  public restart() {
+    this.gameTime = 300;
+    this.score = 0;
+    this.flipCounts = 0;
+    this.stepInfoArray = [];
+    this.timeBonus = 0;
+    this.cyclePokerRoot.clear();
+    this.placePokerRoot.clear();
+    this.gameStart = false;
+    this.removePokerCount = 0;
+    gEventMgr.emit(GlobalEvent.REMOVE_POKER);
+  }
+
+  public addRemovePokerCount(count: number) {
+    this.removePokerCount += count;
+    if (this.removePokerCount >= 52) {
+      console.error(
+        "------------------------ game restart ---------------------------"
+      );
+      gEventMgr.emit(GlobalEvent.RESTART);
+    }
   }
 
   public setPause(pause: boolean) {
