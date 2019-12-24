@@ -65,7 +65,7 @@ export default class Poker extends cc.Component {
 
   private cycled: boolean = false;
 
-  private readonly placeLimit: number = 100;
+  private placeLimit: cc.Size = cc.size(0, 0);
 
   reuse() {
     let pokerInfo: string = arguments[0][0][0];
@@ -146,6 +146,8 @@ export default class Poker extends cc.Component {
   }
 
   onLoad() {
+    this.placeLimit.width = this.node.width / 2;
+    this.placeLimit.height = this.node.height * 0.75;
     this.node.getChildByName("Label").active = false; // CC_DEBUG;
     this.defualtChildCount = this.node.childrenCount;
     console.log(" default children count:", this.defualtChildCount);
@@ -283,7 +285,7 @@ export default class Poker extends cc.Component {
     );
 
     e.bubbles = !this.isNormal();
-    if (Game.isTimeOver()) return;
+    if (Game.isTimeOver() || Game.isComplete()) return;
     if (!Game.isGameStarted()) Game.start();
   }
 
@@ -317,7 +319,7 @@ export default class Poker extends cc.Component {
 
   onMove(e: cc.Event.EventTouch) {
     e.bubbles = false;
-    if (Game.isTimeOver()) return;
+    if (Game.isTimeOver() || Game.isComplete()) return;
     if (!this.canMove) return;
     this.node.group = "top";
     let move = e.getDelta();
@@ -332,7 +334,7 @@ export default class Poker extends cc.Component {
 
   onMoveEnd(e: cc.Event.EventTouch) {
     e.bubbles = false;
-    if (Game.isTimeOver()) return;
+    if (Game.isTimeOver() || Game.isComplete()) return;
 
     if (this.defaultPos && this.canMove) {
       let placeIndex = this.checkCanPlace();
@@ -367,7 +369,6 @@ export default class Poker extends cc.Component {
   }
 
   checkCanPlace(): number {
-    let distance = this.placeLimit;
     let index = -1;
     Game.getPlacePokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
@@ -379,12 +380,11 @@ export default class Poker extends cc.Component {
         (poker && Poker.checkBeNext(poker, this)) ||
         (!poker && this.value == 13)
       ) {
-        let dis = CMath.Distance(
-          CMath.ConvertToNodeSpaceAR(root, this.node.parent),
-          this.node.position
-        );
-        if (dis < distance) {
-          distance = dis;
+        let pos = CMath.ConvertToNodeSpaceAR(root, this.node.parent);
+        if (
+          Math.abs(pos.x - this.node.position.x) <= this.placeLimit.width &&
+          Math.abs(pos.y - this.node.position.y) <= this.placeLimit.height
+        ) {
           index = key;
         }
       }
@@ -394,7 +394,6 @@ export default class Poker extends cc.Component {
   }
 
   checkCanRecycled() {
-    let distance = this.placeLimit;
     let index = -1;
 
     if (this.node.childrenCount > this.defualtChildCount) return index;
@@ -405,12 +404,11 @@ export default class Poker extends cc.Component {
         (poker && Poker.checkRecycled(poker, this)) ||
         (!poker && this.value == 1)
       ) {
-        let dis = CMath.Distance(
-          CMath.ConvertToNodeSpaceAR(root, this.node.parent),
-          this.node.position
-        );
-        if (dis < distance) {
-          distance = dis;
+        let pos = CMath.ConvertToNodeSpaceAR(root, this.node.parent);
+        if (
+          Math.abs(pos.x - this.node.x) <= this.placeLimit.width &&
+          Math.abs(pos.y - this.node.y) <= this.placeLimit.height
+        ) {
           index = key;
         }
       }
@@ -522,11 +520,13 @@ export default class Poker extends cc.Component {
     if (root.getComponent(Poker)) {
       offset = OFFSET_Y;
     }
+
+    this.setDefaultPosition(cc.v2(0, offset));
     this.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),
         cc.callFunc(() => {
-          this.setDefaultPosition();
+          this.node.group = "default";
         }, this)
       )
     );
@@ -607,12 +607,12 @@ export default class Poker extends cc.Component {
     this.setNext(null);
     Game.addCycledPokerRoot(index, this.node);
     this.node.group = "top";
+    this.setDefaultPosition(cc.v2(0, 0));
     this.node.runAction(
       cc.sequence(
         cc.moveTo(time, 0, 0),
         cc.callFunc(() => {
           this.node.group = "default";
-          this.setDefaultPosition();
         }, this)
       )
     );

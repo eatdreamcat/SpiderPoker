@@ -42,12 +42,15 @@ class GameMgr {
 
   public removePokerCount = 0;
 
+  private complete: boolean = false;
+
   public getGameTime() {
     return this.gameTime;
   }
 
   public addGameTime(time: number) {
-    if (window["noTime"]) return;
+    if (window["noTime"] || Game.isComplete()) return;
+
     this.gameTime += time;
     this.gameTime = Math.max(this.gameTime, 0);
     if (this.gameTime <= 0) {
@@ -86,6 +89,21 @@ class GameMgr {
 
   public start() {
     this.gameStart = true;
+  }
+
+  public checkIsComplete() {
+    Game.placePokerRoot.forEach((key: number, node: cc.Node) => {
+      let poker = node.getComponent(Poker);
+      if (poker && poker.getValue() < 10) {
+        return false;
+      }
+    });
+    this.complete = this.flipCounts >= 45;
+    return this.complete;
+  }
+
+  public isComplete() {
+    return this.complete;
   }
 
   public restart() {

@@ -1,18 +1,23 @@
+export const SpadeStartIndex = 0;
+export const HeartStartIndex = 1;
+export const ClubStartIndex = 2;
+export const DiamondStartIndex = 3;
+
 export const Pokers = [
-  "spade_,1",
-  "heart_,1",
-  "club_,1",
-  "diamond_,1",
+  "spade_,1", //0
+  "heart_,1", //1
+  "club_,1", //2
+  "diamond_,1", //3
 
-  "spade_,2",
-  "heart_,2",
-  "club_,2",
-  "diamond_,2",
+  "spade_,2", //4
+  "heart_,2", //5
+  "club_,2", //6
+  "diamond_,2", //7
 
-  "spade_,3",
-  "heart_,3",
-  "club_,3",
-  "diamond_,3",
+  "spade_,3", //8
+  "heart_,3", //9
+  "club_,3", //10
+  "diamond_,3", //11
 
   "spade_,4",
   "heart_,4",

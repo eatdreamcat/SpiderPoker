@@ -164,6 +164,7 @@ export default class GameScene extends cc.Component {
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
       () => {
+        if (Game.isComplete()) return;
         this.Stop.active = true;
         Game.setPause(true);
       },
@@ -210,7 +211,7 @@ export default class GameScene extends cc.Component {
     this.PokerDevl.on(
       cc.Node.EventType.TOUCH_START,
       () => {
-        if (Game.isTimeOver()) return;
+        if (Game.isTimeOver() || Game.isComplete()) return;
         if (this.devTime >= 0.3) {
           this.devPoker();
           this.devTime = 0;
@@ -228,7 +229,8 @@ export default class GameScene extends cc.Component {
     this.BackButton.node.on(
       cc.Node.EventType.TOUCH_START,
       () => {
-        if (Game.isTimeOver() || this.backTime < 0.5) return;
+        if (Game.isTimeOver() || this.backTime < 0.5 || Game.isComplete())
+          return;
         this.backTime = 0;
         Game.backStep();
       },
@@ -395,6 +397,16 @@ export default class GameScene extends cc.Component {
     let pokers = Pokers.concat();
     let pokerIndex = PokerIndex.concat();
     let weightDiv = pokerIndex.length;
+
+    /**
+     *生成可解牌局
+     */
+    let solutionPokers = [];
+    let underPokersCount = 28;
+    while (underPokersCount-- > 0) {}
+    /**
+     *
+     */
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
       let pokerWeight =
@@ -857,7 +869,7 @@ export default class GameScene extends cc.Component {
   }
 
   dispatchPoker() {
-    if (Game.isTimeOver()) return;
+    if (Game.isTimeOver() || Game.isComplete()) return;
     if (this.PokerClip.childrenCount <= 0 || !this.canDispatchPoker) {
       return;
     }
