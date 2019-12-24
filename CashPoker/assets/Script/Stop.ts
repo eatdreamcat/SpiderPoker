@@ -32,6 +32,8 @@ export default class Stop extends cc.Component {
     this.EndButton.node.on(cc.Node.EventType.TOUCH_END, this.endNow, this);
     this.ResumeButton.node.on(cc.Node.EventType.TOUCH_END, this.Resume, this);
     this.Help.node.on(cc.Node.EventType.TOUCH_END, this.ShowHelp, this);
+
+    this.Content["_enableBold"](true);
   }
 
   endNow() {

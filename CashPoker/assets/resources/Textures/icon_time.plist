@@ -4,48 +4,33 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>bg_font01.png</key>
+            <key>icon_time.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{723,82}</string>
+                <string>{63,63}</string>
                 <key>spriteSourceSize</key>
-                <string>{723,82}</string>
+                <string>{63,63}</string>
                 <key>textureRect</key>
-                <string>{{0,0},{723,82}}</string>
+                <string>{{0,0},{63,63}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_font02.png</key>
+            <key>icon_time_2.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{723,82}</string>
+                <string>{63,63}</string>
                 <key>spriteSourceSize</key>
-                <string>{723,82}</string>
+                <string>{63,63}</string>
                 <key>textureRect</key>
-                <string>{{0,82},{723,82}}</string>
-                <key>textureRotated</key>
-                <false/>
-            </dict>
-            <key>bg_font03.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{0,0}</string>
-                <key>spriteSize</key>
-                <string>{723,82}</string>
-                <key>spriteSourceSize</key>
-                <string>{723,82}</string>
-                <key>textureRect</key>
-                <string>{{0,164},{723,82}}</string>
+                <string>{{63,0},{63,63}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -59,13 +44,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>title.png</string>
+            <string>icon_time.png</string>
             <key>size</key>
-            <string>{723,246}</string>
+            <string>{126,63}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:6f15a33cf7b797e9f80e101e15a3c8d7:8d5b2cb5e8e890bbc037d905abc7ea22:eac3319ae54fe6d043150c971d4e6759$</string>
+            <string>$TexturePacker:SmartUpdate:988879e4d8080d9d1907450bf2b9fb0e:e0791623df3082bbfc22f6e596866563:c7a4af443cd02f96013f4c9247a2902c$</string>
             <key>textureFileName</key>
-            <string>title.png</string>
+            <string>icon_time.png</string>
         </dict>
     </dict>
 </plist>

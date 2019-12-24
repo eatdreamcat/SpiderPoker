@@ -58,11 +58,21 @@ class GameMgr {
   }
 
   public calTimeBonus() {
-    if (this.gameTime >= 300 || this.gameTime <= 0) return;
+    if (this.gameTime >= 300 || this.gameTime <= 0 || this.flipCounts <= 0)
+      return;
+
     this.timeBonus =
-      (((this.flipCounts + 7) * 2) / (300 - this.gameTime)) *
-      20 *
-      (this.flipCounts + 7);
+      ((this.flipCounts / 45) * (1.2 / 0.5) + 0.3) * this.gameTime;
+
+    this.timeBonus = Math.floor(this.timeBonus);
+    console.error(
+      "this.flipCounts: ",
+      this.flipCounts,
+      ", this.gameTime:",
+      this.gameTime,
+      ",this.timbonus:",
+      this.timeBonus
+    );
     Game.addScore(this.timeBonus);
   }
 
@@ -111,6 +121,7 @@ class GameMgr {
 
   public addScore(score: number, pos: cc.Vec2 = cc.v2(-200, 700)) {
     if (score == 0) return;
+    score = Math.floor(score);
     this.score += score;
     this.score = Math.max(this.score, 0);
     console.log("------------------- score:", this.score, score);
@@ -139,7 +150,7 @@ class GameMgr {
       "-----------------------------------flipCounts:",
       this.flipCounts
     );
-    if (this.flipCounts >= 21) {
+    if (this.flipCounts >= 45) {
       console.error(
         "-----------------------------------flipCounts:",
         this.flipCounts
@@ -159,6 +170,7 @@ class GameMgr {
     scores?: number[],
     scorePos?: cc.Vec2[]
   ) {
+    if (!CC_DEBUG) this.stepInfoArray.length = 0;
     this.stepInfoArray.push({
       node: node,
       lastParent: lastParent,

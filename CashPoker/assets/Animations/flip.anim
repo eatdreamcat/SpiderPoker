@@ -3,9 +3,9 @@
   "_name": "flip",
   "_objFlags": 0,
   "_native": "",
-  "_duration": 0.6,
+  "_duration": 0.9333333333333333,
   "sample": 60,
-  "speed": 2,
+  "speed": 4,
   "wrapMode": 1,
   "curveData": {
     "comps": {
@@ -58,6 +58,30 @@
             "value": {
               "__uuid__": "3507ebf6-5bfe-4f86-adea-387577b82323"
             }
+          },
+          {
+            "frame": 0.6666666666666666,
+            "value": {
+              "__uuid__": "11608b94-718b-4fe2-a042-19085505f5a8"
+            }
+          },
+          {
+            "frame": 0.75,
+            "value": {
+              "__uuid__": "3d7cb3f1-ef99-4d2a-8dbe-b0453b57ddb8"
+            }
+          },
+          {
+            "frame": 0.8333333333333334,
+            "value": {
+              "__uuid__": "20167846-46a6-407f-a0e5-ea0ded4cf52b"
+            }
+          },
+          {
+            "frame": 0.9166666666666666,
+            "value": {
+              "__uuid__": "ff6b8f40-c308-4e19-98d7-5525bbf78a7c"
+            }
           }
         ]
       }
@@ -69,11 +93,11 @@
           "value": 255
         },
         {
-          "frame": 0.5833333333333334,
+          "frame": 0.9166666666666666,
           "value": 255
         },
         {
-          "frame": 0.6,
+          "frame": 0.9333333333333333,
           "value": 0
         }
       ]

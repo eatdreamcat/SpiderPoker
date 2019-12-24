@@ -1,4 +1,6 @@
 import { Game } from "./controller/Game";
+import { gEventMgr } from "./controller/EventManager";
+import { GlobalEvent } from "./controller/EventName";
 
 const celerx = require("./utils/celerx");
 const { ccclass, property } = cc._decorator;
@@ -52,11 +54,21 @@ export default class Result extends cc.Component {
     }
 
     this.Result.setEventListener(this.eventListener.bind(this));
+
     this.showScore = Math.max(0, Game.getScore() - Game.getTimeBonus());
 
-    this.scoreStep = this.showScore / 30;
-    this.timeBonusStep = Game.getTimeBonus() / 30;
-    this.finalScoreStep = Game.getScore() / 30;
+    console.log(
+      " result:",
+      Game.getScore(),
+      ", timeBonus:",
+      Game.getTimeBonus(),
+      ",showScore:",
+      this.showScore
+    );
+
+    this.scoreStep = Math.ceil(this.showScore / 30);
+    this.timeBonusStep = Math.ceil(Game.getTimeBonus() / 30);
+    this.finalScoreStep = Math.ceil(Game.getScore() / 30);
 
     if (!CC_DEBUG) {
       this.scheduleOnce(() => {
@@ -68,11 +80,20 @@ export default class Result extends cc.Component {
       cc.Node.EventType.TOUCH_END,
       () => {
         if (CC_DEBUG) {
-          this.node.removeFromParent();
-          Game.restart();
+          //Game.restart();
+
+          window.location.reload();
         } else {
           celerx.submitScore(Game.getScore());
         }
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.RESTART,
+      () => {
+        this.node.removeFromParent();
       },
       this
     );
@@ -89,7 +110,7 @@ export default class Result extends cc.Component {
 
   start() {}
 
-  update(dt) {
+  update(dt: number) {
     if (this.score < this.showScore) {
       this.score += this.scoreStep;
       this.score = Math.min(this.score, this.showScore);

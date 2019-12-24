@@ -167,6 +167,7 @@ export default class Poker extends cc.Component {
     gEventMgr.on(
       GlobalEvent.REMOVE_POKER,
       () => {
+        this.node.setParent(Game.removeNode);
         gFactory.putPoker(this.node);
         Game.addRemovePokerCount(1);
       },
@@ -465,6 +466,7 @@ export default class Poker extends cc.Component {
     let socre2 = 0;
     if (this.node.getParent().name == "PokerFlipRoot") {
       socre2 = 20;
+      Game.addFlipCounts(1);
     }
 
     let scorePos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
@@ -501,7 +503,13 @@ export default class Poker extends cc.Component {
         [this.node],
         [this.node.getParent()],
         [this.node.position.clone()],
-        [],
+        [
+          {
+            callback: Game.addFlipCounts,
+            args: [-1],
+            target: Game
+          }
+        ],
         [-score - socre2],
         [scorePos]
       );
@@ -537,6 +545,7 @@ export default class Poker extends cc.Component {
     let socre2 = 0;
     if (this.node.getParent().name == "PokerFlipRoot") {
       socre2 = 20;
+      Game.addFlipCounts(1);
     }
 
     if (this.isCycled()) {
@@ -578,7 +587,13 @@ export default class Poker extends cc.Component {
         [this.node],
         [this.node.getParent()],
         [this.node.position.clone()],
-        [],
+        [
+          {
+            callback: Game.addFlipCounts,
+            args: [-1],
+            target: Game
+          }
+        ],
         [-score - socre2],
         [scorePos]
       );
@@ -687,7 +702,7 @@ export default class Poker extends cc.Component {
 
   public static checkBeNext(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-    if (window["ChectOpen"] && CC_DEBUG) {
+    if (window["CheatOpen"] && CC_DEBUG) {
       return true;
     }
     return (
@@ -698,7 +713,7 @@ export default class Poker extends cc.Component {
 
   public static checkRecycled(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-    if (window["ChectOpen"] && CC_DEBUG) {
+    if (window["CheatOpen"] && CC_DEBUG) {
       return poker != next;
     }
 
@@ -719,7 +734,7 @@ export default class Poker extends cc.Component {
       "cycled:",
       this.cycled
     );
-
+    if (!Game.isGameStarted()) return;
     this.setNext(null);
     if (this.cycled) {
       console.log(" onChildRemove cycled ------------");
@@ -791,7 +806,7 @@ export default class Poker extends cc.Component {
   }
 
   setNormal() {
-    console.log("setNormal:", this.value, ",key:", this.key);
+    console.log("setNormal:", this.value, ", setNormal key:", this.key);
     this.frontCard.node.color = cc.Color.WHITE;
     this.canMove = this.carState == CardState.Front;
   }

@@ -60,6 +60,12 @@ export default class GameScene extends cc.Component {
   @property(cc.Label)
   TimeLabel: cc.Label = null;
 
+  @property(cc.Sprite)
+  TimeIcon: cc.Sprite = null;
+
+  @property(cc.SpriteAtlas)
+  TimeIconAtlas: cc.SpriteAtlas = null;
+
   @property(cc.Label)
   ScoreLabel: cc.Label = null;
 
@@ -101,6 +107,12 @@ export default class GameScene extends cc.Component {
     this.ScoreLabel.string = "0";
     this.TimeAnimation.node.active = false;
     this.LightAnimation.node.active = false;
+
+    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame("icon_time");
+
+    Game.getCycledPokerRoot().clear();
+    Game.getPlacePokerRoot().clear();
+
     for (let child of this.PlaceRoot.children) {
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
@@ -278,7 +290,7 @@ export default class GameScene extends cc.Component {
       (score: number, pos: cc.Vec2) => {
         console.log(" score change: ", score, ",pos:", pos);
 
-        this.scoreStep = Math.max(score / 20, this.scoreStep);
+        this.scoreStep = Math.ceil(Math.max(score / 20, this.scoreStep));
 
         let targetPos = CMath.ConvertToNodeSpaceAR(
           this.ScoreLabel.node,
@@ -293,7 +305,7 @@ export default class GameScene extends cc.Component {
           scoreLabel.runAction(
             cc.sequence(
               cc.scaleTo(0, 0),
-              cc.scaleTo(0.15, 1.2),
+              cc.scaleTo(0.15, 1.5),
               cc.delayTime(0.25),
               cc.scaleTo(0.1, 1.0),
               cc.moveTo(0.25, targetPos.x, targetPos.y),
@@ -310,7 +322,7 @@ export default class GameScene extends cc.Component {
           scoreLabel.runAction(
             cc.sequence(
               cc.scaleTo(0, 0),
-              cc.scaleTo(0.15, 1.2),
+              cc.scaleTo(0.15, 1.5),
               cc.delayTime(0.25),
               cc.scaleTo(0.1, 1.0),
               cc.moveTo(0.25, targetPos.x, targetPos.y),
@@ -376,6 +388,10 @@ export default class GameScene extends cc.Component {
   }
 
   startGame() {
+    console.log(
+      " this.PokerDevl ------------------------- :",
+      this.PokerDevl.childrenCount
+    );
     let pokers = Pokers.concat();
     let pokerIndex = PokerIndex.concat();
     let weightDiv = pokerIndex.length;
@@ -525,7 +541,7 @@ export default class GameScene extends cc.Component {
         }
         pokerNode.runAction(
           cc.sequence(
-            cc.moveTo(0.1, 0, offset),
+            cc.moveTo(0.05, 0, offset),
             cc.callFunc(() => {
               pokerNode.group = "default";
               poker.setDefaultPosition();
@@ -572,11 +588,15 @@ export default class GameScene extends cc.Component {
     let nodes: cc.Node[] = [];
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
-    this.FlipAnimation.play();
+
+    if (this.PokerFlipRoot.childrenCount >= 3) {
+      this.FlipAnimation.play();
+    }
 
     let children = this.PokerFlipRoot.children.concat().reverse();
     let i = 0;
     for (let child of children) {
+      child.opacity = 255;
       let selfPos = CMath.ConvertToNodeSpaceAR(child, this.PokerDevl);
 
       let poker = child.getComponent(Poker);
@@ -686,6 +706,9 @@ export default class GameScene extends cc.Component {
     for (let i = 0; i < length; i++) {
       let child = oldChildren[i];
       child.x = 0;
+      if (i < length - 1) {
+        child.opacity = 0;
+      }
       if (child.getNumberOfRunningActions() > 0) {
         child.group = "default";
         child.stopAllActions();
@@ -701,6 +724,7 @@ export default class GameScene extends cc.Component {
       this.LightAnimation.node.active = false;
     }
 
+    child.opacity = 255;
     let childIndex = this.PokerFlipRoot.children.indexOf(child);
     let poker = child.getComponent(Poker);
     if (poker) {
@@ -720,7 +744,8 @@ export default class GameScene extends cc.Component {
     this.updateFlipPokerPosOnAdd();
   }
 
-  onPokerFlipRemoveChild() {
+  onPokerFlipRemoveChild(child: cc.Node) {
+    child.opacity = 255;
     if (this.PokerFlipRoot.childrenCount > 0) {
       this.PokerFlipRoot.children[this.PokerFlipRoot.childrenCount - 1]
         .getComponent(Poker)
@@ -780,6 +805,10 @@ export default class GameScene extends cc.Component {
       child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
       child3.group = "default";
       child3.stopActionByTag(ACTION_TAG.BACK_STEP);
+
+      child1.opacity = 255;
+      child2.opacity = 255;
+      child3.opacity = 255;
     }
   }
 
@@ -820,6 +849,10 @@ export default class GameScene extends cc.Component {
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
       child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+
+      child1.opacity = 255;
+      child2.opacity = 255;
+      child3.opacity = 255;
     }
   }
 
@@ -891,6 +924,9 @@ export default class GameScene extends cc.Component {
         if (!this.TimeAnimation.node.active) {
           this.TimeAnimation.node.active = true;
           this.TimeAnimation.play();
+          this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame(
+            "icon_time_2"
+          );
         }
       }
 
