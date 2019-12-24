@@ -31,6 +31,13 @@ interface CMath {
   GetWorldPosition(node: cc.Node): cc.Vec2;
 
   /**
+   * 检测两个不同的数是否含有相同的bit
+   * @param a
+   * @param b
+   */
+  CheckNumberBit(a: number, b: number): boolean;
+
+  /**
    *
    * @param node 转换的节点
    * @param spaceNode 目标坐标空间节点

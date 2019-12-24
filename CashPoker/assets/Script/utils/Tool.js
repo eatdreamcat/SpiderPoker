@@ -89,6 +89,11 @@ CMath.ConvertToNodeSpaceAR = function(node, spaceNode) {
   return spaceNode.convertToNodeSpaceAR(worldPos);
 };
 
+CMath.CheckNumberBit = function(a, b) {
+  if (a == b) return false;
+  return (a | b) < a + b;
+};
+
 if (CC_DEBUG) {
   cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, event => {
     switch (event.keyCode) {
