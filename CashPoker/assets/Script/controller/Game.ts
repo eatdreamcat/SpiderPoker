@@ -102,12 +102,13 @@ class GameMgr {
   }
 
   public isComplete() {
-    return (
-      this.flipCounts >= 45 ||
-      (this.flipCounts >= 44 &&
-        Game.pokerFlipRoot &&
-        Game.pokerFlipRoot.childrenCount == 1)
-    );
+    // return (
+    //   this.flipCounts >= 45 ||
+    //   (this.flipCounts >= 44 &&
+    //     Game.pokerFlipRoot &&
+    //     Game.pokerFlipRoot.childrenCount == 1)
+    // );
+    return this.flipCounts >= 45;
   }
 
   public checkIsRecycleComplete() {
@@ -189,7 +190,7 @@ class GameMgr {
       "-----------------------------------flipCounts:",
       this.flipCounts
     );
-    if (this.flipCounts >= 45) {
+    if (this.isComplete()) {
       console.error(
         "-----------------------------------flipCounts:",
         this.flipCounts

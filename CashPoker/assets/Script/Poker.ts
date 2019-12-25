@@ -659,6 +659,7 @@ export default class Poker extends cc.Component {
     Game.addCycledPokerRoot(index, this.node);
     this.node.group = "top";
     this.setDefaultPosition(cc.v2(0, 0));
+
     this.node.runAction(
       cc.sequence(
         cc.delayTime(delay),
