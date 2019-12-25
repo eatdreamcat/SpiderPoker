@@ -42,10 +42,20 @@ class GameMgr {
 
   public removePokerCount = 0;
 
-  private complete: boolean = false;
+  private recycleCount: number = 0;
+
+  public pokerFlipRoot: cc.Node = null;
 
   public getGameTime() {
     return this.gameTime;
+  }
+
+  public addRecycleCount(count: number) {
+    this.recycleCount += count;
+    if (this.recycleCount > 52 || this.recycleCount < 0) {
+      console.error(" recycle count error! ", this.recycleCount);
+      this.recycleCount = CMath.Clamp(this.recycleCount, 52, 0);
+    }
   }
 
   public addGameTime(time: number) {
@@ -91,19 +101,33 @@ class GameMgr {
     this.gameStart = true;
   }
 
-  public checkIsComplete() {
-    Game.placePokerRoot.forEach((key: number, node: cc.Node) => {
-      let poker = node.getComponent(Poker);
-      if (poker && poker.getValue() < 10) {
-        return false;
-      }
-    });
-    this.complete = this.flipCounts >= 45;
-    return this.complete;
+  public isComplete() {
+    return (
+      this.flipCounts >= 45 ||
+      (this.flipCounts >= 44 &&
+        Game.pokerFlipRoot &&
+        Game.pokerFlipRoot.childrenCount == 1)
+    );
   }
 
-  public isComplete() {
-    return this.complete;
+  public checkIsRecycleComplete() {
+    let isComplete = this.recycleCount == 52;
+    // this.cyclePokerRoot.forEach((key: number, node: cc.Node) => {
+    //   let poker = node.getComponent(Poker);
+    //   if (poker && poker.getValue() < 13) {
+    //     isComplete = false;
+    //     return;
+    //   } else {
+    //     isComplete = false;
+    //     return;
+    //   }
+    // });
+
+    if (isComplete) {
+      console.log(" isComplete isComplete ");
+      gEventMgr.emit(GlobalEvent.AUTO_COMPLETE_DONE);
+    }
+    return isComplete;
   }
 
   public restart() {
@@ -116,16 +140,13 @@ class GameMgr {
     this.placePokerRoot.clear();
     this.gameStart = false;
     this.removePokerCount = 0;
-    gEventMgr.emit(GlobalEvent.REMOVE_POKER);
   }
 
   public addRemovePokerCount(count: number) {
     this.removePokerCount += count;
     if (this.removePokerCount >= 52) {
-      console.error(
-        "------------------------ game restart ---------------------------"
-      );
-      gEventMgr.emit(GlobalEvent.RESTART);
+      this.calTimeBonus();
+      gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
   }
 
@@ -173,6 +194,7 @@ class GameMgr {
         "-----------------------------------flipCounts:",
         this.flipCounts
       );
+      gEventMgr.emit(GlobalEvent.COMPLETE);
     }
   }
 
@@ -209,6 +231,7 @@ class GameMgr {
   }
 
   addPlacePokerRoot(key: number, node: cc.Node) {
+    if (this.isComplete()) return;
     this.placePokerRoot.add(key, node);
     if (this.placePokerRoot.length > 7) {
       console.error(

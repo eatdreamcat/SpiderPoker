@@ -28,6 +28,7 @@ export default class PokerRoot extends cc.Component {
     }
     this.setNewRoot(poker);
     this.next = poker;
+    poker.setRecycle(false);
   }
 
   setNewRoot(poker: Poker) {

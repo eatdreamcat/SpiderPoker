@@ -48,9 +48,17 @@ export default class Result extends cc.Component {
     this.TimeBonus.string = "0";
     this.FinalScore.string = "0";
     if (Game.getGameTime() > 0) {
-      this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font03");
+      if (Game.isComplete()) {
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_complete");
+      } else {
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font02");
+      }
     } else {
-      this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font02");
+      if (Game.isComplete()) {
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_complete");
+      } else {
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font03");
+      }
     }
 
     this.Result.setEventListener(this.eventListener.bind(this));

@@ -1,0 +1,61 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "complete",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 1.15,
+  "sample": 60,
+  "speed": 1.2,
+  "wrapMode": 1,
+  "curveData": {
+    "paths": {
+      "font_gamecom": {
+        "props": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 0,
+              "curve": [
+                0.4,
+                0,
+                0.7364864864864865,
+                0.34643734643734647
+              ]
+            },
+            {
+              "frame": 0.5,
+              "value": 1.2
+            },
+            {
+              "frame": 0.6666666666666666,
+              "value": 1
+            }
+          ]
+        }
+      },
+      "font_congra": {
+        "props": {
+          "scaleX": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.5,
+              "value": 0
+            },
+            {
+              "frame": 0.9833333333333333,
+              "value": 1.1
+            },
+            {
+              "frame": 1.15,
+              "value": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": []
+}

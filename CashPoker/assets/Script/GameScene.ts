@@ -90,6 +90,12 @@ export default class GameScene extends cc.Component {
   @property(cc.Animation)
   FlipAnimation: cc.Animation = null;
 
+  @property(cc.Animation)
+  Complete: cc.Animation = null;
+
+  @property(cc.Toggle)
+  CheatToggle: cc.Toggle = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
@@ -103,6 +109,7 @@ export default class GameScene extends cc.Component {
 
   init() {
     this.Stop.active = false;
+    this.Complete.node.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
     this.TimeAnimation.node.active = false;
@@ -129,6 +136,7 @@ export default class GameScene extends cc.Component {
 
   onLoad() {
     Game.removeNode = this.RemoveNode;
+    Game.pokerFlipRoot = this.PokerFlipRoot;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -143,6 +151,20 @@ export default class GameScene extends cc.Component {
     });
 
     CC_DEBUG && this.celerStart();
+
+    this.CheatToggle.node.active = CC_DEBUG;
+    this.CheatToggle.isChecked = false;
+    this.CheatToggle.node.on(
+      "toggle",
+      () => {
+        if (this.CheatToggle.isChecked) {
+          window["noTime"] = window["CheatOpen"] = true;
+        } else {
+          window["noTime"] = window["CheatOpen"] = false;
+        }
+      },
+      this
+    );
 
     // init prefabs
 
@@ -216,6 +238,15 @@ export default class GameScene extends cc.Component {
           this.devPoker();
           this.devTime = 0;
         }
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.COMPLETE,
+      () => {
+        this.Complete.node.active = true;
+        this.Complete.play();
       },
       this
     );
@@ -401,9 +432,9 @@ export default class GameScene extends cc.Component {
     /**
      *生成可解牌局
      */
+    let origPokers = Pokers.concat();
     let solutionPokers = [];
-    let underPokersCount = 28;
-    while (underPokersCount-- > 0) {}
+    let group1 = [];
     /**
      *
      */
@@ -601,12 +632,16 @@ export default class GameScene extends cc.Component {
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
 
-    if (this.PokerFlipRoot.childrenCount >= 3) {
-      this.FlipAnimation.play();
-    }
-
     let children = this.PokerFlipRoot.children.concat().reverse();
     let i = 0;
+
+    let isAction = false;
+    if (this.PokerFlipRoot.childrenCount >= 3) {
+      this.FlipAnimation.play();
+    } else {
+      isAction = true;
+    }
+
     for (let child of children) {
       child.opacity = 255;
       let selfPos = CMath.ConvertToNodeSpaceAR(child, this.PokerDevl);
@@ -622,19 +657,26 @@ export default class GameScene extends cc.Component {
       poker.setDefaultPosition(cc.v2(0, 0));
 
       poker.flipCard(0, false);
-      child.group = "top";
-      this.scheduleOnce(() => {
-        let action = cc.sequence(
-          /*cc.delayTime(i / 100),*/
-          cc.moveTo(0, 0, 0),
-          cc.callFunc(() => {
-            child.group = "default";
-          }, this)
-        );
-        action.setTag(ACTION_TAG.RE_DEV_POKER);
-        child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-        child.runAction(action);
-      }, 0);
+
+      if (isAction) {
+        child.group = "top";
+        this.scheduleOnce(() => {
+          let action = cc.sequence(
+            /*cc.delayTime(i / 100),*/
+            cc.moveTo(0, 0, 0),
+            cc.callFunc(() => {
+              child.group = "default";
+            }, this)
+          );
+          action.setTag(ACTION_TAG.RE_DEV_POKER);
+          child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+          child.runAction(action);
+        }, 0.1);
+      } else {
+        child.group = "default";
+        child.stopAllActions();
+        child.setPosition(0, 0);
+      }
       i++;
     }
     Game.addStep(
@@ -821,6 +863,56 @@ export default class GameScene extends cc.Component {
       child1.opacity = 255;
       child2.opacity = 255;
       child3.opacity = 255;
+    } else if (this.PokerFlipRoot.childrenCount == 2) {
+      let child1 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 1
+      ];
+
+      let action1 = cc.moveTo(0.1, 60, 0);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      // child1.stopAllActions();
+      child1.runAction(action1);
+      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
+      child1.group = "default";
+      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
+
+      let child2 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 2
+      ];
+
+      let action2 = cc.moveTo(0.1, 0, 0);
+      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      // child2.stopAllActions();
+      child2.runAction(action2);
+      child2.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+      child2.group = "default";
+      child2.stopActionByTag(ACTION_TAG.BACK_STEP);
+
+      child1.opacity = 255;
+      child2.opacity = 255;
+    } else if (this.PokerFlipRoot.childrenCount == 1) {
+      let child1 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 1
+      ];
+
+      let action1 = cc.moveTo(0.1, 0, 0);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      // child1.stopAllActions();
+      child1.runAction(action1);
+      child1.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+      child1.group = "default";
+      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
+
+      child1.opacity = 255;
     }
   }
 
@@ -865,6 +957,47 @@ export default class GameScene extends cc.Component {
       child1.opacity = 255;
       child2.opacity = 255;
       child3.opacity = 255;
+    } else if (this.PokerFlipRoot.childrenCount == 2) {
+      let child1 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 1
+      ];
+
+      let action1 = cc.moveTo(0.1, 60, 0);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.runAction(action1);
+      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
+
+      let child2 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 2
+      ];
+
+      let action2 = cc.moveTo(0.1, 0, 0);
+      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.runAction(action2);
+      child2.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+
+      child1.opacity = 255;
+      child2.opacity = 255;
+    } else if (this.PokerFlipRoot.childrenCount == 1) {
+      let child1 = this.PokerFlipRoot.children[
+        this.PokerFlipRoot.childrenCount - 1
+      ];
+
+      let action1 = cc.moveTo(0.1, 0, 0);
+      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
+      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.runAction(action1);
+      child1.getComponent(Poker).setFlipPos(cc.v2(0, 0));
+      child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
+
+      child1.opacity = 255;
     }
   }
 
