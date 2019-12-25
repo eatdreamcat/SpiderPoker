@@ -795,10 +795,12 @@ export default class GameScene extends cc.Component {
         .setCanMove(false);
     }
 
-    Game.addFlipCounts(0);
-    if (!Game.isComplete()) {
-      this.updateFlipPokerPosOnAdd();
-    }
+    // Game.addFlipCounts(0);
+    // if (!Game.isComplete()) {
+    //   this.updateFlipPokerPosOnAdd();
+    // }
+
+    this.updateFlipPokerPosOnAdd();
   }
 
   onPokerFlipRemoveChild(child: cc.Node) {
@@ -809,10 +811,12 @@ export default class GameScene extends cc.Component {
         .setNormal();
     }
 
-    Game.addFlipCounts(0);
-    if (!Game.isComplete()) {
-      this.updateFlipPokerPos();
-    }
+    // Game.addFlipCounts(0);
+    // if (!Game.isComplete()) {
+    //   this.updateFlipPokerPos();
+    // }
+
+    this.updateFlipPokerPos();
   }
 
   updateFlipPokerPosOnAdd() {
