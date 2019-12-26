@@ -28,6 +28,8 @@ export default class PokerRoot extends cc.Component {
     }
     this.setNewRoot(poker);
     this.next = poker;
+
+    console.log(" on poker root recycle count");
     poker.setRecycle(false);
   }
 

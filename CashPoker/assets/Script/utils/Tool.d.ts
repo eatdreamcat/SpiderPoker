@@ -60,7 +60,7 @@ declare var CAMERA_SHOW_ALL;
 declare var INVINCIBLE;
 
 /** */
-declare var GESTURE;
+declare var CHEAT_OPEN;
 
 /** 是否像素风 （调试用）*/
 declare var PXIEL;

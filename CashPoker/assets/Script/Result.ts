@@ -30,6 +30,9 @@ export default class Result extends cc.Component {
 
   @property(cc.Node)
   Light: cc.Node = null;
+
+  @property(cc.Node)
+  Stars: cc.Node = null;
   // LIFE-CYCLE CALLBACKS:
 
   private score: number = 0;
@@ -43,6 +46,22 @@ export default class Result extends cc.Component {
   private showScore: number = 0;
 
   onLoad() {
+    for (let child of this.Stars.children) {
+      let action = cc.repeatForever(
+        cc.sequence(
+          cc
+            .fadeIn(CMath.getRandom(0.5, 1.5))
+            .easing(cc.easeQuadraticActionInOut()),
+          cc
+            .fadeOut(CMath.getRandom(0.4, 0.8))
+            .easing(cc.easeQuadraticActionInOut())
+        )
+      );
+      child.opacity = 0;
+      setTimeout(() => {
+        child.runAction(action);
+      }, CMath.getRandom(0, 0.5) * 1000);
+    }
     this.Light.active = false;
     this.Score.string = "0";
     this.TimeBonus.string = "0";

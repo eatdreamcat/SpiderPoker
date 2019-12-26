@@ -52,6 +52,7 @@ class GameMgr {
 
   public addRecycleCount(count: number) {
     this.recycleCount += count;
+    console.log(" ---------------------recycle count :", this.recycleCount);
     if (this.recycleCount > 52 || this.recycleCount < 0) {
       console.error(" recycle count error! ", this.recycleCount);
       this.recycleCount = CMath.Clamp(this.recycleCount, 52, 0);
@@ -243,6 +244,10 @@ class GameMgr {
   }
 
   addCycledPokerRoot(key: number, node: cc.Node) {
+    // let oldNode = this.cyclePokerRoot.get(key);
+    // if (oldNode) {
+    //   let poker = oldNode.getComponent(Poker);
+    // }
     this.cyclePokerRoot.add(key, node);
     if (this.cyclePokerRoot.length > 4) {
       console.error(

@@ -117,3 +117,5 @@ if (CC_DEBUG) {
     }
   });
 }
+
+CHEAT_OPEN = true;

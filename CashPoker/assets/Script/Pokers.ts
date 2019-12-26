@@ -170,7 +170,8 @@ export const enum ACTION_TAG {
   BACK_STEP,
   DEV_POKER,
   RE_DEV_POKER,
-  SHAKE
+  SHAKE,
+  RECYCLE
 }
 
 export const OFFSET_Y = -70;

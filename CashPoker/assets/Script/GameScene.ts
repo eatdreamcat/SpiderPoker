@@ -152,7 +152,7 @@ export default class GameScene extends cc.Component {
 
     CC_DEBUG && this.celerStart();
 
-    this.CheatToggle.node.active = CC_DEBUG;
+    this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
     this.CheatToggle.node.on(
       "toggle",
@@ -218,6 +218,7 @@ export default class GameScene extends cc.Component {
       (child: cc.Node) => {
         let poker = child.getComponent(Poker);
         if (poker) {
+          console.log(" PokerDevl  CHILD_ADDED --- recycle count");
           poker.setRecycle(false);
         }
       },
@@ -395,10 +396,11 @@ export default class GameScene extends cc.Component {
     if (match && match.sharedRandomSeed) {
       CMath.randomSeed = match.sharedRandomSeed;
       CMath.sharedSeed = match.sharedRandomSeed;
+      this.nextStep(LOAD_STEP.CELER);
     } else {
       CMath.randomSeed = Math.random();
+      CC_DEBUG && this.nextStep(LOAD_STEP.CELER);
     }
-    this.nextStep(LOAD_STEP.CELER);
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
     } else {
@@ -787,6 +789,7 @@ export default class GameScene extends cc.Component {
           poker.setCanMove(childIndex + 1 == this.PokerFlipRoot.childrenCount);
         });
       }
+      console.log(" onPokerFlipAddChild ----recycle count ");
       poker.setRecycle(false);
     }
     if (childIndex >= 1) {

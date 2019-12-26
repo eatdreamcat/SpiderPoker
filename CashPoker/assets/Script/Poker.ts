@@ -189,9 +189,10 @@ export default class Poker extends cc.Component {
   autoCompleteDone() {
     let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
     // Game.addStep([this.node], [this.node.getParent()], [this.node.position]);
-
     this.node.setParent(Game.removeNode);
     this.node.setPosition(selfPos);
+    console.log(" recycle count --autoCompleteDone setParent");
+
     this.scheduleOnce(() => {
       let dir = this.value % 2 == 1 ? 1 : -1;
 
@@ -235,7 +236,7 @@ export default class Poker extends cc.Component {
   autoComplete() {
     if (!this.next) {
       this.isReadyAutoComplete = true;
-      console.log(" isAutoComplete:", this.isReadyAutoComplete);
+      console.error(" isAutoComplete:", this.isReadyAutoComplete);
     } else {
       this.isReadyAutoComplete = false;
     }
@@ -313,12 +314,18 @@ export default class Poker extends cc.Component {
 
   checkAutoRecycle(delay: number = 0) {
     if (this.cycled) {
-      console.log(" poker is recycled !!!");
+      console.log(" poker is recycled !!! recycle count");
       return false;
     }
 
     if (this.node.childrenCount > this.defualtChildCount) {
-      console.log(" poker has next !!!");
+      // console.log(
+      //   " poker has next !!!, childcount:",
+      //   this.node.childrenCount,
+      //   ", default:",
+      //   this.defualtChildCount
+      // );
+      // this.frontCard.node.color = cc.Color.RED;
       return false;
     }
 
@@ -342,7 +349,7 @@ export default class Poker extends cc.Component {
     }
 
     if (index >= 0) {
-      console.log(" auto place to recycled root:", index);
+      console.log(" recycle count auto place to recycled root:", index);
       this.placeToNewCycleNode(index, delay);
     }
 
@@ -353,6 +360,12 @@ export default class Poker extends cc.Component {
     e.bubbles = false;
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!this.canMove) return;
+
+    if (this.isCycled() && this.next) return;
+
+    let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
+    if (action && !action.isDone()) return;
+
     this.node.group = "top";
     let move = e.getDelta();
     this.node.x += move.x;
@@ -367,6 +380,8 @@ export default class Poker extends cc.Component {
   onMoveEnd(e: cc.Event.EventTouch) {
     e.bubbles = false;
     if (Game.isTimeOver() || Game.isComplete()) return;
+    let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
+    if (action && !action.isDone()) return;
 
     if (this.defaultPos && this.canMove) {
       let placeIndex = this.checkCanPlace();
@@ -376,8 +391,12 @@ export default class Poker extends cc.Component {
       } else {
         let recycleIndex = this.checkCanRecycled();
 
+        console.log("recycle count recycleIndex:", recycleIndex);
         if (recycleIndex >= 0) {
-          console.log(" place to new Cycled Root:", recycleIndex);
+          console.error(
+            " recycle count place to new Cycled Root:",
+            recycleIndex
+          );
 
           this.placeToNewCycleNode(recycleIndex);
         } else if (!this.checkAutoRecycle()) {
@@ -429,19 +448,36 @@ export default class Poker extends cc.Component {
     let index = -1;
 
     if (this.node.childrenCount > this.defualtChildCount) return index;
+
     Game.getCycledPokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
-      if (this.node.name == root.name && poker) return;
-      if (
-        (poker && Poker.checkRecycled(poker, this)) ||
-        (!poker && this.value == 1)
-      ) {
-        let pos = CMath.ConvertToNodeSpaceAR(root, this.node.parent);
+      if (this.node.name != root.name || !poker) {
         if (
-          Math.abs(pos.x - this.node.x) <= this.placeLimit.width &&
-          Math.abs(pos.y - this.node.y) <= this.placeLimit.height
+          (poker && Poker.checkRecycled(poker, this)) ||
+          (!poker && this.value == 1)
         ) {
-          index = key;
+          let pos = CMath.ConvertToNodeSpaceAR(root, this.node.parent);
+          console.log("recycle count:", pos);
+          if (
+            Math.abs(pos.x - this.node.x) <= this.placeLimit.width &&
+            Math.abs(pos.y - this.node.y) <= this.placeLimit.height
+          ) {
+            index = key;
+          }
+        }
+      } else {
+        console.error(
+          " recycle count == this.node.name:",
+          this.node.name,
+          ", root.name:",
+          root.name,
+          ", key:",
+          key,
+          "value:",
+          this.getValue()
+        );
+        if (poker) {
+          console.error("recycle count :", poker.getValue());
         }
       }
     });
@@ -463,7 +499,7 @@ export default class Poker extends cc.Component {
       this.defualtChildCount
     );
 
-    if (this.cycled) return;
+    if (this.cycled || !this.key || !index) return;
     if (this.node.childrenCount <= this.defualtChildCount) {
       console.warn("update poker root:", index, ", value:", this.value);
       Game.addPlacePokerRoot(index, this.node);
@@ -548,7 +584,7 @@ export default class Poker extends cc.Component {
         [scorePos]
       );
     }
-
+    console.log(" recycle count -- place new root setParent");
     this.node.setParent(root);
     this.node.setPosition(selfPos);
 
@@ -577,6 +613,10 @@ export default class Poker extends cc.Component {
 
   placeToNewCycleNode(index: number, delay: number = 0) {
     let root = Game.getCycledPokerRoot().get(index);
+    if (this.node.getParent() == root) {
+      console.error(" click too quick recycle count");
+      return;
+    }
 
     let selfPos = CMath.ConvertToNodeSpaceAR(this.node, root);
 
@@ -650,6 +690,15 @@ export default class Poker extends cc.Component {
       }
     }
 
+    console.log(
+      " recycle count :",
+      this.node.name,
+      "-- place new cycle node setParent:",
+      this.node.getParent().name,
+      ", new parent:",
+      root.name
+    );
+
     this.node.setParent(root);
     this.node.setPosition(selfPos);
     let distance = CMath.Distance(selfPos, cc.v2(0, 0));
@@ -660,19 +709,19 @@ export default class Poker extends cc.Component {
     this.node.group = "top";
     this.setDefaultPosition(cc.v2(0, 0));
 
-    this.node.runAction(
-      cc.sequence(
-        cc.delayTime(delay),
-        cc.moveTo(time, 0, 0),
-        cc.callFunc(() => {
-          this.node.group = "default";
-          this.RecycleAnimation.play();
-          if (!Game.checkIsRecycleComplete() && completeFunc) {
-            completeFunc();
-          }
-        }, this)
-      )
+    let action = cc.sequence(
+      cc.delayTime(delay),
+      cc.moveTo(time, 0, 0),
+      cc.callFunc(() => {
+        this.node.group = "default";
+        this.RecycleAnimation.play();
+        if (!Game.checkIsRecycleComplete() && completeFunc) {
+          completeFunc();
+        }
+      }, this)
     );
+    action.setTag(ACTION_TAG.RECYCLE);
+    this.node.runAction(action);
   }
 
   /** 从A开始检测到K */
@@ -695,6 +744,7 @@ export default class Poker extends cc.Component {
   }
 
   shake() {
+    if (this.isCycled()) return;
     this.node.group = "default";
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
@@ -732,13 +782,14 @@ export default class Poker extends cc.Component {
     if (this.cycled) {
       console.log("----------------------- cycled -----------------");
       poker.setRecycle(true);
-      let index = Game.getCycledPokerRoot().keyOf(this.node);
-      if (index != null) {
-        Game.addCycledPokerRoot(index, child);
-      }
+      // let index = Game.getCycledPokerRoot().keyOf(this.node);
+      // if (index != null) {
+      //   Game.addCycledPokerRoot(index, child);
+      // }
       return;
     }
 
+    console.log("  on addChild poker recycle count");
     poker.setRecycle(false);
 
     if (Poker.checkBeNext(this, this.next)) {
@@ -771,6 +822,7 @@ export default class Poker extends cc.Component {
   public static checkRecycled(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
     if (window["CheatOpen"] && CC_DEBUG) {
+      console.log("  checkRecycled recycle count ", poker != next);
       return poker != next;
     }
 
@@ -791,16 +843,23 @@ export default class Poker extends cc.Component {
       "cycled:",
       this.cycled
     );
-    if (!Game.isGameStarted()) return;
+    if (!Game.isGameStarted() || Game.isComplete()) return;
+
     this.setNext(null);
     if (this.cycled) {
-      console.log(" onChildRemove cycled ------------");
       let poker = child.getComponent(Poker);
       let index = Game.getCycledPokerRoot().keyOf(child);
+
       if (index != null) {
+        console.log(" onChildRemove cycled ------------recycle count:", index);
         Game.addCycledPokerRoot(index, this.node);
       }
-      if (poker) {
+      let parentPoker = child.getParent().getComponent(Poker);
+      if (
+        poker &&
+        ((parentPoker && !parentPoker.isCycled()) ||
+          (!parentPoker && child.getParent().getParent().name != "CycleRoot"))
+      ) {
         poker.setRecycle(false);
       }
       return;
