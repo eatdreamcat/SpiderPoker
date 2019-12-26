@@ -121,6 +121,12 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
+      if (
+        child.getComponent(cc.Sprite) &&
+        child.getComponent(cc.Sprite).enabled
+      ) {
+        child.getComponent(cc.Sprite).enabled = CC_DEBUG;
+      }
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 

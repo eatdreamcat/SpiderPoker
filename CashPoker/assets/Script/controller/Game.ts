@@ -146,7 +146,10 @@ class GameMgr {
 
   public addRemovePokerCount(count: number) {
     this.removePokerCount += count;
-    if (this.removePokerCount >= 52) {
+    if (this.removePokerCount == 52) {
+      console.error(
+        " ---------------- addRemovePokerCount -----------------------"
+      );
       this.calTimeBonus();
       gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
@@ -187,13 +190,13 @@ class GameMgr {
     if (!this.isGameStarted()) return;
     this.flipCounts += count;
     this.flipCounts = Math.max(this.flipCounts, 0);
-    console.log(
+    console.error(
       "-----------------------------------flipCounts:",
       this.flipCounts
     );
     if (this.isComplete()) {
       console.error(
-        "-----------------------------------flipCounts:",
+        "-------------emit Complete!!!----------------------flipCounts:",
         this.flipCounts
       );
       gEventMgr.emit(GlobalEvent.COMPLETE);

@@ -97,12 +97,6 @@ export default class Result extends cc.Component {
     this.timeBonusStep = Math.ceil(Game.getTimeBonus() / 30);
     this.finalScoreStep = Math.ceil(Game.getScore() / 30);
 
-    if (!CC_DEBUG) {
-      this.scheduleOnce(() => {
-        celerx.submitScore(Game.getScore());
-      }, 2000);
-    }
-
     this.ConfirmButton.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {
@@ -137,23 +131,54 @@ export default class Result extends cc.Component {
 
   start() {}
 
+  private scoreComplete: boolean = false;
+  private timeBonusComplete: boolean = false;
+  private finalScoreComplete: boolean = false;
+
+  private sumbit: boolean = false;
+
+  check() {
+    if (this.sumbit) return;
+    if (
+      !CC_DEBUG &&
+      this.scoreComplete &&
+      this.timeBonusComplete &&
+      this.finalScoreComplete
+    ) {
+      this.sumbit = true;
+      console.log("submit");
+      this.scheduleOnce(() => {
+        celerx.submitScore(Game.getScore());
+      }, 2);
+    }
+  }
+
   update(dt: number) {
     if (this.score < this.showScore) {
       this.score += this.scoreStep;
       this.score = Math.min(this.score, this.showScore);
       this.Score.string = this.score.toString();
+    } else {
+      this.scoreComplete = true;
+      this.check();
     }
 
     if (this.timeBonus < Game.getTimeBonus()) {
       this.timeBonus += this.timeBonusStep;
       this.timeBonus = Math.min(this.timeBonus, Game.getTimeBonus());
       this.TimeBonus.string = this.timeBonus.toString();
+    } else {
+      this.timeBonusComplete = true;
+      this.check();
     }
 
     if (this.finalScore < Game.getScore()) {
       this.finalScore += this.finalScoreStep;
       this.finalScore = Math.min(this.finalScore, Game.getScore());
       this.FinalScore.string = this.finalScore.toString();
+    } else {
+      this.finalScoreComplete = true;
+      this.check();
     }
   }
 }
