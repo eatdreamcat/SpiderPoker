@@ -2,15 +2,13 @@
  * 插件脚本，可以做一些拓展功能
  */
 if (CC_DEBUG) {
-  if (cc.sys.isMobile) {
-    console.log = function(...args) {};
-    console.warn = function(...args) {};
-    console.error = function(...args) {};
-  }
+  // console.log = function(...args) {};
+  // console.warn = function(...args) {};
+  // console.error = function(...args) {};
 } else {
-  console.log = function(...args) {};
-  console.warn = function(...args) {};
-  console.error = function(...args) {};
+  // console.log = function(...args) {};
+  // console.warn = function(...args) {};
+  // console.error = function(...args) {};
 }
 CMath = {};
 CMath.Clamp = function(val, max, min) {

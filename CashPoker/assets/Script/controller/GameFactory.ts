@@ -112,14 +112,14 @@ class GameFactory {
     subScoreLabel?: cc.Prefab
   ) {
     this.doneCallback = callback;
-    this.initPoker(300, poker);
+    this.initPoker(52, poker);
     this.initAddScore(10, addScoreLabel);
     this.initSubScore(10, subScoreLabel);
   }
 
   private nextStep(step: Step) {
     this.step |= step;
-    console.log("Factory Step:" + Step[step]);
+
     if (this.step >= Step.DONE) {
       this.doneCallback && this.doneCallback();
     }

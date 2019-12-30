@@ -28,6 +28,12 @@ export default class Stop extends cc.Component {
   @property(cc.Label)
   Content: cc.Label = null;
 
+  @property(cc.SpriteAtlas)
+  TitleAtlas: cc.SpriteAtlas = null;
+
+  @property(cc.Sprite)
+  Title: cc.Sprite = null;
+
   onLoad() {
     this.EndButton.node.on(cc.Node.EventType.TOUCH_END, this.endNow, this);
     this.ResumeButton.node.on(cc.Node.EventType.TOUCH_END, this.Resume, this);
@@ -39,6 +45,29 @@ export default class Stop extends cc.Component {
   endNow() {
     Game.calTimeBonus();
     gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+  }
+
+  hide() {
+    this.node.active = false;
+  }
+
+  /**
+   *
+   * @param type > 0 暂停，< 0 是提前结算
+   */
+  show(type: number) {
+    this.node.active = true;
+    if (type > 0) {
+      this.EndButton.node.active = false;
+      this.ResumeButton.node.x = 0;
+      this.Content.string = "The game has been paused, please resume.";
+      this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font06");
+    } else {
+      this.EndButton.node.active = true;
+      this.ResumeButton.node.x = -215;
+      this.Content.string = "Do you want to stop now with the current score?";
+      this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font01");
+    }
   }
 
   ShowHelp() {}

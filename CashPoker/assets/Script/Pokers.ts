@@ -10,44 +10,44 @@ export const PokerTypes = {
   heart_: 12
 };
 
-console.log(PokerTypes);
-console.log(
-  "------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA----------------"
-);
-console.log(
-  "spade - spade:",
-  CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.spade_),
-  "spade - club:",
-  CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.club_),
-  ", spade - diamond:",
-  CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.diamond_),
-  ",spade - heart:",
-  CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.heart_)
-);
+// console.log(PokerTypes);
+// console.log(
+//   "------------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA----------------"
+// );
+// console.log(
+//   "spade - spade:",
+//   CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.spade_),
+//   "spade - club:",
+//   CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.club_),
+//   ", spade - diamond:",
+//   CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.diamond_),
+//   ",spade - heart:",
+//   CMath.CheckNumberBit(PokerTypes.spade_, PokerTypes.heart_)
+// );
 
-console.log(
-  "club - club:",
-  CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.club_),
-  ", club - diamond:",
-  CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.diamond_),
-  ",club - heart:",
-  CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.heart_)
-);
+// console.log(
+//   "club - club:",
+//   CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.club_),
+//   ", club - diamond:",
+//   CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.diamond_),
+//   ",club - heart:",
+//   CMath.CheckNumberBit(PokerTypes.club_, PokerTypes.heart_)
+// );
 
-console.log(
-  "diamond - diamond:",
-  CMath.CheckNumberBit(PokerTypes.diamond_, PokerTypes.diamond_),
-  ",diamond - heart:",
-  CMath.CheckNumberBit(PokerTypes.diamond_, PokerTypes.heart_)
-);
-console.log(
-  "heart - heart:",
-  CMath.CheckNumberBit(PokerTypes.heart_, PokerTypes.heart_)
-);
+// console.log(
+//   "diamond - diamond:",
+//   CMath.CheckNumberBit(PokerTypes.diamond_, PokerTypes.diamond_),
+//   ",diamond - heart:",
+//   CMath.CheckNumberBit(PokerTypes.diamond_, PokerTypes.heart_)
+// );
+// console.log(
+//   "heart - heart:",
+//   CMath.CheckNumberBit(PokerTypes.heart_, PokerTypes.heart_)
+// );
 
-console.log(
-  "----------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA------------------"
-);
+// console.log(
+//   "----------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA------------------"
+// );
 export const Pokers = [
   "spade_,1", //0
   "heart_,1", //1

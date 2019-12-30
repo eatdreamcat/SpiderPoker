@@ -114,16 +114,6 @@ class GameMgr {
 
   public checkIsRecycleComplete() {
     let isComplete = this.recycleCount == 52;
-    // this.cyclePokerRoot.forEach((key: number, node: cc.Node) => {
-    //   let poker = node.getComponent(Poker);
-    //   if (poker && poker.getValue() < 13) {
-    //     isComplete = false;
-    //     return;
-    //   } else {
-    //     isComplete = false;
-    //     return;
-    //   }
-    // });
 
     if (isComplete) {
       console.log(" isComplete isComplete ");

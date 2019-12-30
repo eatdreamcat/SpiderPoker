@@ -30,7 +30,7 @@
                 <key>spriteSourceSize</key>
                 <string>{660,81}</string>
                 <key>textureRect</key>
-                <string>{{792,0},{660,81}}</string>
+                <string>{{0,82},{660,81}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -45,7 +45,7 @@
                 <key>spriteSourceSize</key>
                 <string>{660,81}</string>
                 <key>textureRect</key>
-                <string>{{0,82},{660,81}}</string>
+                <string>{{0,163},{660,81}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -60,7 +60,22 @@
                 <key>spriteSourceSize</key>
                 <string>{660,81}</string>
                 <key>textureRect</key>
-                <string>{{660,82},{660,81}}</string>
+                <string>{{0,244},{660,81}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>bg_font06.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{723,82}</string>
+                <key>spriteSourceSize</key>
+                <string>{723,82}</string>
+                <key>textureRect</key>
+                <string>{{0,325},{723,82}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -76,9 +91,9 @@
             <key>realTextureFileName</key>
             <string>title.png</string>
             <key>size</key>
-            <string>{1452,163}</string>
+            <string>{792,407}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:8f9f827578a042eefec8b4263026f0ad:8fc0818d5cb0856583c718d1e19d245c:eac3319ae54fe6d043150c971d4e6759$</string>
+            <string>$TexturePacker:SmartUpdate:8c6c0c918953fb7be1f19fa91772f50d:2fda34605e09eedf20363ca70f841914:eac3319ae54fe6d043150c971d4e6759$</string>
             <key>textureFileName</key>
             <string>title.png</string>
         </dict>

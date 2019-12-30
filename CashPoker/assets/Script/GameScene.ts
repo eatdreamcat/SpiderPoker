@@ -4,6 +4,7 @@ import Poker from "./Poker";
 import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
+import Stop from "./Stop";
 
 const { ccclass, property } = cc._decorator;
 const celerx = require("./utils/celerx");
@@ -84,14 +85,17 @@ export default class GameScene extends cc.Component {
   @property(cc.Animation)
   LightAnimation: cc.Animation = null;
 
-  @property(cc.Node)
-  Stop: cc.Node = null;
+  @property(Stop)
+  Stop: Stop = null;
 
   @property(cc.Animation)
   FlipAnimation: cc.Animation = null;
 
   @property(cc.Animation)
   Complete: cc.Animation = null;
+
+  @property(cc.Button)
+  SubmitButton: cc.Button = null;
 
   @property(cc.Toggle)
   CheatToggle: cc.Toggle = null;
@@ -107,8 +111,10 @@ export default class GameScene extends cc.Component {
   private showScore: number = 0;
   private scoreStep: number = 0;
 
+  private isStart: boolean = false;
+
   init() {
-    this.Stop.active = false;
+    this.Stop.hide();
     this.Complete.node.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
@@ -135,10 +141,10 @@ export default class GameScene extends cc.Component {
     }
   }
 
-  restart() {
-    this.init();
-    this.startGame();
-  }
+  // restart() {
+  //   this.init();
+  //   this.startGame();
+  // }
 
   onLoad() {
     Game.removeNode = this.RemoveNode;
@@ -185,15 +191,23 @@ export default class GameScene extends cc.Component {
       this.SubScoreLabel
     );
 
-    this.nextStep(LOAD_STEP.GUIDE);
-
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
 
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
       () => {
         if (Game.isComplete()) return;
-        this.Stop.active = true;
+        this.Stop.show(1);
+        Game.setPause(true);
+      },
+      this
+    );
+
+    this.SubmitButton.node.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        if (Game.isComplete()) return;
+        this.Stop.show(-1);
         Game.setPause(true);
       },
       this
@@ -224,7 +238,6 @@ export default class GameScene extends cc.Component {
       (child: cc.Node) => {
         let poker = child.getComponent(Poker);
         if (poker) {
-          console.log(" PokerDevl  CHILD_ADDED --- recycle count");
           poker.setRecycle(false);
         }
       },
@@ -328,8 +341,6 @@ export default class GameScene extends cc.Component {
     gEventMgr.on(
       GlobalEvent.UPDATE_SCORE,
       (score: number, pos: cc.Vec2) => {
-        console.log(" score change: ", score, ",pos:", pos);
-
         this.scoreStep = Math.ceil(Math.max(score / 20, this.scoreStep));
 
         let targetPos = CMath.ConvertToNodeSpaceAR(
@@ -379,12 +390,12 @@ export default class GameScene extends cc.Component {
 
     gEventMgr.on(GlobalEvent.OPEN_RESULT, this.openResult, this);
 
-    gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
+    //gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
     cc.loader.loadRes("prefabs/Result");
   }
 
   openResult() {
-    this.Stop.active = false;
+    this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
     cc.loader.loadRes("prefabs/Result", cc.Prefab, (err, result) => {
       if (err) {
@@ -410,8 +421,9 @@ export default class GameScene extends cc.Component {
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
     } else {
-      this.nextStep(LOAD_STEP.GUIDE);
     }
+
+    this.nextStep(LOAD_STEP.GUIDE);
   }
 
   /**
@@ -419,42 +431,34 @@ export default class GameScene extends cc.Component {
    */
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
-
-    console.log("CUR STEP:" + LOAD_STEP[loadStep] + ", total: " + this.step);
-
-    if (this.step >= LOAD_STEP.DONE) {
+    console.log("loadStep Step:" + LOAD_STEP[loadStep]);
+    if (this.step >= LOAD_STEP.DONE && !this.isStart) {
+      console.log("  startGame ---------------------- ");
+      this.isStart = true;
       this.startGame();
     } else {
     }
   }
 
   startGame() {
-    console.log(
-      " this.PokerDevl ------------------------- :",
-      this.PokerDevl.childrenCount
-    );
-    let pokers = Pokers.concat();
-    let pokerIndex = PokerIndex.concat();
-    let weightDiv = pokerIndex.length;
-
+    let pokers = Pokers.concat([]);
+    console.log(pokers);
+    console.log(pokers.length);
     /**
      *生成可解牌局
      */
-    let origPokers = Pokers.concat();
-    let solutionPokers = [];
-    let group1 = [];
+    // let origPokers = Pokers.concat();
+    // let solutionPokers = [];
+    // let group1 = [];
     /**
      *
      */
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
-      let pokerWeight =
-        1 - (weightDiv - pokerIndex.indexOf(curIndex)) / pokerIndex.length;
 
       let totalWeight = pokers.length;
 
       let random = CMath.getRandom(0, 1);
-      //CMath.getRandom(0, 1) / 2 + CMath.getRandom(0, pokerWeight) / 2;
       let randomIndex = Math.floor(random * totalWeight);
 
       let i = pokers.splice(randomIndex, 1);
@@ -463,8 +467,7 @@ export default class GameScene extends cc.Component {
         randomIndex,
         ", poker:",
         i,
-        ",pokerWeight:",
-        pokerWeight,
+
         ",random:",
         random
       );
@@ -509,7 +512,7 @@ export default class GameScene extends cc.Component {
           )
         );
       } else {
-        console.log(this.PokerDevl.children);
+        // console.log(this.PokerDevl.children);
         this.canDispatchPoker = true;
         return;
       }
@@ -567,8 +570,8 @@ export default class GameScene extends cc.Component {
       );
 
       if (!pokerNode) {
-        console.error(" poker node invaild!");
-        console.log(this.PokerDevl);
+        // console.error(" poker node invaild!");
+        // console.log(this.PokerDevl);
         return;
       }
 
@@ -706,7 +709,6 @@ export default class GameScene extends cc.Component {
   }
 
   devPoker() {
-    console.log(" devPoker ");
     if (!this.canDispatchPoker) {
       return;
     }
@@ -781,7 +783,7 @@ export default class GameScene extends cc.Component {
   }
 
   onPokerFlipAddChild(child: cc.Node) {
-    console.log(" onPokerFlipAddChild:", this.PokerFlipRoot.childrenCount);
+    // console.log(" onPokerFlipAddChild:", this.PokerFlipRoot.childrenCount);
     if (this.LightAnimation.node.active) {
       this.LightAnimation.node.active = false;
     }
@@ -795,7 +797,7 @@ export default class GameScene extends cc.Component {
           poker.setCanMove(childIndex + 1 == this.PokerFlipRoot.childrenCount);
         });
       }
-      console.log(" onPokerFlipAddChild ----recycle count ");
+      // console.log(" onPokerFlipAddChild ----recycle count ");
       poker.setRecycle(false);
     }
     if (childIndex >= 1) {

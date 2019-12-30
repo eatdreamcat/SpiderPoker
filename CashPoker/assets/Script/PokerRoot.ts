@@ -15,7 +15,7 @@ export default class PokerRoot extends cc.Component {
 
   onChildRemove() {
     if (Game.isGameStarted()) {
-      console.warn(" PokerRoot update root node");
+      // console.warn(" PokerRoot update root node");
       Game.addPlacePokerRoot(parseInt(this.node.name), this.node);
     }
   }
@@ -29,7 +29,7 @@ export default class PokerRoot extends cc.Component {
     this.setNewRoot(poker);
     this.next = poker;
 
-    console.log(" on poker root recycle count");
+    // console.log(" on poker root recycle count");
     poker.setRecycle(false);
   }
 
@@ -37,7 +37,7 @@ export default class PokerRoot extends cc.Component {
     if (poker.getNext()) {
       this.setNewRoot(poker.getNext());
     } else {
-      console.warn("PokerRoot setNewRoot:", poker.getValue());
+      // console.warn("PokerRoot setNewRoot:", poker.getValue());
       Game.addPlacePokerRoot(parseInt(this.node.name), poker.node);
       poker.setNormal();
     }

@@ -13,7 +13,7 @@ export default class RecycleRoot extends cc.Component {
   }
 
   onAddChild(child: cc.Node) {
-    console.log(" on recycle root add child ----------");
+    // console.log(" on recycle root add child ----------");
     let poker = child.getComponent(Poker);
     if (poker) {
       poker.setNext(null);
