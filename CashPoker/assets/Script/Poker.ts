@@ -74,6 +74,10 @@ export default class Poker extends cc.Component {
 
   private isReadyAutoComplete: boolean = false;
 
+  private recycleActionInfo: {
+    startTime: number;
+    duration: number;
+  } = { startTime: 0, duration: 0 };
   reuse() {
     this.isReadyAutoComplete = false;
     let pokerInfo: string = arguments[0][0][0];
@@ -193,10 +197,19 @@ export default class Poker extends cc.Component {
   autoCompleteDone() {
     let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
 
+    let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
+    let time = 0;
+    if (action && !action.isDone()) {
+      time = Math.max(
+        0,
+        this.recycleActionInfo.duration -
+          (Date.now() - this.recycleActionInfo.startTime)
+      );
+    }
     this.scheduleOnce(() => {
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
-    }, 0.1);
+    }, time / 1000);
 
     this.scheduleOnce(() => {
       let dir = this.value % 2 == 1 ? 1 : -1;
@@ -235,7 +248,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, this.value / 500 + 0.15);
+    }, this.value / 500 + time / 1000);
   }
 
   autoComplete() {
@@ -716,6 +729,9 @@ export default class Poker extends cc.Component {
         }
       }, this)
     );
+
+    (this.recycleActionInfo.duration = (delay + time) * 1000),
+      (this.recycleActionInfo.startTime = Date.now());
     action.setTag(ACTION_TAG.RECYCLE);
     this.node.runAction(action);
   }
