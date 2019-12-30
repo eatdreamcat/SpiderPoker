@@ -151,6 +151,7 @@ export default class Poker extends cc.Component {
 
   setRecycle(cycled: boolean) {
     if (this.cycled == cycled) return;
+
     this.cycled = cycled;
     if (this.cycled) {
       Game.addRecycleCount(1);
@@ -198,6 +199,7 @@ export default class Poker extends cc.Component {
     let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
 
     let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
+
     let time = 0;
     if (action && !action.isDone()) {
       time = Math.max(
@@ -221,7 +223,9 @@ export default class Poker extends cc.Component {
         cc.sequence(
           cc.delayTime(this.value / 10 + CMath.getRandom(0, 2)),
           cc.callFunc(() => {
+            this.frontCard.node.opacity = 255;
             this.node.group = "top";
+            gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
           }, this),
           cc.sequence(
             cc.repeat(
@@ -249,7 +253,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, this.value / 500 + time / 1000);
+    }, this.value / 500 + time / 1000 + 0.05);
   }
 
   autoComplete() {
@@ -320,6 +324,8 @@ export default class Poker extends cc.Component {
     e.bubbles = !this.isNormal();
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!Game.isGameStarted()) Game.start();
+
+    gEventMgr.emit(GlobalEvent.PLAY_POKER_PLACE);
   }
 
   checkAutoRecycle(delay: number = 0) {
@@ -415,6 +421,7 @@ export default class Poker extends cc.Component {
             this.node.setPosition(this.defaultPos);
             if (!this.next) this.shake();
           } else {
+            gEventMgr.emit(GlobalEvent.DEV_POKERS);
             this.node.runAction(
               cc.sequence(
                 cc.moveTo(0.1, this.defaultPos.x, this.defaultPos.y),
@@ -604,6 +611,7 @@ export default class Poker extends cc.Component {
     }
 
     this.setDefaultPosition(cc.v2(0, offset));
+    gEventMgr.emit(GlobalEvent.DEV_POKERS);
     this.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),
@@ -721,6 +729,9 @@ export default class Poker extends cc.Component {
 
     let action = cc.sequence(
       cc.delayTime(delay),
+      cc.callFunc(() => {
+        gEventMgr.emit(GlobalEvent.DEV_POKERS);
+      }),
       cc.moveTo(time, 0, 0),
       cc.callFunc(() => {
         this.node.group = "default";
@@ -795,10 +806,12 @@ export default class Poker extends cc.Component {
     if (this.cycled) {
       // console.log("----------------------- cycled -----------------");
       poker.setRecycle(true);
-      // let index = Game.getCycledPokerRoot().keyOf(this.node);
-      // if (index != null) {
-      //   Game.addCycledPokerRoot(index, child);
-      // }
+      if (this.forward && this.forward.forward) {
+        let forward = this.forward.forward;
+        this.scheduleOnce(() => {
+          forward.frontCard.node.opacity = 0;
+        }, 0.05);
+      }
       return;
     }
 
@@ -846,21 +859,14 @@ export default class Poker extends cc.Component {
   }
 
   onChildRemove(child: cc.Node) {
-    // console.log(
-    //   " onChildRemove:",
-    //   this.node.childrenCount,
-    //   ", value:",
-    //   this.value,
-    //   ",key:",
-    //   this.key,
-    //   "cycled:",
-    //   this.cycled
-    // );
-
     this.setNext(null);
     if (!Game.isGameStarted() || Game.isComplete()) return;
 
     if (this.cycled) {
+      if (this.forward && this.forward.forward) {
+        this.forward.forward.frontCard.node.opacity = 255;
+      }
+
       let poker = child.getComponent(Poker);
       let index = Game.getCycledPokerRoot().keyOf(child);
 

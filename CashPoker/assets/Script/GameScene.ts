@@ -380,7 +380,9 @@ export default class GameScene extends cc.Component {
             )
           );
         } else {
-          let scoreLabel = gFactory.getSubScore("/" + score.toString());
+          let scoreLabel = gFactory.getSubScore(
+            "/" + Math.abs(score).toString()
+          );
           scoreLabel.setParent(this.RemoveNode);
           scoreLabel.setPosition(pos);
           scoreLabel.runAction(
@@ -610,6 +612,7 @@ export default class GameScene extends cc.Component {
           poker.flipCard(0.1);
           poker.setNormal();
         }
+        gEventMgr.emit(GlobalEvent.DEV_POKERS);
         pokerNode.runAction(
           cc.sequence(
             cc.moveTo(0.05, 0, offset),
@@ -666,6 +669,7 @@ export default class GameScene extends cc.Component {
     let isAction = false;
     if (this.PokerFlipRoot.childrenCount >= 3) {
       this.FlipAnimation.play();
+      gEventMgr.emit(GlobalEvent.PLAY_RECYCLE_POKERS);
     } else {
       isAction = true;
     }
@@ -707,6 +711,20 @@ export default class GameScene extends cc.Component {
       }
       i++;
     }
+
+    let oldChildren = this.PokerFlipRoot.children;
+    let count = 3;
+    let func = function() {
+      let length = Math.max(0, oldChildren.length - count);
+      console.log("  opciaty -------------------------------:", length);
+      for (let i = 0; i < length; i++) {
+        let child = oldChildren[i];
+        if (i < length - 1) {
+          child.opacity = 0;
+        }
+      }
+    };
+
     Game.addStep(
       nodes,
       parents,
@@ -715,6 +733,7 @@ export default class GameScene extends cc.Component {
         {
           callback: () => {
             Game.addFreeDrawTimes(drawTimesCost);
+            setTimeout(func, 200);
           },
           target: this,
           args: []
@@ -772,6 +791,9 @@ export default class GameScene extends cc.Component {
         let pos = poker.getFlipPos();
         let action = cc.sequence(
           cc.delayTime(i / 20),
+          cc.callFunc(() => {
+            gEventMgr.emit(GlobalEvent.DEV_POKERS);
+          }),
           cc.moveTo(0.1, pos.x, pos.y),
           cc.callFunc(() => {
             pokerNode.group = "default";

@@ -49,6 +49,44 @@ class AudioController {
     gEventMgr.targetOff(this);
 
     this.audioID["bgm"] = this.play("bgm", true, 1.5, true);
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_RECYCLE_POKERS,
+      () => {
+        this.audioID["recyclePoker"] = this.play("recyclePoker");
+        cc.audioEngine.setFinishCallback(
+          this.audioID["recyclePoker"],
+          function() {
+            this.audioID["recyclePoker"] = null;
+          }.bind(this)
+        );
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.DEV_POKERS,
+      () => {
+        this.play("devPoker");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_POKER_PLACE,
+      () => {
+        this.play("pokerPlace");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_POKER_FLY,
+      () => {
+        this.play("pokerFly");
+      },
+      this
+    );
   }
 
   stop(audioID: number, clipName?: string) {

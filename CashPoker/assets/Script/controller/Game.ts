@@ -330,6 +330,7 @@ class GameMgr {
         let action = cc.sequence(
           cc.delayTime(count / 500),
           cc.callFunc(() => {
+            gEventMgr.emit(GlobalEvent.DEV_POKERS);
             poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
             poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
           }, this),
