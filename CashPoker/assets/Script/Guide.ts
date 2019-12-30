@@ -41,6 +41,7 @@ export default class Guide extends cc.Component {
     this.node.active = true;
     this.callback = closeCallback;
     this.GuideView.scrollToPage(0, 0);
+    this.Forward.node.active = false;
     this.Next.node
       .getChildByName("Background")
       .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(
@@ -66,16 +67,18 @@ export default class Guide extends cc.Component {
             cc.Sprite
           ).spriteFrame = this.ButtonAtlas.getSpriteFrame("new_close");
       }
+      this.Forward.node.active = nextPageIndex != 0;
     }
   }
 
   forwardPage() {
     if (this.GuideView.getCurrentPageIndex() <= 0) {
     } else {
-      this.GuideView.setCurrentPageIndex(
+      let nextPageIndex =
         (this.GuideView.getCurrentPageIndex() - 1) %
-          this.GuideView.content.childrenCount
-      );
+        this.GuideView.content.childrenCount;
+      this.GuideView.setCurrentPageIndex(nextPageIndex);
+      this.Forward.node.active = nextPageIndex != 0;
       this.Next.node
         .getChildByName("Background")
         .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(

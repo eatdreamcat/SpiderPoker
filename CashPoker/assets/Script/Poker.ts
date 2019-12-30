@@ -206,6 +206,7 @@ export default class Poker extends cc.Component {
           (Date.now() - this.recycleActionInfo.startTime)
       );
     }
+    time += 0.05;
     this.scheduleOnce(() => {
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
