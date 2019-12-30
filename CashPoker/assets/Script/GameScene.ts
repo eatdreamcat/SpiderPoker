@@ -5,6 +5,8 @@ import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Stop from "./Stop";
+import { gAudio } from "./controller/AudioController";
+import Guide from "./Guide";
 
 const { ccclass, property } = cc._decorator;
 const celerx = require("./utils/celerx");
@@ -21,7 +23,11 @@ export enum LOAD_STEP {
   CELER = 2 << 4,
   GUIDE = 2 << 5,
   /** 完成 */
-  DONE = LOAD_STEP.READY | LOAD_STEP.PREFABS | LOAD_STEP.CELER | LOAD_STEP.GUIDE
+  DONE = LOAD_STEP.READY |
+    LOAD_STEP.PREFABS |
+    LOAD_STEP.CELER |
+    LOAD_STEP.GUIDE |
+    LOAD_STEP.AUDIO
 }
 
 @ccclass
@@ -87,6 +93,9 @@ export default class GameScene extends cc.Component {
 
   @property(Stop)
   Stop: Stop = null;
+
+  @property(Guide)
+  Guide: Guide = null;
 
   @property(cc.Animation)
   FlipAnimation: cc.Animation = null;
@@ -190,6 +199,10 @@ export default class GameScene extends cc.Component {
       this.AddScoreLabel,
       this.SubScoreLabel
     );
+
+    gAudio.init(() => {
+      this.nextStep(LOAD_STEP.AUDIO);
+    });
 
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
 
@@ -392,6 +405,7 @@ export default class GameScene extends cc.Component {
 
     //gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
     cc.loader.loadRes("prefabs/Result");
+    cc.loader.loadResDir("sounds");
   }
 
   openResult() {
@@ -420,10 +434,13 @@ export default class GameScene extends cc.Component {
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
+      this.Guide.show(() => {
+        this.nextStep(LOAD_STEP.GUIDE);
+      });
     } else {
+      this.Guide.hide();
+      this.nextStep(LOAD_STEP.GUIDE);
     }
-
-    this.nextStep(LOAD_STEP.GUIDE);
   }
 
   /**

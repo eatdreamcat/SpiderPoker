@@ -1,6 +1,7 @@
 import { Game } from "./controller/Game";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
+import Guide from "./Guide";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -33,6 +34,9 @@ export default class Stop extends cc.Component {
 
   @property(cc.Sprite)
   Title: cc.Sprite = null;
+
+  @property(Guide)
+  Guide: Guide = null;
 
   onLoad() {
     this.EndButton.node.on(cc.Node.EventType.TOUCH_END, this.endNow, this);
@@ -70,7 +74,12 @@ export default class Stop extends cc.Component {
     }
   }
 
-  ShowHelp() {}
+  ShowHelp() {
+    this.hide();
+    this.Guide.show(() => {
+      Game.setPause(false);
+    });
+  }
 
   Resume() {
     this.node.active = false;
