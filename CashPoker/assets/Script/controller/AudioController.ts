@@ -48,7 +48,27 @@ class AudioController {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.audioID["bgm"] = this.play("bgm", true, 1.5, true);
+    this.audioID["bgm"] = this.play("bgm", true, 1.2, true);
+
+    gEventMgr.on(
+      GlobalEvent.SMALL_BGM,
+      () => {
+        if (this.audioID["bgm"] != null) {
+          cc.audioEngine.setVolume(this.audioID["bgm"], 0.6);
+        }
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.NORMAL_BGM,
+      () => {
+        if (this.audioID["bgm"] != null) {
+          cc.audioEngine.setVolume(this.audioID["bgm"], 1.2);
+        }
+      },
+      this
+    );
 
     gEventMgr.on(
       GlobalEvent.PLAY_RECYCLE_POKERS,
@@ -81,9 +101,49 @@ class AudioController {
     );
 
     gEventMgr.on(
+      GlobalEvent.PLAY_RECYCLE,
+      () => {
+        this.play("lay");
+      },
+      this
+    );
+
+    gEventMgr.on(
       GlobalEvent.PLAY_POKER_FLY,
       () => {
         this.play("pokerFly");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_OVER,
+      () => {
+        this.play("over");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_PAUSE,
+      () => {
+        this.play("pause");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_SHAKE,
+      () => {
+        this.play("shake");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_START,
+      () => {
+        this.play("start_count");
       },
       this
     );

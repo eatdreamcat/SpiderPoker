@@ -46,6 +46,7 @@ export default class Result extends cc.Component {
   private showScore: number = 0;
 
   onLoad() {
+    gEventMgr.emit(GlobalEvent.SMALL_BGM);
     for (let child of this.Stars.children) {
       let action = cc.repeatForever(
         cc.sequence(
@@ -123,6 +124,7 @@ export default class Result extends cc.Component {
   eventListener(trackEntry: any, event: any) {
     switch (event.stringValue) {
       case "light":
+        gEventMgr.emit(GlobalEvent.PLAY_OVER);
         this.Light.active = true;
         this.Light.runAction(cc.repeatForever(cc.rotateBy(5, 360)));
         break;

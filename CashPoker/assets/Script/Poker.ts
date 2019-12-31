@@ -731,6 +731,7 @@ export default class Poker extends cc.Component {
       cc.delayTime(delay),
       cc.callFunc(() => {
         gEventMgr.emit(GlobalEvent.DEV_POKERS);
+        gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
       }),
       cc.moveTo(time, 0, 0),
       cc.callFunc(() => {
@@ -785,6 +786,7 @@ export default class Poker extends cc.Component {
     shake.setTag(ACTION_TAG.SHAKE);
     this.node.stopActionByTag(ACTION_TAG.SHAKE);
     this.node.runAction(shake);
+    gEventMgr.emit(GlobalEvent.PLAY_SHAKE);
   }
 
   emitCheckDone() {

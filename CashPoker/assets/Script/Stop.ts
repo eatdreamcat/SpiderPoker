@@ -53,6 +53,7 @@ export default class Stop extends cc.Component {
 
   hide() {
     this.node.active = false;
+    gEventMgr.emit(GlobalEvent.NORMAL_BGM);
   }
 
   /**
@@ -61,6 +62,8 @@ export default class Stop extends cc.Component {
    */
   show(type: number) {
     this.node.active = true;
+    gEventMgr.emit(GlobalEvent.PLAY_PAUSE);
+    gEventMgr.emit(GlobalEvent.SMALL_BGM);
     if (type > 0) {
       this.EndButton.node.active = false;
       this.ResumeButton.node.x = 0;
@@ -78,12 +81,14 @@ export default class Stop extends cc.Component {
     this.hide();
     this.Guide.show(() => {
       Game.setPause(false);
+      gEventMgr.emit(GlobalEvent.PLAY_START);
     });
   }
 
   Resume() {
-    this.node.active = false;
+    this.hide();
     Game.setPause(false);
+    gEventMgr.emit(GlobalEvent.PLAY_START);
   }
 
   start() {}

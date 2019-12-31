@@ -100,6 +100,7 @@ class GameMgr {
 
   public start() {
     this.gameStart = true;
+    gEventMgr.emit(GlobalEvent.PLAY_START);
   }
 
   public isComplete() {
