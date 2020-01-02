@@ -81,6 +81,7 @@ export default class Result extends cc.Component {
       }
     }
 
+    gEventMgr.emit(GlobalEvent.PLAY_OVER_1);
     this.Result.setEventListener(this.eventListener.bind(this));
 
     this.showScore = Math.max(0, Game.getScore() - Game.getTimeBonus());
@@ -124,9 +125,15 @@ export default class Result extends cc.Component {
   eventListener(trackEntry: any, event: any) {
     switch (event.stringValue) {
       case "light":
-        gEventMgr.emit(GlobalEvent.PLAY_OVER);
         this.Light.active = true;
         this.Light.runAction(cc.repeatForever(cc.rotateBy(5, 360)));
+        break;
+      case "music1":
+        console.log(" music1111111111111111111111111111111");
+
+        break;
+      case "music2":
+        gEventMgr.emit(GlobalEvent.PLAY_OVER_2);
         break;
     }
   }

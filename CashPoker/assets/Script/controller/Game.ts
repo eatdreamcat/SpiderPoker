@@ -46,6 +46,22 @@ class GameMgr {
 
   public pokerFlipRoot: cc.Node = null;
 
+  private combo: number = -1;
+
+  public getCombo() {
+    return this.combo;
+  }
+
+  public resetCombo() {
+    this.combo = -1;
+  }
+
+  public addCombo(combo: number) {
+    this.combo += combo;
+    this.combo = Math.max(0, this.combo % 8);
+    console.log(" combo:", this.combo);
+  }
+
   public getGameTime() {
     return this.gameTime;
   }
@@ -260,6 +276,8 @@ class GameMgr {
       console.warn(" no cache step!");
       return;
     }
+
+    Game.resetCombo();
     let step = this.stepInfoArray.pop();
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
     let count = 0;

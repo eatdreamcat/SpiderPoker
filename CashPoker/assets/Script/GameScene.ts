@@ -481,6 +481,7 @@ export default class GameScene extends cc.Component {
       let randomIndex = Math.floor(random * totalWeight);
 
       let i = pokers.splice(randomIndex, 1);
+      //let i = pokers.splice(curIndex, 1);
       console.warn(
         "randomIndex:",
         randomIndex,

@@ -1,6 +1,6 @@
 {
   "skeleton": {
-    "hash": "aXm964Yq6yV8j7Qf0W3vzC/wo4Y",
+    "hash": "rgi8lK1zkLOyqGegCRCl3RWB4Ug",
     "spine": "3.6.36",
     "width": 156.69,
     "height": 275,
@@ -338,7 +338,7 @@
       }
     }
   },
-  "events": { "light": {} },
+  "events": { "light": {}, "music1": {}, "music2": {} },
   "animations": {
     "animation": {
       "slots": {
@@ -593,7 +593,11 @@
           ]
         }
       },
-      "events": [{ "time": 0.9333, "name": "light", "string": "light" }]
+      "events": [
+        { "time": 0, "name": "music1", "string": "music1" },
+        { "time": 0.5, "name": "music2", "string": "music2" },
+        { "time": 0.9333, "name": "light", "string": "light" }
+      ]
     }
   }
 }

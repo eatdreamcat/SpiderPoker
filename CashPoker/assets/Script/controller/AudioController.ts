@@ -1,6 +1,7 @@
 import { HashMap } from "../utils/HashMap";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
+import { Game } from "./Game";
 
 interface AudioItem {
   loop: boolean;
@@ -48,13 +49,13 @@ class AudioController {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.audioID["bgm"] = this.play("bgm", true, 1.2, true);
+    this.audioID["bgm"] = this.play("bgm", true, 2, true);
 
     gEventMgr.on(
       GlobalEvent.SMALL_BGM,
       () => {
         if (this.audioID["bgm"] != null) {
-          cc.audioEngine.setVolume(this.audioID["bgm"], 0.6);
+          cc.audioEngine.setVolume(this.audioID["bgm"], 0.9);
         }
       },
       this
@@ -64,7 +65,7 @@ class AudioController {
       GlobalEvent.NORMAL_BGM,
       () => {
         if (this.audioID["bgm"] != null) {
-          cc.audioEngine.setVolume(this.audioID["bgm"], 1.2);
+          cc.audioEngine.setVolume(this.audioID["bgm"], 2);
         }
       },
       this
@@ -73,13 +74,7 @@ class AudioController {
     gEventMgr.on(
       GlobalEvent.PLAY_RECYCLE_POKERS,
       () => {
-        this.audioID["recyclePoker"] = this.play("recyclePoker");
-        cc.audioEngine.setFinishCallback(
-          this.audioID["recyclePoker"],
-          function() {
-            this.audioID["recyclePoker"] = null;
-          }.bind(this)
-        );
+        this.play("recyclePoker");
       },
       this
     );
@@ -103,7 +98,7 @@ class AudioController {
     gEventMgr.on(
       GlobalEvent.PLAY_RECYCLE,
       () => {
-        this.play("lay");
+        this.play("recycle" + Game.getCombo(), false, 4);
       },
       this
     );
@@ -117,9 +112,17 @@ class AudioController {
     );
 
     gEventMgr.on(
-      GlobalEvent.PLAY_OVER,
+      GlobalEvent.PLAY_OVER_1,
       () => {
-        this.play("over");
+        this.play("result_flip");
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.PLAY_OVER_2,
+      () => {
+        this.play("result_dev", false, 2);
       },
       this
     );

@@ -81,14 +81,14 @@ export default class Stop extends cc.Component {
     this.hide();
     this.Guide.show(() => {
       Game.setPause(false);
-      gEventMgr.emit(GlobalEvent.PLAY_START);
+      //gEventMgr.emit(GlobalEvent.PLAY_START);
     });
   }
 
   Resume() {
     this.hide();
     Game.setPause(false);
-    gEventMgr.emit(GlobalEvent.PLAY_START);
+    //gEventMgr.emit(GlobalEvent.PLAY_START);
   }
 
   start() {}

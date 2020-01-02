@@ -196,42 +196,40 @@ export default class Poker extends cc.Component {
   }
 
   autoCompleteDone() {
-    let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
-
-    let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
-
     let time = 0;
-    if (action && !action.isDone()) {
-      time = Math.max(
-        0,
-        this.recycleActionInfo.duration -
-          (Date.now() - this.recycleActionInfo.startTime)
-      );
-    }
-    time += 0.05;
+    time = Math.max(
+      0,
+      this.recycleActionInfo.duration -
+        (Date.now() - this.recycleActionInfo.startTime)
+    );
+    time += 100;
+
     this.scheduleOnce(() => {
+      let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
+      this.node.zIndex = this.value;
     }, time / 1000);
 
     this.scheduleOnce(() => {
-      let dir = this.value % 2 == 1 ? 1 : -1;
-
+      let dir = this.value % 2 == 1 ? 1 : 1;
+      let offsetX = CMath.getRandom(0, 2);
       this.canMove = false;
 
       this.node.runAction(
         cc.sequence(
-          cc.delayTime(this.value / 10 + CMath.getRandom(0, 2)),
+          cc.delayTime((13 - this.value) / 10 + CMath.getRandom(0, 2)),
           cc.callFunc(() => {
             this.frontCard.node.opacity = 255;
             this.node.group = "top";
+            this.node.zIndex = this.value;
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
           }, this),
           cc.sequence(
             cc.repeat(
               cc.spawn(
                 cc
-                  .moveBy(0.01, dir * 1.5, 25)
+                  .moveBy(0.01, dir * 1.5 + offsetX, 25)
                   .easing(cc.easeQuinticActionOut()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
@@ -240,7 +238,9 @@ export default class Poker extends cc.Component {
             ),
             cc.repeat(
               cc.spawn(
-                cc.moveBy(0.01, dir * 2, -25).easing(cc.easeQuinticActionIn()),
+                cc
+                  .moveBy(0.01, dir * 2 + offsetX, -25)
+                  .easing(cc.easeQuinticActionIn()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
               180
@@ -253,7 +253,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, this.value / 500 + time / 1000 + 0.05);
+    }, (13 - this.value) / 500 + time / 1000 + 0.05);
   }
 
   autoComplete() {
@@ -328,7 +328,7 @@ export default class Poker extends cc.Component {
     gEventMgr.emit(GlobalEvent.PLAY_POKER_PLACE);
   }
 
-  checkAutoRecycle(delay: number = 0) {
+  checkAutoRecycle() {
     if (this.cycled) {
       // console.log(" poker is recycled !!! recycle count");
       return false;
@@ -366,7 +366,7 @@ export default class Poker extends cc.Component {
 
     if (index >= 0) {
       // console.log(" recycle count auto place to recycled root:", index);
-      this.placeToNewCycleNode(index, delay);
+      this.placeToNewCycleNode(index);
     }
 
     return index >= 0;
@@ -552,6 +552,8 @@ export default class Poker extends cc.Component {
       socre2 = 20;
     }
 
+    Game.resetCombo();
+
     let scorePos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
 
     Game.addScore(score, scorePos);
@@ -649,6 +651,8 @@ export default class Poker extends cc.Component {
     if (this.isCycled()) {
       score = 0;
       socre2 = 0;
+    } else {
+      Game.addCombo(1);
     }
 
     let scorePos = CMath.ConvertToNodeSpaceAR(root, Game.removeNode);
@@ -708,15 +712,6 @@ export default class Poker extends cc.Component {
       }
     }
 
-    // console.log(
-    //   " recycle count :",
-    //   this.node.name,
-    //   "-- place new cycle node setParent:",
-    //   this.node.getParent().name,
-    //   ", new parent:",
-    //   root.name
-    // );
-
     this.node.setParent(root);
     this.node.setPosition(selfPos);
     let distance = CMath.Distance(selfPos, cc.v2(0, 0));
@@ -729,16 +724,18 @@ export default class Poker extends cc.Component {
 
     let action = cc.sequence(
       cc.delayTime(delay),
+
+      cc.moveTo(time, 0, 0),
       cc.callFunc(() => {
         gEventMgr.emit(GlobalEvent.DEV_POKERS);
         gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
       }),
-      cc.moveTo(time, 0, 0),
+      cc.delayTime(0),
       cc.callFunc(() => {
         this.node.group = "default";
         this.RecycleAnimation.play();
         if (!Game.checkIsRecycleComplete() && completeFunc) {
-          completeFunc();
+          setTimeout(completeFunc, index / 5);
         }
       }, this)
     );
@@ -812,7 +809,7 @@ export default class Poker extends cc.Component {
         let forward = this.forward.forward;
         this.scheduleOnce(() => {
           forward.frontCard.node.opacity = 0;
-        }, 0.05);
+        }, 0.1);
       }
       return;
     }
@@ -1032,12 +1029,8 @@ export default class Poker extends cc.Component {
   start() {}
 
   update(dt: number) {
-    // if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
-    //   this.frontCard.node.color = cc.Color.RED;
-    // } else {
-    //   this.frontCard.node.color = cc.Color.WHITE;
-    // }
     if (this.isCycled()) return;
+
     if (this.isReadyAutoComplete) {
       this.isReadyAutoComplete = !this.checkAutoRecycle();
     }

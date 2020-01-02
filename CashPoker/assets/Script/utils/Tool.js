@@ -116,4 +116,4 @@ if (CC_DEBUG) {
   });
 }
 
-CHEAT_OPEN = true;
+CHEAT_OPEN = CC_DEBUG;
