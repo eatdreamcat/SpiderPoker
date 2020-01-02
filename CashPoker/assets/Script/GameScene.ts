@@ -1127,6 +1127,7 @@ export default class GameScene extends cc.Component {
       if (gameTime <= 60) {
         this.TimeLabel.font = this.SmallOrg;
         if (!this.TimeAnimation.node.active) {
+          gEventMgr.emit(GlobalEvent.PLAY_SHAKE);
           this.TimeAnimation.node.active = true;
           this.TimeAnimation.play();
           this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame(

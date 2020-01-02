@@ -135,7 +135,7 @@ class AudioController {
     gEventMgr.on(
       GlobalEvent.PLAY_SHAKE,
       () => {
-        this.play("shake");
+        this.play("shake", false, 0.7);
       },
       this
     );
