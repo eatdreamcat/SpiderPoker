@@ -92,7 +92,7 @@ class GameMgr {
       return;
 
     this.timeBonus =
-      ((this.flipCounts / 45) * (1.2 / 0.5) + 0.3) * this.gameTime;
+      ((this.flipCounts / 30) * (1.2 / 0.5) + 0.3) * this.gameTime;
 
     this.timeBonus = Math.floor(this.timeBonus);
     console.error(
