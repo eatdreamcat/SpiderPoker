@@ -352,6 +352,7 @@ class GameMgr {
             gEventMgr.emit(GlobalEvent.DEV_POKERS);
             poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
             poker.node.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+            poker.node.stopActionByTag(ACTION_TAG.SHAKE);
           }, this),
           cc.moveTo(0.1, returnPos.x, returnPos.y),
           cc.callFunc(() => {
@@ -360,6 +361,7 @@ class GameMgr {
           }, this)
         );
         action.setTag(ACTION_TAG.BACK_STEP);
+
         poker.node.runAction(action);
       }
     }

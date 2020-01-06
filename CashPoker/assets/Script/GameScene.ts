@@ -890,6 +890,7 @@ export default class GameScene extends cc.Component {
       child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
       child1.group = "default";
       child1.stopActionByTag(ACTION_TAG.BACK_STEP);
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
 
       let child2 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 2
@@ -905,6 +906,7 @@ export default class GameScene extends cc.Component {
       child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
       child2.group = "default";
       child2.stopActionByTag(ACTION_TAG.BACK_STEP);
+      child2.stopActionByTag(ACTION_TAG.SHAKE);
 
       let child3 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 3
@@ -920,6 +922,7 @@ export default class GameScene extends cc.Component {
       child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
       child3.group = "default";
       child3.stopActionByTag(ACTION_TAG.BACK_STEP);
+      child3.stopActionByTag(ACTION_TAG.SHAKE);
 
       child1.opacity = 255;
       child2.opacity = 255;
@@ -939,6 +942,7 @@ export default class GameScene extends cc.Component {
       child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
       child1.group = "default";
       child1.stopActionByTag(ACTION_TAG.BACK_STEP);
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
 
       let child2 = this.PokerFlipRoot.children[
         this.PokerFlipRoot.childrenCount - 2
@@ -954,6 +958,7 @@ export default class GameScene extends cc.Component {
       child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
       child2.group = "default";
       child2.stopActionByTag(ACTION_TAG.BACK_STEP);
+      child2.stopActionByTag(ACTION_TAG.SHAKE);
 
       child1.opacity = 255;
       child2.opacity = 255;
@@ -972,7 +977,7 @@ export default class GameScene extends cc.Component {
       child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
       child1.group = "default";
       child1.stopActionByTag(ACTION_TAG.BACK_STEP);
-
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
       child1.opacity = 255;
     }
   }
@@ -987,6 +992,7 @@ export default class GameScene extends cc.Component {
       action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
       child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
@@ -999,6 +1005,7 @@ export default class GameScene extends cc.Component {
       action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.SHAKE);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
       child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
@@ -1011,6 +1018,7 @@ export default class GameScene extends cc.Component {
       action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child3.stopActionByTag(ACTION_TAG.SHAKE);
       child3.runAction(action3);
       child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
       child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
@@ -1027,6 +1035,7 @@ export default class GameScene extends cc.Component {
       action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
       child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
@@ -1039,6 +1048,7 @@ export default class GameScene extends cc.Component {
       action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child2.stopActionByTag(ACTION_TAG.SHAKE);
       child2.runAction(action2);
       child2.getComponent(Poker).setFlipPos(cc.v2(0, 0));
       child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
@@ -1054,6 +1064,7 @@ export default class GameScene extends cc.Component {
       action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
       child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
+      child1.stopActionByTag(ACTION_TAG.SHAKE);
       child1.runAction(action1);
       child1.getComponent(Poker).setFlipPos(cc.v2(0, 0));
       child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));

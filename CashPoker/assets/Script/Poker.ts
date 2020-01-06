@@ -202,7 +202,7 @@ export default class Poker extends cc.Component {
       this.recycleActionInfo.duration -
         (Date.now() - this.recycleActionInfo.startTime)
     );
-    time += 100;
+    time += 500;
 
     this.scheduleOnce(() => {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
@@ -914,7 +914,7 @@ export default class Poker extends cc.Component {
       if (Poker.checkBeNext(this, this.next) && this.next.isNormal()) {
         this.setNormal();
       } else {
-        this.frontCard.node.color = cc.Color.GRAY;
+        //this.frontCard.node.color = cc.Color.GRAY;
         this.canMove = false;
       }
       if (this.forward) {
@@ -928,7 +928,7 @@ export default class Poker extends cc.Component {
   setAllGray() {
     if (!this.node.parent) return;
     // console.warn(" setGray:", this.value, ",key:", this.key);
-    this.frontCard.node.color = cc.Color.GRAY;
+    //this.frontCard.node.color = cc.Color.GRAY;
     this.canMove = false;
     if (this.forward) {
       // console.log(
@@ -948,7 +948,9 @@ export default class Poker extends cc.Component {
   }
 
   isGray() {
-    return this.frontCard.node.color == cc.Color.GRAY && this.canMove == false;
+    return (
+      /**this.frontCard.node.color == cc.Color.GRAY && */ this.canMove == false
+    );
   }
 
   setCardState(state: CardState, canMove: boolean = true) {
@@ -965,10 +967,10 @@ export default class Poker extends cc.Component {
     }
 
     if (this.canMove) {
-      this.frontCard.node.color = cc.Color.WHITE;
+      //this.frontCard.node.color = cc.Color.WHITE;
       this.setDefaultPosition();
     } else if (this.forward) {
-      this.frontCard.node.color = cc.Color.GRAY;
+      //this.frontCard.node.color = cc.Color.GRAY;
     }
   }
 
