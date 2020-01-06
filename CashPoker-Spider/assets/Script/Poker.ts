@@ -192,34 +192,32 @@ export default class Poker extends cc.Component {
 
     gEventMgr.once(GlobalEvent.COMPLETE, this.autoComplete, this);
 
-    gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, this.autoCompleteDone, this);
+    gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, () => {}, this);
   }
 
   autoCompleteDone() {
-    let time = 0;
-    time = Math.max(
-      0,
-      this.recycleActionInfo.duration -
-        (Date.now() - this.recycleActionInfo.startTime)
-    );
-    time += 500;
-
     this.scheduleOnce(() => {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
-      this.node.zIndex = this.value;
-    }, time / 1000);
+      this.node.zIndex = 13 - this.value;
+    }, 0);
 
     this.scheduleOnce(() => {
-      let dir = this.value % 2 == 1 ? 1 : 1;
-      let offsetX = CMath.getRandom(0, 2);
+      let dir = this.value % 2 == 1 ? -1 : 1;
+      let offsetX = CMath.getRandom(0, 2) * dir;
       this.canMove = false;
 
       this.node.runAction(
         cc.sequence(
-          cc.delayTime((13 - this.value) / 10 + CMath.getRandom(0, 2)),
+          cc.delayTime(this.value / 10),
           cc.callFunc(() => {
+            let score = (13 - this.value) * 10;
+            let scorePos = CMath.ConvertToNodeSpaceAR(
+              this.node,
+              Game.removeNode
+            );
+            Game.addScore(score, scorePos);
             this.frontCard.node.opacity = 255;
             this.node.group = "top";
             this.node.zIndex = this.value;
@@ -253,7 +251,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, (13 - this.value) / 500 + time / 1000 + 0.05);
+    }, (13 - this.value) / 500 + 0.05);
   }
 
   autoComplete() {
@@ -271,6 +269,8 @@ export default class Poker extends cc.Component {
   onCheckDone(key: number) {
     // console.log(" check done: ", key, ":", this.key, this.value);
     if (this.key != key || !this.isCheck) return;
+    this.setRecycle(true);
+    this.autoCompleteDone();
   }
 
   setDefaultPosition(pos?: cc.Vec2) {
@@ -523,7 +523,7 @@ export default class Poker extends cc.Component {
     if (this.node.childrenCount <= this.defualtChildCount) {
       // console.warn("update poker root:", index, ", value:", this.value);
       Game.addPlacePokerRoot(index, this.node);
-      //this.check(1);
+      this.check(1);
     } else {
       if (this.next) {
         // console.log(
@@ -806,14 +806,14 @@ export default class Poker extends cc.Component {
 
     this.setNext(poker);
     if (this.cycled) {
-      // console.log("----------------------- cycled -----------------");
-      poker.setRecycle(true);
-      if (this.forward && this.forward.forward) {
-        let forward = this.forward.forward;
-        this.scheduleOnce(() => {
-          forward.frontCard.node.opacity = 0;
-        }, 0.1);
-      }
+      // // console.log("----------------------- cycled -----------------");
+      // poker.setRecycle(true);
+      // if (this.forward && this.forward.forward) {
+      //   let forward = this.forward.forward;
+      //   this.scheduleOnce(() => {
+      //     forward.frontCard.node.opacity = 0;
+      //   }, 0.1);
+      // }
       return;
     }
 
@@ -866,25 +866,25 @@ export default class Poker extends cc.Component {
     if (!Game.isGameStarted() || Game.isComplete()) return;
 
     if (this.cycled) {
-      if (this.forward && this.forward.forward) {
-        this.forward.forward.frontCard.node.opacity = 255;
-      }
+      // if (this.forward && this.forward.forward) {
+      //   this.forward.forward.frontCard.node.opacity = 255;
+      // }
 
-      let poker = child.getComponent(Poker);
-      let index = Game.getCycledPokerRoot().keyOf(child);
+      // let poker = child.getComponent(Poker);
+      // let index = Game.getCycledPokerRoot().keyOf(child);
 
-      if (index != null) {
-        // console.log(" onChildRemove cycled ------------recycle count:", index);
-        Game.addCycledPokerRoot(index, this.node);
-      }
-      let parentPoker = child.getParent().getComponent(Poker);
-      if (
-        poker &&
-        ((parentPoker && !parentPoker.isCycled()) ||
-          (!parentPoker && child.getParent().getParent().name != "CycleRoot"))
-      ) {
-        poker.setRecycle(false);
-      }
+      // if (index != null) {
+      //   // console.log(" onChildRemove cycled ------------recycle count:", index);
+      //   //Game.addCycledPokerRoot(index, this.node);
+      // }
+      // let parentPoker = child.getParent().getComponent(Poker);
+      // if (
+      //   poker &&
+      //   ((parentPoker && !parentPoker.isCycled()) ||
+      //     (!parentPoker && child.getParent().getParent().name != "CycleRoot"))
+      // ) {
+      //   poker.setRecycle(false);
+      // }
       return;
     }
 

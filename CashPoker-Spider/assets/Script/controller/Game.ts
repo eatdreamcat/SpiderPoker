@@ -69,9 +69,9 @@ class GameMgr {
   public addRecycleCount(count: number) {
     this.recycleCount += count;
     console.log(" ---------------------recycle count :", this.recycleCount);
-    if (this.recycleCount > 52 || this.recycleCount < 0) {
+    if (this.recycleCount > 78 || this.recycleCount < 0) {
       console.error(" recycle count error! ", this.recycleCount);
-      this.recycleCount = CMath.Clamp(this.recycleCount, 52, 0);
+      this.recycleCount = CMath.Clamp(this.recycleCount, 78, 0);
     }
   }
 
@@ -130,7 +130,7 @@ class GameMgr {
   }
 
   public checkIsRecycleComplete() {
-    let isComplete = this.recycleCount == 52;
+    let isComplete = this.recycleCount == 78;
 
     if (isComplete) {
       console.log(" isComplete isComplete ");
@@ -153,7 +153,7 @@ class GameMgr {
 
   public addRemovePokerCount(count: number) {
     this.removePokerCount += count;
-    if (this.removePokerCount == 52) {
+    if (this.removePokerCount == 78) {
       console.error(
         " ---------------- addRemovePokerCount -----------------------"
       );

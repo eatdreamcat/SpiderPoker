@@ -204,7 +204,17 @@ export default class GameScene extends cc.Component {
       this.nextStep(LOAD_STEP.AUDIO);
     });
 
-    this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
+    this.PokerClip.on(
+      cc.Node.EventType.TOUCH_START,
+      () => {
+        if (Game.isTimeOver() || Game.isComplete()) return;
+        if (this.devTime >= 0.3) {
+          this.dispatchPoker();
+          this.devTime = 0;
+        }
+      },
+      this
+    );
 
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
@@ -239,8 +249,8 @@ export default class GameScene extends cc.Component {
           !this.LightAnimation.node.active &&
           this.PokerDevl.childrenCount <= 0
         ) {
-          this.LightAnimation.node.active = true;
-          this.LightAnimation.play();
+          // this.LightAnimation.node.active = true;
+          // this.LightAnimation.play();
         }
       },
       this
@@ -263,17 +273,17 @@ export default class GameScene extends cc.Component {
       this
     );
 
-    this.PokerDevl.on(
-      cc.Node.EventType.TOUCH_START,
-      () => {
-        if (Game.isTimeOver() || Game.isComplete()) return;
-        if (this.devTime >= 0.3) {
-          this.devPoker();
-          this.devTime = 0;
-        }
-      },
-      this
-    );
+    // this.PokerDevl.on(
+    //   cc.Node.EventType.TOUCH_START,
+    //   () => {
+    //     if (Game.isTimeOver() || Game.isComplete()) return;
+    //     if (this.devTime >= 0.3) {
+    //       this.devPoker();
+    //       this.devTime = 0;
+    //     }
+    //   },
+    //   this
+    // );
 
     gEventMgr.on(
       GlobalEvent.COMPLETE,
@@ -510,7 +520,7 @@ export default class GameScene extends cc.Component {
         let targetPos = cc.v2(0, 0);
         if (this.PokerClip.childrenCount > 0) {
           let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
-          targetPos = cc.v2(child.x - 15, child.y);
+          targetPos = cc.v2(child.x - 20, child.y);
         }
 
         let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, this.PokerClip);
@@ -521,7 +531,7 @@ export default class GameScene extends cc.Component {
         pokerNode.group = "top";
         pokerNode.runAction(
           cc.sequence(
-            cc.moveTo(0.1, targetPos.x, targetPos.y),
+            cc.moveTo(0.05, targetPos.x, targetPos.y),
             cc.callFunc(() => {
               pokerNode.group = "default";
               poker.setLastPosition();
