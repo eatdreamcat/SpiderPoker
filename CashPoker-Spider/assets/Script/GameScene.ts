@@ -529,6 +529,7 @@ export default class GameScene extends cc.Component {
         pokerNode.setParent(this.PokerClip);
         pokerNode.setPosition(selfPos);
         pokerNode.group = "top";
+        gEventMgr.emit(GlobalEvent.DEV_POKERS);
         pokerNode.runAction(
           cc.sequence(
             cc.moveTo(0.05, targetPos.x, targetPos.y),
