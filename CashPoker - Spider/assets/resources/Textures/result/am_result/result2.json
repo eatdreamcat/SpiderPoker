@@ -1,0 +1,603 @@
+{
+  "skeleton": {
+    "hash": "rgi8lK1zkLOyqGegCRCl3RWB4Ug",
+    "spine": "3.6.36",
+    "width": 156.69,
+    "height": 275,
+    "images": ""
+  },
+  "bones": [
+    { "name": "root" },
+    {
+      "name": "bone",
+      "parent": "root",
+      "length": 164,
+      "rotation": 90,
+      "y": 34
+    },
+    {
+      "name": "bone2",
+      "parent": "bone",
+      "length": 91.01,
+      "rotation": 0.63,
+      "x": 2
+    },
+    {
+      "name": "bone3",
+      "parent": "bone",
+      "length": 95.01,
+      "rotation": 0.6,
+      "x": -2,
+      "y": 2
+    },
+    {
+      "name": "bone4",
+      "parent": "bone",
+      "length": 101.08,
+      "rotation": 2.27,
+      "x": -5,
+      "y": 2
+    },
+    {
+      "name": "bone5",
+      "parent": "bone",
+      "length": 97.01,
+      "rotation": -0.59,
+      "x": 1,
+      "y": 1
+    },
+    {
+      "name": "bone6",
+      "parent": "bone",
+      "length": 110.04,
+      "rotation": 1.56,
+      "x": -3,
+      "y": 5
+    },
+    {
+      "name": "bone7",
+      "parent": "bone",
+      "length": 97.01,
+      "rotation": 0.59,
+      "x": -3
+    },
+    {
+      "name": "bone8",
+      "parent": "bone",
+      "length": 91.01,
+      "rotation": -0.63,
+      "x": -5,
+      "y": -4
+    },
+    {
+      "name": "bone9",
+      "parent": "bone",
+      "length": 106.02,
+      "rotation": -1.08,
+      "x": -9,
+      "y": 1
+    },
+    {
+      "name": "bone10",
+      "parent": "bone",
+      "length": 116,
+      "rotation": 0.49,
+      "x": -4,
+      "y": 5
+    },
+    {
+      "name": "bone11",
+      "parent": "bone",
+      "length": 99.01,
+      "rotation": -0.58,
+      "x": -6,
+      "y": 4
+    },
+    {
+      "name": "bone12",
+      "parent": "bone",
+      "length": 102,
+      "rotation": 0.56,
+      "x": -6,
+      "y": 4
+    },
+    {
+      "name": "bone13",
+      "parent": "bone",
+      "length": 108.02,
+      "rotation": 1.06,
+      "x": -2,
+      "y": 7
+    },
+    {
+      "name": "bone14",
+      "parent": "bone",
+      "length": 115,
+      "rotation": 0.5,
+      "x": -6,
+      "y": 4
+    },
+    {
+      "name": "bone15",
+      "parent": "bone",
+      "length": 120,
+      "rotation": 0.48,
+      "x": -8,
+      "y": 2
+    }
+  ],
+  "slots": [
+    {
+      "name": "bg_solitarie_02A",
+      "bone": "bone14",
+      "attachment": "bg_solitarie_02A"
+    },
+    {
+      "name": "bg_solitarie_042",
+      "bone": "bone13",
+      "attachment": "bg_solitarie_042"
+    },
+    {
+      "name": "bg_solitarie_013",
+      "bone": "bone12",
+      "attachment": "bg_solitarie_013"
+    },
+    {
+      "name": "bg_solitarie_024",
+      "bone": "bone11",
+      "attachment": "bg_solitarie_024"
+    },
+    {
+      "name": "bg_solitarie_035",
+      "bone": "bone10",
+      "attachment": "bg_solitarie_035"
+    },
+    {
+      "name": "bg_solitarie_046",
+      "bone": "bone9",
+      "attachment": "bg_solitarie_046"
+    },
+    {
+      "name": "bg_solitarie_017",
+      "bone": "bone8",
+      "attachment": "bg_solitarie_017"
+    },
+    {
+      "name": "bg_solitarie_028",
+      "bone": "bone7",
+      "attachment": "bg_solitarie_028"
+    },
+    {
+      "name": "bg_solitarie_039",
+      "bone": "bone6",
+      "attachment": "bg_solitarie_039"
+    },
+    {
+      "name": "bg_solitarie_0410",
+      "bone": "bone5",
+      "attachment": "bg_solitarie_0410"
+    },
+    {
+      "name": "bg_solitarie_03J",
+      "bone": "bone4",
+      "attachment": "bg_solitarie_03J"
+    },
+    {
+      "name": "bg_solitarie_02Q",
+      "bone": "bone3",
+      "attachment": "bg_solitarie_02Q"
+    },
+    {
+      "name": "bg_solitarie_01K",
+      "bone": "bone2",
+      "attachment": "bg_solitarie_01K"
+    },
+    { "name": "am_fanpaice", "bone": "bone15", "attachment": "am_fanpaice" },
+    {
+      "name": "bg_solitarienoneback",
+      "bone": "bone15",
+      "attachment": "bg_solitarienoneback"
+    }
+  ],
+  "skins": {
+    "default": {
+      "am_fanpaice": {
+        "am_fanpaice": {
+          "x": 103.98,
+          "y": -2.87,
+          "rotation": -90.48,
+          "width": 21,
+          "height": 275
+        }
+      },
+      "bg_solitarie_013": {
+        "bg_solitarie_013": {
+          "x": 101.96,
+          "y": -5,
+          "rotation": -90.38,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_017": {
+        "bg_solitarie_017": {
+          "x": 100.95,
+          "y": 5.11,
+          "rotation": -89.37,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_01K": {
+        "bg_solitarie_01K": {
+          "x": 93.99,
+          "y": -1.03,
+          "rotation": -90.63,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_024": {
+        "bg_solitarie_024": {
+          "x": 102.04,
+          "y": -2.97,
+          "rotation": -89.42,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_028": {
+        "bg_solitarie_028": {
+          "x": 98.99,
+          "y": -1.02,
+          "rotation": -90.59,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_02A": {
+        "bg_solitarie_02A": {
+          "x": 101.96,
+          "y": -4.89,
+          "rotation": -90.5,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_02Q": {
+        "bg_solitarie_02Q": {
+          "x": 97.97,
+          "y": -3.03,
+          "rotation": -90.6,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_035": {
+        "bg_solitarie_035": {
+          "x": 99.95,
+          "y": -5.86,
+          "rotation": -90.49,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_039": {
+        "bg_solitarie_039": {
+          "x": 98.83,
+          "y": -7.7,
+          "rotation": -91.56,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_03J": {
+        "bg_solitarie_03J": {
+          "x": 100.84,
+          "y": -6,
+          "rotation": -92.27,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_0410": {
+        "bg_solitarie_0410": {
+          "x": 95.01,
+          "y": -0.02,
+          "rotation": -89.41,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_042": {
+        "bg_solitarie_042": {
+          "x": 97.85,
+          "y": -8.81,
+          "rotation": -91.06,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarie_046": {
+        "bg_solitarie_046": {
+          "x": 105,
+          "y": 0.98,
+          "rotation": -88.92,
+          "width": 156,
+          "height": 214
+        }
+      },
+      "bg_solitarienoneback": {
+        "bg_solitarienoneback": {
+          "x": 103.98,
+          "y": -2.87,
+          "rotation": -90.48,
+          "width": 156,
+          "height": 214
+        }
+      }
+    }
+  },
+  "events": { "light": {}, "music1": {}, "music2": {} },
+  "animations": {
+    "animation": {
+      "slots": {
+        "am_fanpaice": {
+          "attachment": [
+            { "time": 0, "name": null },
+            { "time": 0.5, "name": null },
+            { "time": 0.5333, "name": "am_fanpaice" },
+            { "time": 0.6, "name": null }
+          ]
+        },
+        "bg_solitarie_013": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_013" }
+          ]
+        },
+        "bg_solitarie_017": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_017" }
+          ]
+        },
+        "bg_solitarie_024": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_024" }
+          ]
+        },
+        "bg_solitarie_028": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_028" }
+          ]
+        },
+        "bg_solitarie_035": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_035" }
+          ]
+        },
+        "bg_solitarie_039": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_039" }
+          ]
+        },
+        "bg_solitarie_042": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_042" }
+          ]
+        },
+        "bg_solitarie_046": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_046" }
+          ]
+        },
+        "bg_solitarie_0410": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_0410" }
+          ]
+        },
+        "bg_solitarie_01K": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_01K" }
+          ]
+        },
+        "bg_solitarie_02A": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_02A" }
+          ]
+        },
+        "bg_solitarie_02Q": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_02Q" }
+          ]
+        },
+        "bg_solitarie_03J": {
+          "attachment": [
+            { "time": 0.5, "name": null },
+            { "time": 0.6333, "name": "bg_solitarie_03J" }
+          ]
+        },
+        "bg_solitarienoneback": {
+          "attachment": [
+            { "time": 0, "name": "bg_solitarienoneback" },
+            { "time": 0.5333, "name": null },
+            { "time": 0.6, "name": "bg_solitarienoneback" },
+            { "time": 0.6333, "name": null }
+          ]
+        }
+      },
+      "bones": {
+        "bone": {
+          "rotate": [
+            { "time": 0, "angle": -40, "curve": "stepped" },
+            { "time": 0.9667, "angle": -40 },
+            { "time": 1.0667, "angle": -83 },
+            { "time": 2.1, "angle": -90 }
+          ],
+          "scale": [
+            { "time": 0, "x": 0.1, "y": 0.1 },
+            { "time": 0.1667, "x": 1, "y": 1, "curve": "stepped" },
+            { "time": 0.5333, "x": 1, "y": 1 }
+          ]
+        },
+        "bone15": {
+          "translate": [{ "time": 0.5, "x": -7, "y": 0 }],
+          "scale": [{ "time": 0.5, "x": 1.2, "y": 1.2 }],
+          "shear": [
+            { "time": 0.5, "x": 0, "y": 30 },
+            { "time": 0.6, "x": 0, "y": -30 }
+          ]
+        },
+        "bone3": {
+          "rotate": [
+            { "time": 0.6667, "angle": 19.4, "curve": "stepped" },
+            { "time": 0.9667, "angle": 19.4 },
+            { "time": 1.4, "angle": 11.4 },
+            { "time": 1.5667, "angle": 19.4 }
+          ],
+          "scale": [
+            { "time": 0.7667, "x": 1.5, "y": 1.5 },
+            { "time": 0.9667, "x": 1.1, "y": 1.1 },
+            { "time": 1.1, "x": 1, "y": 1 },
+            { "time": 1.1333, "x": 0.8, "y": 0.8 },
+            { "time": 1.2, "x": 1.5, "y": 1.4 },
+            { "time": 1.3, "x": 1.2, "y": 1.2, "curve": "stepped" },
+            { "time": 1.5, "x": 1.2, "y": 1.2 },
+            { "time": 1.5667, "x": 1.3, "y": 1.3 },
+            { "time": 1.6333, "x": 1.2, "y": 1.2 }
+          ]
+        },
+        "bone4": {
+          "rotate": [
+            { "time": 0.7, "angle": 37.73, "curve": "stepped" },
+            { "time": 1.3667, "angle": 37.73 },
+            { "time": 1.6667, "angle": 29.73 },
+            { "time": 1.8333, "angle": 37.73 }
+          ],
+          "scale": [
+            { "time": 0.8333, "x": 1.5, "y": 1.5 },
+            { "time": 0.9667, "x": 1.1, "y": 1.1 },
+            { "time": 1.3667, "x": 1, "y": 1 },
+            { "time": 1.4, "x": 0.8, "y": 0.8 },
+            { "time": 1.4667, "x": 1.5, "y": 1.4 },
+            { "time": 1.5667, "x": 1.2, "y": 1.2, "curve": "stepped" },
+            { "time": 1.7667, "x": 1.2, "y": 1.2 },
+            { "time": 1.8333, "x": 1.3, "y": 1.3 },
+            { "time": 1.9, "x": 1.2, "y": 1.2 }
+          ]
+        },
+        "bone5": {
+          "rotate": [
+            { "time": 0.7333, "angle": 60.59, "curve": "stepped" },
+            { "time": 1.4333, "angle": 60.59 },
+            { "time": 1.7333, "angle": 56.59 },
+            { "time": 1.8667, "angle": 66.59 }
+          ],
+          "translate": [
+            { "time": 0.7333, "x": 9, "y": 0 },
+            { "time": 1.8667, "x": 15, "y": 19 }
+          ],
+          "scale": [
+            { "time": 1.4667, "x": 1, "y": 1 },
+            { "time": 1.5, "x": 0.8, "y": 0.8 },
+            { "time": 1.5667, "x": 1.4, "y": 1.3 },
+            { "time": 1.6667, "x": 1.2, "y": 1.2 },
+            { "time": 1.8667, "x": 1, "y": 1 }
+          ]
+        },
+        "bone6": {
+          "rotate": [{ "time": 0.7667, "angle": 84.44 }],
+          "translate": [{ "time": 0.7667, "x": 13, "y": 9 }]
+        },
+        "bone7": {
+          "rotate": [{ "time": 0.8, "angle": 106.41 }],
+          "translate": [{ "time": 0.8, "x": 23, "y": 20 }]
+        },
+        "bone2": {
+          "rotate": [
+            { "time": 1.2, "angle": -15.63 },
+            { "time": 1.3667, "angle": -0.63 }
+          ],
+          "translate": [{ "time": 0.6333, "x": -2, "y": 0 }],
+          "scale": [
+            { "time": 0.6333, "x": 1.2, "y": 1.2 },
+            { "time": 0.7, "x": 1.6, "y": 1.6 },
+            { "time": 0.8333, "x": 1.2, "y": 1.2 },
+            { "time": 0.9, "x": 1, "y": 1 },
+            { "time": 0.9333, "x": 0.8, "y": 0.8 },
+            { "time": 1, "x": 1.5, "y": 1.4 },
+            { "time": 1.1, "x": 1.2, "y": 1.2, "curve": "stepped" },
+            { "time": 1.3, "x": 1.2, "y": 1.2 },
+            { "time": 1.3667, "x": 1.3, "y": 1.3 },
+            { "time": 1.4333, "x": 1.2, "y": 1.2 }
+          ]
+        },
+        "bone8": {
+          "rotate": [{ "time": 0.8333, "angle": 124.63 }],
+          "translate": [{ "time": 0.8333, "x": 25, "y": 34 }]
+        },
+        "bone9": {
+          "rotate": [
+            { "time": 0.8333, "angle": 1.08 },
+            { "time": 0.8667, "angle": 141.08 }
+          ],
+          "translate": [{ "time": 0.8667, "x": 19, "y": 19 }]
+        },
+        "bone10": {
+          "rotate": [{ "time": 0.9, "angle": 161.51 }],
+          "translate": [{ "time": 0.9, "x": 4, "y": 25 }]
+        },
+        "bone11": {
+          "rotate": [{ "time": 0.9333, "angle": 174.58 }],
+          "translate": [{ "time": 0.9333, "x": -1, "y": 26 }]
+        },
+        "bone12": {
+          "rotate": [
+            { "time": 0.9667, "angle": -170.56, "curve": "stepped" },
+            { "time": 1.7667, "angle": -170.56 }
+          ],
+          "translate": [
+            { "time": 0.9667, "x": -4, "y": 36, "curve": "stepped" },
+            { "time": 1.7667, "x": -4, "y": 36 }
+          ]
+        },
+        "bone13": {
+          "rotate": [
+            { "time": 0.9667, "angle": -157.06, "curve": "stepped" },
+            { "time": 1.9333, "angle": -157.06 }
+          ],
+          "translate": [
+            { "time": 0.9667, "x": -18, "y": 29, "curve": "stepped" },
+            { "time": 1.9333, "x": -18, "y": 29 }
+          ]
+        },
+        "bone14": {
+          "rotate": [
+            { "time": 0.9667, "angle": -140.5, "curve": "stepped" },
+            { "time": 1.6333, "angle": -140.5 }
+          ],
+          "translate": [
+            { "time": 0.9667, "x": -34, "y": 36, "curve": "stepped" },
+            { "time": 1.6333, "x": -34, "y": 36 }
+          ]
+        }
+      },
+      "events": [
+        { "time": 0, "name": "music1", "string": "music1" },
+        { "time": 0.5, "name": "music2", "string": "music2" },
+        { "time": 0.9333, "name": "light", "string": "light" }
+      ]
+    }
+  }
+}
