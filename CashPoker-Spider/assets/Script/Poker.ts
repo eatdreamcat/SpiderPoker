@@ -58,6 +58,7 @@ export default class Poker extends cc.Component {
   private flips: number[] = [];
   private value: number = 0;
   private posState: POS_STATE = POS_STATE.NORMAL;
+  private hasMove: boolean = false;
 
   private defaultPos: cc.Vec2;
   private lastPos: cc.Vec2;
@@ -86,6 +87,7 @@ export default class Poker extends cc.Component {
   } = { startTime: 0, duration: 0 };
   reuse() {
     this.posState = POS_STATE.NORMAL;
+    this.hasMove = false;
     this.isReadyAutoComplete = false;
     let pokerInfo: string = arguments[0][0][0];
     console.log(
@@ -200,15 +202,15 @@ export default class Poker extends cc.Component {
     this.node.on(
       "pos-scale",
       (key: number) => {
-        // console.log(
-        //   "pos-scale:",
-        //   key,
-        //   this.key,
-        //   this.isCycled(),
-        //   POS_STATE[this.posState],
-        //   CardState[this.carState],
-        //   this.value
-        // );
+        console.log(
+          "pos-scale:",
+          key,
+          this.key,
+          this.isCycled(),
+          POS_STATE[this.posState],
+          CardState[this.carState],
+          this.value
+        );
         if (
           key != this.key ||
           this.isCycled() ||
@@ -223,15 +225,15 @@ export default class Poker extends cc.Component {
     this.node.on(
       "pos-normal",
       (key: number) => {
-        // console.log(
-        //   "pos-normal:",
-        //   key,
-        //   this.key,
-        //   this.isCycled(),
-        //   POS_STATE[this.posState],
-        //   CardState[this.carState],
-        //   this.value
-        // );
+        console.log(
+          "pos-normal:",
+          key,
+          this.key,
+          this.isCycled(),
+          POS_STATE[this.posState],
+          CardState[this.carState],
+          this.value
+        );
         if (
           key != this.key ||
           this.isCycled() ||
@@ -622,31 +624,39 @@ export default class Poker extends cc.Component {
       offset
     );
 
-    if (pos.y - this.node.height + offset <= -642) {
+    /** -642 */
+    if (pos.y - this.node.height + offset <= Game.pokerClip.y) {
+      console.log("pos-scale-------------");
       poker.emitNodeEventToForward("pos-scale");
     } else {
       poker.emitNodeEventToForward("pos-normal");
     }
   }
 
-  setPosState(posS: POS_STATE) {
+  setPosState(posS: POS_STATE, isMove: boolean = true) {
     if (this.posState == posS) return;
     this.posState = posS;
 
     if (this.posState == POS_STATE.NORMAL) {
-      Game.addPosOffset(this.key, OFFSET_SCALE);
-      this.node.runAction(cc.moveBy(0.01, 0, -OFFSET_SCALE));
-      let pos = this.getDefaultPosition();
-      this.setDefaultPosition(cc.v2(pos.x, pos.y - OFFSET_SCALE));
+      if (this.hasMove) {
+        isMove && this.node.runAction(cc.moveBy(0.01, 0, -OFFSET_SCALE));
+        let pos = this.getDefaultPosition();
+        this.setDefaultPosition(cc.v2(pos.x, pos.y - OFFSET_SCALE));
+        Game.addPosOffset(this.key, OFFSET_SCALE);
+        this.hasMove = false;
+      }
 
       if (this.next) {
         this.next.setPosState.call(this.next, POS_STATE.NORMAL);
       }
     } else {
-      this.node.runAction(cc.moveBy(0.01, 0, OFFSET_SCALE));
-      let pos = this.getDefaultPosition();
-      this.setDefaultPosition(cc.v2(pos.x, pos.y + OFFSET_SCALE));
-      Game.addPosOffset(this.key, -OFFSET_SCALE);
+      if (isMove && this.forward && this.forward.carState != CardState.Back) {
+        this.hasMove = true;
+        this.node.runAction(cc.moveBy(0.01, 0, OFFSET_SCALE));
+        let pos = this.getDefaultPosition();
+        this.setDefaultPosition(cc.v2(pos.x, pos.y + OFFSET_SCALE));
+        Game.addPosOffset(this.key, -OFFSET_SCALE);
+      }
     }
   }
 
@@ -718,7 +728,7 @@ export default class Poker extends cc.Component {
       );
     }
     // console.log(" recycle count -- place new root setParent");
-    this.setPosState(POS_STATE.NORMAL);
+    this.setPosState(POS_STATE.NORMAL, false);
     console.log(" set pos normal ------------");
     this.node.setParent(root);
     this.node.setPosition(selfPos);
@@ -955,9 +965,9 @@ export default class Poker extends cc.Component {
     }
 
     poker.setNormal();
-    if (this.posState == POS_STATE.SCALE) {
-      child.emit("pos-scale", this.key);
-    }
+    // if (this.posState == POS_STATE.SCALE) {
+    //   child.emit("pos-scale", this.key);
+    // }
     this.updateRootNode(this.key);
   }
 

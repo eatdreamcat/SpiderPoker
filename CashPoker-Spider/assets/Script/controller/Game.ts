@@ -36,6 +36,7 @@ class GameMgr {
   private timeBonus: number = 0;
   private freeDrawTimes: number = 3;
   private flipCounts: number = 0;
+  public pokerClip: cc.Node = null;
 
   private gameStart: boolean = false;
 
@@ -334,7 +335,7 @@ class GameMgr {
       }
 
       let poker = node.getComponent(Poker);
-      if (parent.getComponent(Poker)) poker.setPosState(POS_STATE.NORMAL);
+      poker.setPosState(POS_STATE.NORMAL);
       node.setParent(parent);
 
       node.group = "top";

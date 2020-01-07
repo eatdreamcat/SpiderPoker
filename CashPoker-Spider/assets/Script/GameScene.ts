@@ -158,6 +158,7 @@ export default class GameScene extends cc.Component {
   onLoad() {
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
+    Game.pokerClip = this.PokerClip;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
