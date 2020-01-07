@@ -470,7 +470,7 @@ export default class GameScene extends cc.Component {
   }
 
   startGame() {
-    let pokers = Pokers.concat([]);
+    let pokers = Pokers.concat([]).reverse();
     console.log(pokers);
     console.log(pokers.length);
     /**
@@ -1129,6 +1129,7 @@ export default class GameScene extends cc.Component {
           cc.callFunc(() => {
             poker.setDefaultPosition();
             pokerNode.group = "default";
+            poker.checkPos();
           }, this)
         )
       );

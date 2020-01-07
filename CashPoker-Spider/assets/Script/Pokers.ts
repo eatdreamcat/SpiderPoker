@@ -197,8 +197,13 @@ export const enum ACTION_TAG {
   DEV_POKER,
   RE_DEV_POKER,
   SHAKE,
-  RECYCLE
+  RECYCLE,
+  POS_SCALE,
+  POS_NORMAL
 }
+
+export const COLOR_GRAY = cc.color(155, 155, 155);
 
 export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
+export const OFFSET_SCALE = 30;

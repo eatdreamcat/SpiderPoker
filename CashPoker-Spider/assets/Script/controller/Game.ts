@@ -1,5 +1,5 @@
 import { HashMap } from "../utils/HashMap";
-import Poker, { CardState } from "../Poker";
+import Poker, { CardState, POS_STATE } from "../Poker";
 import { ACTION_TAG, OFFSET_Y } from "../Pokers";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
@@ -27,6 +27,7 @@ class GameMgr {
 
   private placePokerRoot: HashMap<number, cc.Node> = new HashMap();
   private cyclePokerRoot: HashMap<number, cc.Node> = new HashMap();
+  private posOffsetCal: HashMap<number, number> = new HashMap();
   public removeNode: cc.Node;
 
   private stepInfoArray: StepInfo[] = [];
@@ -47,6 +48,27 @@ class GameMgr {
   public pokerFlipRoot: cc.Node = null;
 
   private combo: number = -1;
+
+  public addPosOffset(key: number, offset: number) {
+    let pos = this.posOffsetCal.get(key);
+    if (pos) {
+      let off = Math.max(0, pos + offset);
+      //this.posOffsetCal.add(key, off);
+      this.posOffsetCal.add(key, pos + offset);
+    } else {
+      //offset = Math.max(0, offset);
+      this.posOffsetCal.add(key, offset);
+    }
+
+    for (let i = 0; i < 8; i++) {
+      console.log(" --------addPosOffset key:", i, ":", this.getPosOffset(i));
+    }
+  }
+
+  public getPosOffset(key: number) {
+    let pos = this.posOffsetCal.get(key);
+    return pos == null ? 0 : pos;
+  }
 
   public getCombo() {
     return this.combo;
@@ -311,11 +333,11 @@ class GameMgr {
         func.callback.apply(func.target, func.args);
       }
 
+      let poker = node.getComponent(Poker);
+      if (parent.getComponent(Poker)) poker.setPosState(POS_STATE.NORMAL);
       node.setParent(parent);
 
       node.group = "top";
-
-      let poker = node.getComponent(Poker);
 
       if (poker) {
         let returnPos;
@@ -362,6 +384,7 @@ class GameMgr {
           cc.callFunc(() => {
             node.group = "default";
             poker.setDefaultPosition();
+            if (parent.getComponent(Poker)) poker.checkPos();
           }, this)
         );
         action.setTag(ACTION_TAG.BACK_STEP);
