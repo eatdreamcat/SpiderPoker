@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 1.2890169927094335,
-      "y": 1.2890169927094335,
+      "x": 0.2884256313317793,
+      "y": 0.2884256313317793,
       "z": 1
     },
     "_quat": {
@@ -468,8 +468,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 398,
-      "y": 0,
+      "x": 407,
+      "y": -615,
       "z": 0
     },
     "_scale": {
@@ -499,7 +499,7 @@
     "node": {
       "__id__": 9
     },
-    "_enabled": true,
+    "_enabled": false,
     "_spriteFrame": {
       "__uuid__": "a23235d1-15db-4b95-8439-a2e005bfff91"
     },
@@ -2977,8 +2977,8 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 242,
-      "y": -11,
+      "x": 278.3,
+      "y": -8,
       "z": 0
     },
     "_scale": {
@@ -3037,7 +3037,7 @@
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 205,
+      "x": 129.9,
       "y": 4,
       "z": 0
     },
@@ -3117,17 +3117,17 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 478,
-      "height": 109
+      "width": 600,
+      "height": 104
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
+      "x": 0,
       "y": 0.5
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": 169,
+      "x": -106,
       "y": 0,
       "z": 0
     },
@@ -7559,6 +7559,9 @@
     },
     "CheatToggle": {
       "__id__": 162
+    },
+    "RecyclePokerLabel": {
+      "__id__": 86
     },
     "_id": "89eQy3JCNNsbs6HVvjJfLq"
   }

@@ -109,6 +109,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Toggle)
   CheatToggle: cc.Toggle = null;
 
+  @property(cc.Label)
+  RecyclePokerLabel: cc.Label = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 38;
@@ -291,6 +294,14 @@ export default class GameScene extends cc.Component {
       () => {
         this.Complete.node.active = true;
         this.Complete.play();
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.UPDATE_RECYCLE_POKER,
+      (count: number) => {
+        this.RecyclePokerLabel.string = count.toString();
       },
       this
     );

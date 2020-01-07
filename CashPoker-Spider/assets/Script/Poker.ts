@@ -277,7 +277,9 @@ export default class Poker extends cc.Component {
             this.frontCard.node.opacity = 255;
             this.node.group = "top";
             this.node.zIndex = this.value;
+            Game.addCombo(1);
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
+            gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
           }, this),
           cc.sequence(
             cc.repeat(

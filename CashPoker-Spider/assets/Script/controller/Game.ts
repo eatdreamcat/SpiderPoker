@@ -50,6 +50,16 @@ class GameMgr {
 
   private combo: number = -1;
 
+  private recyclePoker: number = 0;
+
+  public addRecyclePoker(count: number) {
+    this.recyclePoker += count;
+    if (this.recyclePoker > 6) {
+      console.error(" recycle poker error!!!!");
+    }
+    gEventMgr.emit(GlobalEvent.UPDATE_RECYCLE_POKER, this.recyclePoker);
+  }
+
   public addPosOffset(key: number, offset: number) {
     let pos = this.posOffsetCal.get(key);
     if (pos) {
@@ -335,7 +345,7 @@ class GameMgr {
       }
 
       let poker = node.getComponent(Poker);
-      poker.setPosState(POS_STATE.NORMAL);
+      poker.setPosState(POS_STATE.NORMAL, false);
       node.setParent(parent);
 
       node.group = "top";

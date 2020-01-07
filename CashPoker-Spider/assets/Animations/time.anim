@@ -3,7 +3,7 @@
   "_name": "time",
   "_objFlags": 0,
   "_native": "",
-  "_duration": 0.43333333333333335,
+  "_duration": 0.6,
   "sample": 60,
   "speed": 0.5,
   "wrapMode": "2",
@@ -45,6 +45,18 @@
             "frame": 0.4166666666666667,
             "value": {
               "__uuid__": "7f3dd9cb-45db-443c-aa52-cb55509cdf66"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "2e2dbab3-3e23-40b0-94d6-3f228c0e1aad"
+            }
+          },
+          {
+            "frame": 0.5833333333333334,
+            "value": {
+              "__uuid__": "7c250b23-9ae3-40c3-837d-39a12d8eeb2d"
             }
           }
         ]
