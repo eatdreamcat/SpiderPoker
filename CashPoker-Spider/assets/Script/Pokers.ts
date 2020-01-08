@@ -202,7 +202,7 @@ export const enum ACTION_TAG {
   POS_NORMAL
 }
 
-export const COLOR_GRAY = cc.color(155, 155, 155);
+export const COLOR_GRAY = cc.color(238, 218, 166);
 
 export const OFFSET_Y = -70;
 export const OFFSET_X = 0;

@@ -253,12 +253,19 @@ export default class Poker extends cc.Component {
 
   autoCompleteDone() {
     let time = 0.05 + this.value / 200;
+
+    let moveTime = (13 - this.value) / 500;
+
+    if (this.hasMove) {
+      console.log(" has move key :", this.key, ", value:", this.value);
+      Game.addPosOffset(this.key, OFFSET_SCALE);
+    }
     this.scheduleOnce(() => {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
       this.node.zIndex = 13 - this.value;
-    }, time);
+    }, time * this.value);
 
     this.scheduleOnce(() => {
       let dir = this.value % 2 == 1 ? -1 : 1;
@@ -310,7 +317,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, (13 - this.value) / 500 + 0.05 + time);
+    }, moveTime + time);
   }
 
   autoComplete() {
@@ -613,6 +620,7 @@ export default class Poker extends cc.Component {
       console.error(" checkPos");
       return;
     }
+    if (this.isCycled()) return;
     let rootNode = Game.getPlacePokerRoot().get(this.key);
     if (!rootNode) return;
     let poker = rootNode.getComponent(Poker);
