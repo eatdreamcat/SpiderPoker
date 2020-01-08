@@ -206,4 +206,4 @@ export const COLOR_GRAY = cc.color(155, 155, 155);
 
 export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
-export const OFFSET_SCALE = 30;
+export const OFFSET_SCALE = 15;

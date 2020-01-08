@@ -91,7 +91,7 @@ class GameMgr {
 
   public addCombo(combo: number) {
     this.combo += combo;
-    this.combo = Math.max(0, this.combo % 8);
+    this.combo = Math.max(0, this.combo % 13);
     console.log(" combo:", this.combo);
   }
 

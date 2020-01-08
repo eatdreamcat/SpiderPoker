@@ -252,12 +252,13 @@ export default class Poker extends cc.Component {
   }
 
   autoCompleteDone() {
+    let time = 0.05 + this.value / 200;
     this.scheduleOnce(() => {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
       this.node.zIndex = 13 - this.value;
-    }, 0);
+    }, time);
 
     this.scheduleOnce(() => {
       let dir = this.value % 2 == 1 ? -1 : 1;
@@ -266,7 +267,7 @@ export default class Poker extends cc.Component {
 
       this.node.runAction(
         cc.sequence(
-          cc.delayTime(this.value / 10),
+          cc.delayTime(this.value / 8),
           cc.callFunc(() => {
             let score = (13 - this.value) * 10;
             let scorePos = CMath.ConvertToNodeSpaceAR(
@@ -309,7 +310,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, (13 - this.value) / 500 + 0.05);
+    }, (13 - this.value) / 500 + 0.05 + time);
   }
 
   autoComplete() {
@@ -329,6 +330,7 @@ export default class Poker extends cc.Component {
     if (this.key != key || !this.isCheck) return;
     this.setRecycle(true);
     this.autoCompleteDone();
+    if (this.value == 13) Game.addRecyclePoker(1);
   }
 
   setDefaultPosition(pos?: cc.Vec2) {

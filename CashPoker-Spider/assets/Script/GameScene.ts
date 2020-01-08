@@ -482,7 +482,8 @@ export default class GameScene extends cc.Component {
   }
 
   startGame() {
-    let pokers = Pokers.concat([]).reverse();
+    //let pokers = Pokers.concat([]).reverse();
+    let pokers = Pokers.concat([]);
     console.log(pokers);
     console.log(pokers.length);
     /**
@@ -502,8 +503,8 @@ export default class GameScene extends cc.Component {
       let random = CMath.getRandom(0, 1);
       let randomIndex = Math.floor(random * totalWeight);
 
-      let i = pokers.splice(randomIndex, 1);
-      //let i = pokers.splice(curIndex, 1);
+      //let i = pokers.splice(randomIndex, 1);
+      let i = pokers.splice(curIndex, 1);
       console.warn(
         "randomIndex:",
         randomIndex,
@@ -523,10 +524,13 @@ export default class GameScene extends cc.Component {
     let count = 0;
     let totalCount = this.PokerDevl.childrenCount;
     /** 发底牌 */
+    let count2 = 0;
     let func2 = () => {
-      let pokerNode = this.PokerDevl.getChildByName(
-        (totalCount - count++).toString()
-      );
+      // let pokerNode = this.PokerDevl.getChildByName(
+      //   (totalCount - count++).toString()
+      // );
+
+      let pokerNode = this.PokerDevl.getChildByName((count2++).toString());
 
       if (pokerNode) {
         let targetPos = cc.v2(0, 0);
@@ -1142,6 +1146,7 @@ export default class GameScene extends cc.Component {
             poker.setDefaultPosition();
             pokerNode.group = "default";
             poker.checkPos();
+            poker.check(1);
           }, this)
         )
       );
