@@ -209,7 +209,19 @@ export default class GameScene extends cc.Component {
     });
 
     this.PokerClip.on(
-      cc.Node.EventType.TOUCH_START,
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        if (Game.isTimeOver() || Game.isComplete()) return;
+        if (this.devTime >= 0.3) {
+          this.dispatchPoker();
+          this.devTime = 0;
+        }
+      },
+      this
+    );
+
+    this.PokerClip.on(
+      cc.Node.EventType.TOUCH_CANCEL,
       () => {
         if (Game.isTimeOver() || Game.isComplete()) return;
         if (this.devTime >= 0.3) {
@@ -221,7 +233,7 @@ export default class GameScene extends cc.Component {
     );
 
     this.PauseButton.node.on(
-      cc.Node.EventType.TOUCH_START,
+      cc.Node.EventType.TOUCH_END,
       () => {
         if (Game.isComplete()) return;
         this.Stop.show(1);
