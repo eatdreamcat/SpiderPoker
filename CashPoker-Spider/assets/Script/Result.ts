@@ -81,7 +81,6 @@ export default class Result extends cc.Component {
       }
     }
 
-    gEventMgr.emit(GlobalEvent.PLAY_OVER_1);
     this.Result.setEventListener(this.eventListener.bind(this));
 
     this.showScore = Math.max(0, Game.getScore() - Game.getTimeBonus());
@@ -130,7 +129,7 @@ export default class Result extends cc.Component {
         break;
       case "music1":
         console.log(" music1111111111111111111111111111111");
-
+        gEventMgr.emit(GlobalEvent.PLAY_OVER_1);
         break;
       case "music2":
         gEventMgr.emit(GlobalEvent.PLAY_OVER_2);

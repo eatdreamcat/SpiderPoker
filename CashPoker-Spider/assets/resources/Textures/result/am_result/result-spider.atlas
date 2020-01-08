@@ -1,110 +1,110 @@
 
-result2.png
-size: 512,1024
+result-spider.png
+size: 1024,256
 format: RGBA8888
 filter: Linear,Linear
 repeat: none
-am_fanpaice
+bg_solitarie_01J
   rotate: false
-  xy: 476, 747
-  size: 21, 275
-  orig: 21, 275
-  offset: 0, 0
-  index: -1
-bg_solitarie_013
-  rotate: false
-  xy: 2, 592
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_017
-  rotate: false
-  xy: 160, 808
+  xy: 160, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
   index: -1
 bg_solitarie_01K
   rotate: false
-  xy: 160, 160
+  xy: 318, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
   index: -1
-bg_solitarie_024
+bg_solitarie_01Q
   rotate: false
-  xy: 2, 376
+  xy: 476, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
   index: -1
-bg_solitarie_028
-  rotate: false
-  xy: 160, 592
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_02A
-  rotate: true
-  xy: 218, 2
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_02Q
-  rotate: false
-  xy: 318, 376
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_035
-  rotate: false
-  xy: 318, 808
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_039
-  rotate: false
-  xy: 2, 160
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_03J
-  rotate: false
-  xy: 318, 160
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_0410
-  rotate: false
-  xy: 160, 376
-  size: 156, 214
-  orig: 156, 214
-  offset: 0, 0
-  index: -1
-bg_solitarie_042
+bg_solitarienoneback01
   rotate: true
   xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback02
+  rotate: true
+  xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback03
+  rotate: true
+  xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback3
+  rotate: false
+  xy: 2, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
   index: -1
-bg_solitarie_046
+bg_solitarienoneback1
   rotate: false
-  xy: 318, 592
+  xy: 2, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
   index: -1
-bg_solitarienoneback
+bg_solitarienoneback2
   rotate: false
-  xy: 2, 808
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 1
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 2
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 3
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 4
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 5
+  rotate: false
+  xy: 2, 25
   size: 156, 214
   orig: 156, 214
   offset: 0, 0
