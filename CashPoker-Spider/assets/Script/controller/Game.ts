@@ -302,6 +302,7 @@ class GameMgr {
 
   clearStep() {
     this.stepInfoArray.length = 0;
+    gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
   }
 
   public backStep() {
