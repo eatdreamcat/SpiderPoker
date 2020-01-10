@@ -59,12 +59,6 @@ export default class GameScene extends cc.Component {
   @property(cc.Button)
   PauseButton: cc.Button = null;
 
-  @property(cc.Node)
-  CycleRoot: cc.Node = null;
-
-  @property(cc.Node)
-  PokerFlipRoot: cc.Node = null;
-
   @property(cc.SpriteAtlas)
   BackButtonAtlas: cc.SpriteAtlas = null;
   @property(cc.SpriteAtlas)
@@ -93,9 +87,6 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Animation)
   TimeAnimation: cc.Animation = null;
-
-  @property(cc.Animation)
-  LightAnimation: cc.Animation = null;
 
   @property(Stop)
   Stop: Stop = null;
@@ -137,7 +128,6 @@ export default class GameScene extends cc.Component {
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
     this.TimeAnimation.node.active = false;
-    this.LightAnimation.node.active = false;
 
     this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame("icon_time");
 
@@ -153,10 +143,6 @@ export default class GameScene extends cc.Component {
       }
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
-
-    for (let child of this.CycleRoot.children) {
-      Game.addCycledPokerRoot(parseInt(child.name), child);
-    }
   }
 
   // restart() {
@@ -166,7 +152,6 @@ export default class GameScene extends cc.Component {
 
   onLoad() {
     Game.removeNode = this.RemoveNode;
-    Game.pokerFlipRoot = this.PokerFlipRoot;
     Game.pokerClip = this.PokerClip;
     celerx.ready();
     CMath.randomSeed = Math.random();
@@ -258,26 +243,6 @@ export default class GameScene extends cc.Component {
       this
     );
 
-    this.PokerFlipRoot.on(
-      cc.Node.EventType.CHILD_ADDED,
-      this.onPokerFlipAddChild,
-      this
-    );
-
-    this.PokerDevl.on(
-      cc.Node.EventType.CHILD_REMOVED,
-      () => {
-        if (
-          !this.LightAnimation.node.active &&
-          this.PokerDevl.childrenCount <= 0
-        ) {
-          // this.LightAnimation.node.active = true;
-          // this.LightAnimation.play();
-        }
-      },
-      this
-    );
-
     this.PokerDevl.on(
       cc.Node.EventType.CHILD_ADDED,
       (child: cc.Node) => {
@@ -286,12 +251,6 @@ export default class GameScene extends cc.Component {
           poker.setRecycle(false);
         }
       },
-      this
-    );
-
-    this.PokerFlipRoot.on(
-      cc.Node.EventType.CHILD_REMOVED,
-      this.onPokerFlipRemoveChild,
       this
     );
 
@@ -669,7 +628,6 @@ export default class GameScene extends cc.Component {
             cc.callFunc(() => {
               pokerNode.group = "default";
               poker.setDefaultPosition();
-
               func1();
             }, this)
           )
@@ -680,447 +638,9 @@ export default class GameScene extends cc.Component {
     func1();
   }
 
-  recyclePoker() {
-    if (this.PokerDevl.childrenCount > 0) {
-      return;
-    }
+  recyclePoker() {}
 
-    if (this.PokerFlipRoot.childrenCount <= 0) {
-      return;
-    }
-
-    if (this.LightAnimation.node.active) {
-      this.LightAnimation.node.active = false;
-    }
-
-    let scores = [];
-    let drawTimesCost = 0;
-    let pos = CMath.ConvertToNodeSpaceAR(this.PokerDevl, this.RemoveNode);
-    if (Game.getFreeDrawTimes() > 0) {
-      Game.addFreeDrawTimes(-1);
-      drawTimesCost = 1;
-    } else {
-      if (Game.getScore() >= 20) {
-        scores.push(20);
-      } else {
-        scores.push(Game.getScore());
-      }
-
-      Game.addScore(-20, pos);
-    }
-
-    let nodes: cc.Node[] = [];
-    let parents: cc.Node[] = [];
-    let poses: cc.Vec2[] = [];
-
-    let children = this.PokerFlipRoot.children.concat().reverse();
-    let i = 0;
-
-    let isAction = false;
-    if (this.PokerFlipRoot.childrenCount >= 3) {
-      this.FlipAnimation.play();
-      gEventMgr.emit(GlobalEvent.PLAY_RECYCLE_POKERS);
-    } else {
-      isAction = true;
-    }
-
-    for (let child of children) {
-      child.opacity = 255;
-      let selfPos = CMath.ConvertToNodeSpaceAR(child, this.PokerDevl);
-
-      let poker = child.getComponent(Poker);
-      nodes.push(child);
-      parents.push(this.PokerFlipRoot);
-      poses.push(child.position.clone());
-
-      child.setParent(this.PokerDevl);
-      child.setPosition(selfPos);
-
-      poker.setDefaultPosition(cc.v2(0, 0));
-
-      poker.flipCard(0, false);
-
-      if (isAction) {
-        child.group = "top";
-        this.scheduleOnce(() => {
-          let action = cc.sequence(
-            /*cc.delayTime(i / 100),*/
-            cc.moveTo(0, 0, 0),
-            cc.callFunc(() => {
-              child.group = "default";
-            }, this)
-          );
-          action.setTag(ACTION_TAG.RE_DEV_POKER);
-          child.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-          child.runAction(action);
-        }, 0.1);
-      } else {
-        child.group = "default";
-        child.stopAllActions();
-        child.setPosition(0, 0);
-      }
-      i++;
-    }
-
-    let oldChildren = this.PokerFlipRoot.children;
-    let count = 3;
-    let func = function() {
-      let length = Math.max(0, oldChildren.length - count);
-      console.log("  opciaty -------------------------------:", length);
-      for (let i = 0; i < length; i++) {
-        let child = oldChildren[i];
-        if (i < length - 1) {
-          child.opacity = 0;
-        }
-      }
-    };
-
-    Game.addStep(
-      nodes,
-      parents,
-      poses,
-      [
-        {
-          callback: () => {
-            Game.addFreeDrawTimes(drawTimesCost);
-            setTimeout(func, 200);
-          },
-          target: this,
-          args: []
-        }
-      ],
-      scores,
-      [pos]
-    );
-  }
-
-  devPoker() {
-    if (!this.canDispatchPoker) {
-      return;
-    }
-    if (this.PokerDevl.childrenCount <= 0) {
-      this.recyclePoker();
-      return;
-    }
-
-    let nodes: cc.Node[] = [];
-    let parents: cc.Node[] = [];
-    let poses: cc.Vec2[] = [];
-    let funcs: StepFunc[] = [];
-
-    let oldChildren = this.PokerFlipRoot.children.concat();
-
-    let count = 3;
-
-    for (let i = 0; i < 3; i++) {
-      let pokerNode = this.PokerDevl.children[this.PokerDevl.childrenCount - 1];
-      if (!pokerNode) {
-        break;
-      }
-      count--;
-
-      let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, this.PokerFlipRoot);
-
-      let poker = pokerNode.getComponent(Poker);
-      nodes.push(pokerNode);
-      parents.push(pokerNode.getParent());
-      poses.push(pokerNode.position.clone());
-      funcs.push({
-        callback: poker.flipCard,
-        args: [0.1],
-        target: poker
-      });
-
-      pokerNode.setParent(this.PokerFlipRoot);
-      pokerNode.setPosition(selfPos);
-
-      //let offset = i * 30 + this.devOffset;
-
-      pokerNode.group = "top";
-      this.scheduleOnce(() => {
-        let pos = poker.getFlipPos();
-        let action = cc.sequence(
-          cc.delayTime(i / 20),
-          cc.callFunc(() => {
-            gEventMgr.emit(GlobalEvent.DEV_POKERS);
-          }),
-          cc.moveTo(0.1, pos.x, pos.y),
-          cc.callFunc(() => {
-            pokerNode.group = "default";
-          }, this)
-        );
-        action.setTag(ACTION_TAG.DEV_POKER);
-        pokerNode.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-        pokerNode.runAction(action);
-      }, 0);
-    }
-
-    let length = Math.max(0, oldChildren.length - count);
-    for (let i = 0; i < length; i++) {
-      let child = oldChildren[i];
-      child.x = 0;
-      if (i < length - 1) {
-        child.opacity = 0;
-      }
-      if (child.getNumberOfRunningActions() > 0) {
-        child.group = "default";
-        child.stopAllActions();
-      }
-    }
-
-    Game.addStep(nodes, parents, poses, funcs);
-  }
-
-  onPokerFlipAddChild(child: cc.Node) {
-    // console.log(" onPokerFlipAddChild:", this.PokerFlipRoot.childrenCount);
-    if (this.LightAnimation.node.active) {
-      this.LightAnimation.node.active = false;
-    }
-
-    child.opacity = 255;
-    let childIndex = this.PokerFlipRoot.children.indexOf(child);
-    let poker = child.getComponent(Poker);
-    if (poker) {
-      if (!poker.isFront()) {
-        poker.flipCard(0.1, false, () => {
-          poker.setCanMove(childIndex + 1 == this.PokerFlipRoot.childrenCount);
-        });
-      }
-      // console.log(" onPokerFlipAddChild ----recycle count ");
-      poker.setRecycle(false);
-    }
-    if (childIndex >= 1) {
-      this.PokerFlipRoot.children[childIndex - 1]
-        .getComponent(Poker)
-        .setCanMove(false);
-    }
-
-    // Game.addFlipCounts(0);
-    // if (!Game.isComplete()) {
-    //   this.updateFlipPokerPosOnAdd();
-    // }
-
-    this.updateFlipPokerPosOnAdd();
-  }
-
-  onPokerFlipRemoveChild(child: cc.Node) {
-    child.opacity = 255;
-    if (this.PokerFlipRoot.childrenCount > 0) {
-      this.PokerFlipRoot.children[this.PokerFlipRoot.childrenCount - 1]
-        .getComponent(Poker)
-        .setNormal();
-    }
-
-    // Game.addFlipCounts(0);
-    // if (!Game.isComplete()) {
-    //   this.updateFlipPokerPos();
-    // }
-
-    this.updateFlipPokerPos();
-  }
-
-  updateFlipPokerPosOnAdd() {
-    console.log(
-      "this.PokerFlipRoot.childrenCount :",
-      this.PokerFlipRoot.childrenCount
-    );
-    if (this.PokerFlipRoot.childrenCount >= 3) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 120, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      // child1.stopAllActions();
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
-      child1.group = "default";
-      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-
-      let child2 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 2
-      ];
-
-      let action2 = cc.moveTo(0.1, 60, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      // child2.stopAllActions();
-      child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
-      child2.group = "default";
-      child2.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child2.stopActionByTag(ACTION_TAG.SHAKE);
-
-      let child3 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 3
-      ];
-
-      let action3 = cc.moveTo(0.1, 0, 0);
-      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      // child3.stopAllActions();
-      child3.runAction(action3);
-      child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-      child3.group = "default";
-      child3.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child3.stopActionByTag(ACTION_TAG.SHAKE);
-
-      child1.opacity = 255;
-      child2.opacity = 255;
-      child3.opacity = 255;
-    } else if (this.PokerFlipRoot.childrenCount == 2) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 60, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      // child1.stopAllActions();
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
-      child1.group = "default";
-      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-
-      let child2 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 2
-      ];
-
-      let action2 = cc.moveTo(0.1, 0, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      // child2.stopAllActions();
-      child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-      child2.group = "default";
-      child2.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child2.stopActionByTag(ACTION_TAG.SHAKE);
-
-      child1.opacity = 255;
-      child2.opacity = 255;
-    } else if (this.PokerFlipRoot.childrenCount == 1) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 0, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      // child1.stopAllActions();
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-      child1.group = "default";
-      child1.stopActionByTag(ACTION_TAG.BACK_STEP);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-      child1.opacity = 255;
-    }
-  }
-
-  updateFlipPokerPos() {
-    if (this.PokerFlipRoot.childrenCount >= 3) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 120, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(120, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(120, 0));
-
-      let child2 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 2
-      ];
-
-      let action2 = cc.moveTo(0.1, 60, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.SHAKE);
-      child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
-
-      let child3 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 3
-      ];
-
-      let action3 = cc.moveTo(0.1, 0, 0);
-      action3.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child3.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child3.stopActionByTag(ACTION_TAG.SHAKE);
-      child3.runAction(action3);
-      child3.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child3.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-
-      child1.opacity = 255;
-      child2.opacity = 255;
-      child3.opacity = 255;
-    } else if (this.PokerFlipRoot.childrenCount == 2) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 60, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(60, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(60, 0));
-
-      let child2 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 2
-      ];
-
-      let action2 = cc.moveTo(0.1, 0, 0);
-      action2.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child2.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child2.stopActionByTag(ACTION_TAG.SHAKE);
-      child2.runAction(action2);
-      child2.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child2.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-
-      child1.opacity = 255;
-      child2.opacity = 255;
-    } else if (this.PokerFlipRoot.childrenCount == 1) {
-      let child1 = this.PokerFlipRoot.children[
-        this.PokerFlipRoot.childrenCount - 1
-      ];
-
-      let action1 = cc.moveTo(0.1, 0, 0);
-      action1.setTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_REMOVE);
-      child1.stopActionByTag(ACTION_TAG.FLIP_CARD_REPOS_ON_ADD);
-      child1.stopActionByTag(ACTION_TAG.SHAKE);
-      child1.runAction(action1);
-      child1.getComponent(Poker).setFlipPos(cc.v2(0, 0));
-      child1.getComponent(Poker).setDefaultPosition(cc.v2(0, 0));
-
-      child1.opacity = 255;
-    }
-  }
+  devPoker() {}
 
   dispatchPoker() {
     if (Game.isTimeOver() || Game.isComplete()) return;
