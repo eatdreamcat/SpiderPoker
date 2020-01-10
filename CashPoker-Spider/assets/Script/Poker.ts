@@ -1,6 +1,12 @@
 import { Game } from "./controller/Game";
 import { gFactory } from "./controller/GameFactory";
-import { OFFSET_Y, ACTION_TAG, OFFSET_SCALE, COLOR_GRAY } from "./Pokers";
+import {
+  OFFSET_Y,
+  ACTION_TAG,
+  OFFSET_SCALE,
+  COLOR_GRAY,
+  FLIP_SCORE
+} from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 
@@ -688,7 +694,7 @@ export default class Poker extends cc.Component {
     let socre2 = 0;
     let addFlip = this.node.getParent().name == "PokerFlipRoot";
     if (addFlip) {
-      socre2 = 20;
+      socre2 = FLIP_SCORE;
     }
 
     Game.resetCombo();
@@ -719,7 +725,7 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20 - score - socre2],
+        [-FLIP_SCORE - score - socre2],
         [scorePos]
       );
     } else {
@@ -786,7 +792,7 @@ export default class Poker extends cc.Component {
     let socre2 = 0;
     let addFlip = this.node.getParent().name == "PokerFlipRoot";
     if (addFlip) {
-      socre2 = 20;
+      socre2 = FLIP_SCORE;
       Game.addFlipCounts(1);
     }
 
@@ -823,7 +829,7 @@ export default class Poker extends cc.Component {
             target: this.forward
           }
         ],
-        [-20 - score - socre2],
+        [-FLIP_SCORE - score - socre2],
         [scorePos]
       );
     } else {
@@ -1052,7 +1058,7 @@ export default class Poker extends cc.Component {
         this.flipCard(0.1);
         Game.addFlipCounts(1);
         Game.addScore(
-          20,
+          FLIP_SCORE,
           CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
         );
       } else {
@@ -1068,7 +1074,7 @@ export default class Poker extends cc.Component {
       if (Poker.checkBeNext(this, this.next) && this.next.isNormal()) {
         this.setNormal();
       } else {
-        this.frontCard.node.color = COLOR_GRAY;
+        this.frontCard.node.color = COLOR_GRAY.clone();
         this.canMove = false;
       }
       if (this.forward) {
@@ -1082,7 +1088,7 @@ export default class Poker extends cc.Component {
   setAllGray() {
     if (!this.node.parent) return;
     // console.warn(" setGray:", this.value, ",key:", this.key);
-    this.frontCard.node.color = COLOR_GRAY;
+    this.frontCard.node.color = COLOR_GRAY.clone();
     this.canMove = false;
     if (this.forward) {
       // console.log(
@@ -1096,7 +1102,7 @@ export default class Poker extends cc.Component {
   }
 
   setNormal() {
-    // console.log("setNormal:", this.value, ", setNormal key:", this.key);
+    console.log("setNormal:", this.value, ", setNormal key:", this.key);
     this.frontCard.node.color = cc.Color.WHITE;
     this.canMove = this.carState == CardState.Front;
   }

@@ -207,3 +207,5 @@ export const COLOR_GRAY = cc.color(238, 218, 166);
 export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
 export const OFFSET_SCALE = 15;
+export const FLIP_SCORE = 50;
+export const BACK_STEP_SCORE = 20;

@@ -308,7 +308,7 @@ class GameMgr {
   public backStep() {
     if (this.stepInfoArray.length <= 0) {
       console.warn(" no cache step!");
-      return;
+      return false;
     }
 
     Game.resetCombo();
@@ -404,6 +404,7 @@ class GameMgr {
         poker.node.runAction(action);
       }
     }
+    return count > 0;
   }
 
   public canBackStep() {

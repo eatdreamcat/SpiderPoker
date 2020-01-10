@@ -1,7 +1,13 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
-import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex } from "./Pokers";
+import {
+  Pokers,
+  ACTION_TAG,
+  OFFSET_Y,
+  PokerIndex,
+  BACK_STEP_SCORE
+} from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Stop from "./Stop";
@@ -330,7 +336,12 @@ export default class GameScene extends cc.Component {
         if (Game.isTimeOver() || this.backTime < 0.5 || Game.isComplete())
           return;
         this.backTime = 0;
-        Game.backStep();
+        if (Game.backStep()) {
+          Game.addScore(
+            -BACK_STEP_SCORE,
+            CMath.ConvertToNodeSpaceAR(this.BackButton.node, Game.removeNode)
+          );
+        }
       },
       Game
     );
@@ -1117,6 +1128,8 @@ export default class GameScene extends cc.Component {
       return;
     }
 
+    if (!Game.isGameStarted()) Game.start();
+
     let nodes: cc.Node[] = [];
     let parents: cc.Node[] = [];
     let poses: cc.Vec2[] = [];
@@ -1151,6 +1164,7 @@ export default class GameScene extends cc.Component {
       poker.flipCard(0.1);
       poker.setNormal();
       pokerNode.group = "top";
+      gEventMgr.emit(GlobalEvent.DEV_POKERS);
       pokerNode.runAction(
         cc.sequence(
           cc.moveTo(0.3, 0, offset),
