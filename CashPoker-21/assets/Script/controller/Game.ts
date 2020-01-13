@@ -1,6 +1,6 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState, POS_STATE } from "../Poker";
-import { ACTION_TAG, OFFSET_Y } from "../Pokers";
+import { ACTION_TAG, OFFSET_Y, BOOOOM_LIMIT } from "../Pokers";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
 
@@ -37,6 +37,7 @@ class GameMgr {
   private freeDrawTimes: number = 3;
   private flipCounts: number = 0;
   public pokerClip: cc.Node = null;
+  private curSelectPoker: Poker = null;
 
   private gameStart: boolean = false;
 
@@ -50,14 +51,34 @@ class GameMgr {
 
   private combo: number = -1;
 
+  private streakCount: number = 0;
+
   private recyclePoker: number = 0;
 
   public addRecyclePoker(count: number) {
     this.recyclePoker += count;
-    if (this.recyclePoker > 6) {
+    if (this.recyclePoker >= BOOOOM_LIMIT && !window["CheatOpen"]) {
       console.error(" recycle poker error!!!!");
+      setTimeout(() => {
+        gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+      }, 1000);
     }
     gEventMgr.emit(GlobalEvent.UPDATE_RECYCLE_POKER, this.recyclePoker);
+  }
+
+  getCurSelectPoker() {
+    if (!this.curSelectPoker) {
+      console.error(" cur select poker is null");
+    }
+    return this.curSelectPoker;
+  }
+
+  setCurSelectPoker(poker: Poker) {
+    if (poker == null) {
+    }
+    console.log(" set cur select poker ------------------");
+    console.log(poker);
+    this.curSelectPoker = poker;
   }
 
   public addPosOffset(key: number, offset: number) {
@@ -93,6 +114,18 @@ class GameMgr {
     this.combo += combo;
     this.combo = Math.max(0, this.combo % 13);
     console.log(" combo:", this.combo);
+  }
+
+  public addStreak(streak: number) {
+    this.streakCount += streak;
+  }
+
+  public getStreak() {
+    return this.streakCount;
+  }
+
+  public clearStreak() {
+    this.streakCount = 0;
   }
 
   public getGameTime() {

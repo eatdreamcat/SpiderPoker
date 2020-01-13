@@ -101,6 +101,7 @@ export default class Poker extends cc.Component {
     );
     console.log(arguments[0][0][0]);
     this.value = parseInt(pokerInfo.split(",")[1]);
+
     let type = pokerInfo.split(",")[0];
     this.pokerColer =
       type == "spade_" || type == "club_" ? PokerColor.Black : PokerColor.Red;
@@ -176,6 +177,7 @@ export default class Poker extends cc.Component {
   }
 
   getValue() {
+    if (this.value >= 10) return 10;
     return this.value;
   }
 
@@ -257,7 +259,12 @@ export default class Poker extends cc.Component {
     gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, () => {}, this);
   }
 
-  autoCompleteDone() {
+  autoCompleteDone(
+    delay: number,
+    dir: number,
+    isAddScore: boolean,
+    zIndex: number
+  ) {
     let time = 0.05 + this.value / 200;
 
     let moveTime = (13 - this.value) / 500;
@@ -270,24 +277,25 @@ export default class Poker extends cc.Component {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
-      this.node.zIndex = 13 - this.value;
-    }, time * this.value);
+      this.node.zIndex = zIndex;
+    }, 0);
 
     this.scheduleOnce(() => {
-      let dir = this.value % 2 == 1 ? -1 : 1;
       let offsetX = CMath.getRandom(0, 2) * dir;
       this.canMove = false;
 
       this.node.runAction(
         cc.sequence(
-          cc.delayTime(this.value / 8),
+          cc.delayTime(delay),
           cc.callFunc(() => {
             let score = (13 - this.value) * 10;
             let scorePos = CMath.ConvertToNodeSpaceAR(
               this.node,
               Game.removeNode
             );
-            Game.addScore(score, scorePos);
+            if (isAddScore) {
+              Game.addScore(score, scorePos);
+            }
             this.frontCard.node.opacity = 255;
             this.node.group = "top";
             this.node.zIndex = this.value;
@@ -299,7 +307,7 @@ export default class Poker extends cc.Component {
             cc.repeat(
               cc.spawn(
                 cc
-                  .moveBy(0.01, dir * 1.5 + offsetX, 25)
+                  .moveBy(0.01, dir * 1.5 + offsetX, 15)
                   .easing(cc.easeQuinticActionOut()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
@@ -309,7 +317,7 @@ export default class Poker extends cc.Component {
             cc.repeat(
               cc.spawn(
                 cc
-                  .moveBy(0.01, dir * 2 + offsetX, -25)
+                  .moveBy(0.01, dir * 2 + offsetX, -20)
                   .easing(cc.easeQuinticActionIn()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
@@ -323,7 +331,7 @@ export default class Poker extends cc.Component {
           )
         )
       );
-    }, moveTime + time);
+    }, 0.01);
   }
 
   autoComplete() {
@@ -342,8 +350,8 @@ export default class Poker extends cc.Component {
     // console.log(" check done: ", key, ":", this.key, this.value);
     if (this.key != key || !this.isCheck) return;
     this.setRecycle(true);
-    this.autoCompleteDone();
-    if (this.value == 13) Game.addRecyclePoker(1);
+    //this.autoCompleteDone();
+    //if (this.value == 13) Game.addRecyclePoker(1);
   }
 
   setDefaultPosition(pos?: cc.Vec2) {
@@ -403,9 +411,8 @@ export default class Poker extends cc.Component {
   }
 
   onTouchStart(e: cc.Event.EventTouch) {
-    if (this.carState == CardState.Back) return;
-    e.bubbles = !this.isNormal();
-    this.node.stopActionByTag(ACTION_TAG.SHAKE);
+    //if (this.carState == CardState.Back) return;
+    e.bubbles = this.isCycled();
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!Game.isGameStarted()) Game.start();
 
@@ -458,7 +465,7 @@ export default class Poker extends cc.Component {
   }
 
   onMove(e: cc.Event.EventTouch) {
-    if (this.carState == CardState.Back) return;
+    return;
     e.bubbles = false;
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!this.canMove) return;
@@ -480,11 +487,13 @@ export default class Poker extends cc.Component {
   }
 
   onMoveEnd(e: cc.Event.EventTouch) {
-    if (this.carState == CardState.Back) return;
+    //if (this.carState == CardState.Back) return;
     e.bubbles = false;
-    if (Game.isTimeOver() || Game.isComplete()) return;
-    let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
+    if (Game.isTimeOver() || Game.isComplete() || this.isCycled()) return;
+    let action = this.node.getActionByTag(ACTION_TAG.SHAKE);
     if (action && !action.isDone()) return;
+    this.shake();
+    return;
 
     if (this.defaultPos && this.canMove) {
       let placeIndex = this.checkCanPlace();
@@ -619,6 +628,10 @@ export default class Poker extends cc.Component {
         return;
       }
     }
+  }
+
+  isWildCard() {
+    return this.value == 11;
   }
 
   checkPos() {
@@ -924,12 +937,13 @@ export default class Poker extends cc.Component {
           cc.moveTo(0.04, pos.x + 20, pos.y),
           cc.moveTo(0.02, pos.x - 10, pos.y)
         ),
-        5
+        3
       ),
       cc.moveTo(0.01, pos.x, pos.y)
     );
     shake.setTag(ACTION_TAG.SHAKE);
     this.node.stopActionByTag(ACTION_TAG.SHAKE);
+    this.node.setPosition(pos.x, pos.y);
     this.node.runAction(shake);
     gEventMgr.emit(GlobalEvent.PLAY_SHAKE);
   }
@@ -1117,6 +1131,10 @@ export default class Poker extends cc.Component {
     this.frontCard.node.scaleX = this.carState == CardState.Front ? 1 : 0;
     this.backCard.node.scaleX = this.carState == CardState.Back ? 1 : 0;
     this.canMove = this.carState == CardState.Front && canMove;
+
+    if (this.isWildCard() && this.canMove) {
+      this.RecycleAnimation.play();
+    }
 
     if (this.canMove) {
       if (this.next && !Poker.checkBeNext(this, this.next)) {

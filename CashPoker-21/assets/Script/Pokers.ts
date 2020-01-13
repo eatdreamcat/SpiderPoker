@@ -199,7 +199,8 @@ export const enum ACTION_TAG {
   SHAKE,
   RECYCLE,
   POS_SCALE,
-  POS_NORMAL
+  POS_NORMAL,
+  SELECT_POKER
 }
 
 export const COLOR_GRAY = cc.color(238, 218, 166);
@@ -209,3 +210,6 @@ export const OFFSET_X = 0;
 export const OFFSET_SCALE = 15;
 export const FLIP_SCORE = 50;
 export const BACK_STEP_SCORE = 20;
+
+export const TARGET_POINT = 21;
+export const BOOOOM_LIMIT = 3;

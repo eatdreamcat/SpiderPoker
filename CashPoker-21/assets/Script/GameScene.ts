@@ -6,7 +6,8 @@ import {
   ACTION_TAG,
   OFFSET_Y,
   PokerIndex,
-  BACK_STEP_SCORE
+  BACK_STEP_SCORE,
+  BOOOOM_LIMIT
 } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
@@ -95,9 +96,6 @@ export default class GameScene extends cc.Component {
   Guide: Guide = null;
 
   @property(cc.Animation)
-  FlipAnimation: cc.Animation = null;
-
-  @property(cc.Animation)
   Complete: cc.Animation = null;
 
   @property(cc.Button)
@@ -108,6 +106,15 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Label)
   RecyclePokerLabel: cc.Label = null;
+
+  @property(cc.Label)
+  TotalRecyclePokerLabel: cc.Label = null;
+
+  @property(cc.Label)
+  PokerRestLabel: cc.Label = null;
+
+  @property(cc.Node)
+  SelectPokerNode: cc.Node = null;
 
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
@@ -153,6 +160,7 @@ export default class GameScene extends cc.Component {
   onLoad() {
     Game.removeNode = this.RemoveNode;
     Game.pokerClip = this.PokerClip;
+    this.TotalRecyclePokerLabel.string = BOOOOM_LIMIT.toString();
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -199,17 +207,17 @@ export default class GameScene extends cc.Component {
       this.nextStep(LOAD_STEP.AUDIO);
     });
 
-    this.PokerClip.on(
-      cc.Node.EventType.TOUCH_END,
-      () => {
-        if (Game.isTimeOver() || Game.isComplete()) return;
-        if (this.devTime >= 0.3) {
-          this.dispatchPoker();
-          this.devTime = 0;
-        }
-      },
-      this
-    );
+    // this.PokerClip.on(
+    //   cc.Node.EventType.TOUCH_END,
+    //   () => {
+    //     if (Game.isTimeOver() || Game.isComplete()) return;
+    //     if (this.devTime >= 0.3) {
+    //       this.dispatchPoker();
+    //       this.devTime = 0;
+    //     }
+    //   },
+    //   this
+    // );
 
     this.PokerClip.on(
       cc.Node.EventType.TOUCH_CANCEL,
@@ -374,9 +382,9 @@ export default class GameScene extends cc.Component {
             cc.sequence(
               cc.scaleTo(0, 0),
               cc.scaleTo(0.15, 1.5),
-              cc.delayTime(0.25),
+              cc.delayTime(0.3),
               cc.scaleTo(0.1, 1.0),
-              cc.moveTo(0.25, targetPos.x, targetPos.y),
+              cc.moveTo(0.3, targetPos.x, targetPos.y),
               cc.callFunc(() => {
                 this.showScore = Game.getScore();
                 gFactory.putAddScore(scoreLabel);
@@ -393,9 +401,9 @@ export default class GameScene extends cc.Component {
             cc.sequence(
               cc.scaleTo(0, 0),
               cc.scaleTo(0.15, 1.5),
-              cc.delayTime(0.25),
+              cc.delayTime(0.3),
               cc.scaleTo(0.1, 1.0),
-              cc.moveTo(0.25, targetPos.x, targetPos.y),
+              cc.moveTo(0.3, targetPos.x, targetPos.y),
               cc.callFunc(() => {
                 this.showScore = Game.getScore();
                 gFactory.putSubScore(scoreLabel);
@@ -407,11 +415,84 @@ export default class GameScene extends cc.Component {
       this
     );
 
+    gEventMgr.on(
+      GlobalEvent.UPDATE_CUR_SELECT_POKER,
+      this.updateCurSelectPoker,
+      this
+    );
     gEventMgr.on(GlobalEvent.OPEN_RESULT, this.openResult, this);
+
+    this.PokerClip.on(
+      cc.Node.EventType.CHILD_REMOVED,
+      this.onPokerClipRemoveChild,
+      this
+    );
+    this.PokerClip.on(
+      cc.Node.EventType.CHILD_ADDED,
+      this.onPokerClipAddChild,
+      this
+    );
+
+    this.SelectPokerNode.on(
+      cc.Node.EventType.CHILD_ADDED,
+      this.onSelectPokerAddChild,
+      this
+    );
+    this.SelectPokerNode.on(
+      cc.Node.EventType.CHILD_REMOVED,
+      this.onSelectPokerRemoveChild,
+      this
+    );
 
     //gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
     cc.loader.loadRes("prefabs/Result");
     cc.loader.loadResDir("sounds");
+  }
+
+  onPokerClipRemoveChild() {
+    this.PokerRestLabel.string = this.PokerClip.childrenCount.toString();
+    if (this.PokerClip.childrenCount == 0) {
+      this.scheduleOnce(() => {
+        gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+      }, 1);
+    }
+  }
+
+  onPokerClipAddChild() {
+    this.PokerRestLabel.string = this.PokerClip.childrenCount.toString();
+  }
+
+  onSelectPokerAddChild(child: cc.Node) {
+    let poker = child.getComponent(Poker);
+    console.log(" on Select poker add child !");
+    Game.setCurSelectPoker(poker);
+  }
+
+  onSelectPokerRemoveChild(child: cc.Node) {
+    console.log(" on Select poker remove child !");
+    this.updateCurSelectPoker();
+  }
+
+  updateCurSelectPoker() {
+    console.log(" poker clip childcount:", this.PokerClip.childrenCount);
+    if (this.PokerClip.childrenCount <= 0) return;
+    let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
+    let poker = child.getComponent(Poker);
+    let pos = CMath.ConvertToNodeSpaceAR(child, this.SelectPokerNode);
+    child.setParent(this.SelectPokerNode);
+    child.setPosition(pos);
+
+    poker.flipCard(0.1);
+    gEventMgr.emit(GlobalEvent.DEV_POKERS);
+    let action = cc.sequence(
+      cc.moveTo(0.3, 0, 0),
+      cc.callFunc(() => {
+        poker.setDefaultPosition();
+        child.group = "default";
+      }, this)
+    );
+    action.setTag(ACTION_TAG.SELECT_POKER);
+    child.runAction(action);
   }
 
   openResult() {
@@ -503,7 +584,7 @@ export default class GameScene extends cc.Component {
       this.PokerDevl.addChild(pokerNode);
     }
 
-    let count = 0;
+    let count = 1;
     let totalCount = this.PokerDevl.childrenCount;
     /** 发底牌 */
     //let count2 = 0;
@@ -518,7 +599,7 @@ export default class GameScene extends cc.Component {
         let targetPos = cc.v2(0, 0);
         if (this.PokerClip.childrenCount > 0) {
           let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
-          targetPos = cc.v2(child.x - 20, child.y);
+          targetPos = cc.v2(child.x + 2, child.y);
         }
 
         let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, this.PokerClip);
@@ -541,6 +622,7 @@ export default class GameScene extends cc.Component {
       } else {
         // console.log(this.PokerDevl.children);
         this.canDispatchPoker = true;
+        this.updateCurSelectPoker();
         return;
       }
     };
@@ -635,7 +717,7 @@ export default class GameScene extends cc.Component {
       }
     };
 
-    func1();
+    func2();
   }
 
   recyclePoker() {}
