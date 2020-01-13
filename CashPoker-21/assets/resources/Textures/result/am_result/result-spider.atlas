@@ -1,0 +1,111 @@
+
+result-spider.png
+size: 1024,256
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+bg_solitarie_01J
+  rotate: false
+  xy: 160, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_solitarie_01K
+  rotate: false
+  xy: 318, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_solitarie_01Q
+  rotate: false
+  xy: 476, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback01
+  rotate: true
+  xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback02
+  rotate: true
+  xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback03
+  rotate: true
+  xy: 2, 2
+  size: 21, 275
+  orig: 21, 275
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback3
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback1
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_solitarienoneback2
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 1
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 2
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 3
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 4
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
+bg_spiderback - 5
+  rotate: false
+  xy: 2, 25
+  size: 156, 214
+  orig: 156, 214
+  offset: 0, 0
+  index: -1
