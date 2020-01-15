@@ -50,95 +50,69 @@ export const PokerTypes = {
 // );
 export const Pokers = [
   "spade_,1", //0
-  "spade_,1", //1
-  "spade_,1", //2
-  "spade_,1", //3
-  "spade_,1", //2
-  "spade_,1",
+  "diamond_,9",
+
+  "heart_,10",
+  "heart_,1", //1
+  "club_,1", //2
+  "diamond_,1", //3
+  "spade_,9",
+  "heart_,9",
+  "club_,9",
+  "diamond_,10",
+  "spade_,10",
 
   "spade_,2", //4
-  "spade_,2", //5
-  "spade_,2", //6
-  "spade_,2", //7
-  "spade_,2", //6
-  "spade_,2", //7
+  "heart_,2", //5
+  "club_,2", //6
+  "diamond_,2", //7
 
   "spade_,3", //8
-  "spade_,3", //9
-  "spade_,3", //10
-  "spade_,3", //11
-  "spade_,3", //10
-  "spade_,3", //1
+  "heart_,3", //9
+  "club_,3", //10
+  "diamond_,3", //11
 
   "spade_,4",
-  "spade_,4",
-  "spade_,4",
-  "spade_,4",
-  "spade_,4",
-  "spade_,4",
+  "heart_,4",
+  "club_,4",
+  "diamond_,4",
 
   "spade_,5",
-  "spade_,5",
-  "spade_,5",
-  "spade_,5",
-  "spade_,5",
-  "spade_,5",
+  "heart_,5",
+  "club_,5",
+  "diamond_,5",
 
   "spade_,6",
-  "spade_,6",
-  "spade_,6",
-  "spade_,6",
-  "spade_,6",
-  "spade_,6",
+  "heart_,6",
+  "club_,6",
+  "diamond_,6",
 
   "spade_,7",
-  "spade_,7",
-  "spade_,7",
-  "spade_,7",
-  "spade_,7",
-  "spade_,7",
+  "heart_,7",
+  "club_,7",
+  "diamond_,7",
 
   "spade_,8",
-  "spade_,8",
-  "spade_,8",
-  "spade_,8",
-  "spade_,8",
-  "spade_,8",
+  "heart_,8",
+  "club_,8",
+  "diamond_,8",
 
-  "spade_,9",
-  "spade_,9",
-  "spade_,9",
-  "spade_,9",
-  "spade_,9",
-  "spade_,9",
-
-  "spade_,10",
-  "spade_,10",
-  "spade_,10",
-  "spade_,10",
-  "spade_,10",
-  "spade_,10",
+  "club_,10",
 
   "spade_,11",
-  "spade_,11",
-  "spade_,11",
-  "spade_,11",
-  "spade_,11",
-  "spade_,11",
+  "heart_,11",
+  "club_,11",
+  "diamond_,11",
 
   "spade_,12",
-  "spade_,12",
-  "spade_,12",
-  "spade_,12",
-  "spade_,12",
-  "spade_,12",
+  "heart_,12",
+  "club_,12",
+  "diamond_,12",
 
   "spade_,13",
-  "spade_,13",
-  "spade_,13",
-  "spade_,13",
-  "spade_,13",
-  "spade_,13"
+  "heart_,13",
+  "club_,13",
+  "diamond_,13"
 ];
 
 export const PokerIndex = [
@@ -209,7 +183,13 @@ export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
 export const OFFSET_SCALE = 15;
 export const FLIP_SCORE = 50;
-export const BACK_STEP_SCORE = 20;
+export const BACK_STEP_SCORE = 0;
 
 export const TARGET_POINT = 21;
 export const BOOOOM_LIMIT = 3;
+export const NORMAL_21_SCORE = 400;
+export const WILD_21_SCORE = 200;
+export const STREAK_SCORE = 250;
+export const OVER_5_SCORE = 600;
+
+export const TOTAL_POKER_COUNT = Pokers.length;

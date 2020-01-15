@@ -176,9 +176,9 @@ export default class Poker extends cc.Component {
     }
   }
 
-  getValue() {
-    if (this.value >= 10) return 10;
-    return this.value;
+  getValue(isReal: boolean = false) {
+    if (isReal || this.value < 10) return this.value;
+    return 10;
   }
 
   getCardState() {
@@ -262,44 +262,63 @@ export default class Poker extends cc.Component {
   autoCompleteDone(
     delay: number,
     dir: number,
-    isAddScore: boolean,
-    zIndex: number
+    zIndex: number,
+    isBoom: boolean = false
   ) {
-    let time = 0.05 + this.value / 200;
-
-    let moveTime = (13 - this.value) / 500;
+    let time = 0.12;
 
     if (this.hasMove) {
       console.log(" has move key :", this.key, ", value:", this.value);
       Game.addPosOffset(this.key, OFFSET_SCALE);
     }
+
+    this.scheduleOnce(() => {
+      let step = Game.getTopStep();
+      if (step) {
+        if (step.node.indexOf(this.node) < 0) {
+          step.node.push(this.node);
+          step.lastParent.push(this.node.getParent());
+          step.lastPos.push(this.getDefaultPosition());
+          if (isBoom) {
+            if (step.func) {
+              step.func.push({
+                callback: Game.addRecyclePoker,
+                args: [-1],
+                target: Game
+              });
+            } else {
+              step.func = [
+                {
+                  callback: Game.addRecyclePoker,
+                  args: [-1],
+                  target: Game
+                }
+              ];
+            }
+          }
+        }
+      }
+    });
+
     this.scheduleOnce(() => {
       let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
       this.node.zIndex = zIndex;
-    }, 0);
+    }, time);
 
     this.scheduleOnce(() => {
-      let offsetX = CMath.getRandom(0, 2) * dir;
+      let offsetX = CMath.getRandom(0, 4) * dir;
       this.canMove = false;
 
       this.node.runAction(
         cc.sequence(
           cc.delayTime(delay),
           cc.callFunc(() => {
-            let score = (13 - this.value) * 10;
-            let scorePos = CMath.ConvertToNodeSpaceAR(
-              this.node,
-              Game.removeNode
-            );
-            if (isAddScore) {
-              Game.addScore(score, scorePos);
-            }
             this.frontCard.node.opacity = 255;
             this.node.group = "top";
-            this.node.zIndex = this.value;
             Game.addCombo(1);
+
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
             gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
           }, this),
@@ -307,7 +326,7 @@ export default class Poker extends cc.Component {
             cc.repeat(
               cc.spawn(
                 cc
-                  .moveBy(0.01, dir * 1.5 + offsetX, 15)
+                  .moveBy(0.01, dir * 3 + offsetX, 15)
                   .easing(cc.easeQuinticActionOut()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
@@ -325,13 +344,12 @@ export default class Poker extends cc.Component {
             ),
             cc.callFunc(() => {
               console.log("done!");
-              gFactory.putPoker(this.node);
               Game.addRemovePokerCount(1);
             }, this)
           )
         )
       );
-    }, 0.01);
+    }, 0.01 + time);
   }
 
   autoComplete() {
@@ -1134,6 +1152,9 @@ export default class Poker extends cc.Component {
 
     if (this.isWildCard() && this.canMove) {
       this.RecycleAnimation.play();
+    } else {
+      this.RecycleAnimation.node.opacity = 0;
+      this.RecycleAnimation.stop();
     }
 
     if (this.canMove) {

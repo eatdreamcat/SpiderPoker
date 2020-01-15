@@ -463,6 +463,20 @@ export default class GameScene extends cc.Component {
   }
 
   onSelectPokerAddChild(child: cc.Node) {
+    if (this.SelectPokerNode.childrenCount > 1) {
+      let oldChild = this.SelectPokerNode.children[0];
+      let targetPos = cc.v2(0, 0);
+      if (this.PokerClip.childrenCount > 0) {
+        let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
+        targetPos = cc.v2(child.x + 2, child.y);
+      }
+      let pos = CMath.ConvertToNodeSpaceAR(oldChild, this.PokerClip);
+      oldChild.setParent(this.PokerClip);
+      oldChild.setPosition(pos);
+      oldChild.getComponent(Poker).flipCard(0.1);
+      oldChild.runAction(cc.moveTo(0.1, targetPos));
+    }
+
     let poker = child.getComponent(Poker);
     console.log(" on Select poker add child !");
     Game.setCurSelectPoker(poker);
@@ -470,7 +484,9 @@ export default class GameScene extends cc.Component {
 
   onSelectPokerRemoveChild(child: cc.Node) {
     console.log(" on Select poker remove child !");
-    this.updateCurSelectPoker();
+    if (this.SelectPokerNode.childrenCount <= 0) {
+      this.updateCurSelectPoker();
+    }
   }
 
   updateCurSelectPoker() {

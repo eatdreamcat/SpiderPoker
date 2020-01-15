@@ -1,6 +1,11 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState, POS_STATE } from "../Poker";
-import { ACTION_TAG, OFFSET_Y, BOOOOM_LIMIT } from "../Pokers";
+import {
+  ACTION_TAG,
+  OFFSET_Y,
+  BOOOOM_LIMIT,
+  TOTAL_POKER_COUNT
+} from "../Pokers";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
 
@@ -16,6 +21,7 @@ export interface StepInfo {
   scores?: number[];
   scoresPos?: cc.Vec2[];
   func?: StepFunc[];
+  zIndex?: number[];
 }
 
 class GameMgr {
@@ -57,6 +63,7 @@ class GameMgr {
 
   public addRecyclePoker(count: number) {
     this.recyclePoker += count;
+    this.recyclePoker = Math.max(0, this.recyclePoker);
     if (this.recyclePoker >= BOOOOM_LIMIT && !window["CheatOpen"]) {
       console.error(" recycle poker error!!!!");
       setTimeout(() => {
@@ -158,7 +165,8 @@ class GameMgr {
       return;
 
     this.timeBonus =
-      ((this.flipCounts / 45) * (1.2 / 0.5) + 0.3) * this.gameTime;
+      ((this.flipCounts / TOTAL_POKER_COUNT) * (1.2 / 0.5) + 0.3) *
+      this.gameTime;
 
     this.timeBonus = Math.floor(this.timeBonus);
     console.error(
@@ -192,7 +200,11 @@ class GameMgr {
     //     Game.pokerFlipRoot &&
     //     Game.pokerFlipRoot.childrenCount == 1)
     // );
-    return this.flipCounts >= 45;
+    return this.flipCounts >= TOTAL_POKER_COUNT;
+  }
+
+  public isBoom() {
+    return this.recyclePoker >= BOOOOM_LIMIT;
   }
 
   public checkIsRecycleComplete() {
@@ -218,8 +230,8 @@ class GameMgr {
   }
 
   public addRemovePokerCount(count: number) {
-    this.removePokerCount += count;
-    if (this.removePokerCount == 78) {
+    this.removePokerCount = Game.removeNode.childrenCount;
+    if (this.removePokerCount == TOTAL_POKER_COUNT) {
       console.error(
         " ---------------- addRemovePokerCount -----------------------"
       );
@@ -286,18 +298,25 @@ class GameMgr {
     lastPos: cc.Vec2[],
     func?: StepFunc[],
     scores?: number[],
-    scorePos?: cc.Vec2[]
+    scorePos?: cc.Vec2[],
+    zIndex?: number[]
   ) {
-    if (!CC_DEBUG) this.stepInfoArray.length = 0;
+    this.stepInfoArray.length = 0;
     this.stepInfoArray.push({
       node: node,
       lastParent: lastParent,
       lastPos: lastPos,
       func: func,
       scores: scores,
-      scoresPos: scorePos
+      scoresPos: scorePos,
+      zIndex: zIndex
     });
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
+  }
+
+  public getTopStep() {
+    if (this.stepInfoArray.length <= 0) return null;
+    return this.stepInfoArray[this.stepInfoArray.length - 1];
   }
 
   getPlacePokerRoot() {
@@ -343,21 +362,26 @@ class GameMgr {
       console.warn(" no cache step!");
       return false;
     }
+    Game.clearStreak();
 
     Game.resetCombo();
+
     let step = this.stepInfoArray.pop();
+
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
     let count = 0;
     while (step.node.length > 0) {
       count++;
-      let node = step.node.pop();
-      let parent = step.lastParent.pop();
-      let pos = step.lastPos.pop();
-      let func = step.func ? step.func.pop() : null;
-      let score = step.scores && step.scores.length > 0 ? step.scores.pop() : 0;
+      let node = step.node.shift();
+      let parent = step.lastParent.shift();
+      let pos = step.lastPos.shift();
+      let func = step.func ? step.func.shift() : null;
+
+      let score =
+        step.scores && step.scores.length > 0 ? step.scores.shift() : 0;
       let scorePos =
         step.scoresPos && step.scoresPos.length > 0
-          ? step.scoresPos.pop()
+          ? step.scoresPos.shift()
           : null;
 
       if (scorePos) {
@@ -366,24 +390,16 @@ class GameMgr {
         Game.addScore(score);
       }
 
-      if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot") {
-        let selfPos = CMath.ConvertToNodeSpaceAR(node, parent);
-        node.setPosition(selfPos);
-      } else {
-        node.setPosition(pos);
-      }
+      let selfPos = CMath.ConvertToNodeSpaceAR(node, parent);
+      node.setPosition(selfPos);
 
       if (func && func.callback && func.target) {
         console.log("call func !");
         func.callback.apply(func.target, func.args);
       }
 
-      let poker = node.getComponent(Poker);
-      poker.setPosState(POS_STATE.NORMAL, false);
-      node.setParent(parent);
-
       node.group = "top";
-
+      let poker = node.getComponent(Poker);
       if (poker) {
         let returnPos;
 
@@ -395,7 +411,7 @@ class GameMgr {
               ? poker.getFlipPos()
               : poker.getDefaultPosition();
           if (!parent.getComponent(Poker)) {
-            if (parent.name != "PokerFlipRoot") {
+            if (parent.name == "place_aback") {
               returnPos.x = 0;
               returnPos.y = 0;
             }
@@ -417,6 +433,10 @@ class GameMgr {
           }
         }
 
+        poker.setDefaultPosition(cc.v2(returnPos.x, returnPos.y));
+        poker.setPosState(POS_STATE.NORMAL, false);
+        node.setParent(parent);
+
         let action = cc.sequence(
           cc.delayTime(count / 500),
           cc.callFunc(() => {
@@ -434,6 +454,10 @@ class GameMgr {
         );
         action.setTag(ACTION_TAG.BACK_STEP);
 
+        poker.node.stopAllActions();
+        if (poker.node.rotation != 0) {
+          poker.node.runAction(cc.rotateTo(0.1, 0));
+        }
         poker.node.runAction(action);
       }
     }
