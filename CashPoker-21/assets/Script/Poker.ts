@@ -263,9 +263,10 @@ export default class Poker extends cc.Component {
     delay: number,
     dir: number,
     zIndex: number,
-    isBoom: boolean = false
+    isBoom: boolean = false,
+    callback?: Function
   ) {
-    let time = 0.12;
+    let time = 0.15;
 
     if (this.hasMove) {
       console.log(" has move key :", this.key, ", value:", this.value);
@@ -279,6 +280,7 @@ export default class Poker extends cc.Component {
           step.node.push(this.node);
           step.lastParent.push(this.node.getParent());
           step.lastPos.push(this.getDefaultPosition());
+        } else {
           if (isBoom) {
             if (step.func) {
               step.func.push({
@@ -305,6 +307,7 @@ export default class Poker extends cc.Component {
       this.node.setParent(Game.removeNode);
       this.node.setPosition(selfPos);
       this.node.zIndex = zIndex;
+      if (callback) callback();
     }, time);
 
     this.scheduleOnce(() => {

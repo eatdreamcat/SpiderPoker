@@ -348,22 +348,18 @@ export default class Poker extends cc.Component {
 
     let index = -1;
 
-    if (window["CheatOpen"]) {
-      index = Poker.DebugRecycIndex++ % 4;
-    } else {
-      Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
-        let poker = node.getComponent(Poker);
-        if (poker) {
-          if (Poker.checkRecycled(poker, this)) {
-            index = key;
-          }
-        } else {
-          if (this.value == 1) {
-            index = key;
-          }
+    Game.getCycledPokerRoot().forEach((key: number, node: cc.Node) => {
+      let poker = node.getComponent(Poker);
+      if (poker) {
+        if (Poker.checkRecycled(poker, this)) {
+          index = key;
         }
-      });
-    }
+      } else {
+        if (this.value == 1) {
+          index = key;
+        }
+      }
+    });
 
     if (index >= 0) {
       // console.log(" recycle count auto place to recycled root:", index);
@@ -836,9 +832,7 @@ export default class Poker extends cc.Component {
 
   public static checkBeNext(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-    if (window["CheatOpen"]) {
-      return true;
-    }
+
     return (
       poker.getValue() - next.getValue() == 1 &&
       poker.getPokerColor() != next.getPokerColor()
@@ -847,10 +841,6 @@ export default class Poker extends cc.Component {
 
   public static checkRecycled(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-    if (window["CheatOpen"]) {
-      console.log("  checkRecycled recycle count ", poker != next);
-      return poker != next;
-    }
 
     return (
       poker.getValue() - next.getValue() == -1 &&

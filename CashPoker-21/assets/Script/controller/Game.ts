@@ -372,16 +372,15 @@ class GameMgr {
     let count = 0;
     while (step.node.length > 0) {
       count++;
-      let node = step.node.shift();
-      let parent = step.lastParent.shift();
-      let pos = step.lastPos.shift();
-      let func = step.func ? step.func.shift() : null;
+      let node = step.node.pop();
+      let parent = step.lastParent.pop();
+      let pos = step.lastPos.pop();
+      let func = step.func ? step.func.pop() : null;
 
-      let score =
-        step.scores && step.scores.length > 0 ? step.scores.shift() : 0;
+      let score = step.scores && step.scores.length > 0 ? step.scores.pop() : 0;
       let scorePos =
         step.scoresPos && step.scoresPos.length > 0
-          ? step.scoresPos.shift()
+          ? step.scoresPos.pop()
           : null;
 
       if (scorePos) {

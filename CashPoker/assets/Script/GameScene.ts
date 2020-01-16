@@ -175,17 +175,7 @@ export default class GameScene extends cc.Component {
 
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
-    this.CheatToggle.node.on(
-      "toggle",
-      () => {
-        if (this.CheatToggle.isChecked) {
-          window["noTime"] = window["CheatOpen"] = true;
-        } else {
-          window["noTime"] = window["CheatOpen"] = false;
-        }
-      },
-      this
-    );
+    this.CheatToggle.node.on("toggle", () => {}, this);
 
     // init prefabs
 

@@ -35,6 +35,9 @@ export default class PokerRoot extends cc.Component {
   private totalValue1: number = 0;
 
   private canTouch: boolean = false;
+
+  private touchLimitTime = 0.3;
+  private touchTime = 1;
   onLoad() {
     this.node.on(cc.Node.EventType.CHILD_ADDED, this.onAddChild, this);
     this.node.on(cc.Node.EventType.CHILD_REMOVED, this.onChildRemove, this);
@@ -50,13 +53,14 @@ export default class PokerRoot extends cc.Component {
 
   onTouchStart(e: cc.Event.EventTouch) {
     if (!Game.isGameStarted()) Game.start();
-
+    if (this.touchTime < this.touchLimitTime) return;
     let curSelectPoker = Game.getCurSelectPoker();
     Game.setCurSelectPoker(null);
     if (!curSelectPoker) return;
     if (!this.canTouch) return;
     if (Game.isBoom() || Game.isComplete()) return;
 
+    this.touchTime = 0;
     // console.log(" on poker root recycle count");
     curSelectPoker.setRecycle(true);
 
@@ -175,9 +179,6 @@ export default class PokerRoot extends cc.Component {
       }
     }
 
-    if (totalValue1_test > 21 || totalValue1_test == totalValue0_test)
-      totalValue1_test = 0;
-
     totalValue0_test = Math.max(0, totalValue0_test);
     totalValue1_test = Math.max(0, totalValue1_test);
 
@@ -212,6 +213,9 @@ export default class PokerRoot extends cc.Component {
     } else {
       if (totalValue0_test == 21 || totalValue1_test == 21) {
         addScore += this.complete(isWild, true);
+        if (this.node.childrenCount >= 5) {
+          addScore += OVER_5_SCORE;
+        }
         console.error(" add Score:", addScore);
       } else {
         if (this.node.childrenCount >= 5) {
@@ -225,7 +229,11 @@ export default class PokerRoot extends cc.Component {
   }
 
   updateValueLabel() {
-    if (this.totalValue1 == 0) {
+    if (
+      this.totalValue1 == 0 ||
+      this.totalValue0 == this.totalValue1 ||
+      this.totalValue1 > 21
+    ) {
       this.MutilpValueNode.active = false;
       this.SingleValueNode.active = true;
     } else {
@@ -258,6 +266,15 @@ export default class PokerRoot extends cc.Component {
     }
     if (!isCheck) {
       console.log(" 完成 21点");
+      if (this.node.childrenCount >= 5) {
+        Game.addScore(
+          OVER_5_SCORE,
+          CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode).add(
+            cc.v2(0, -300)
+          )
+        );
+      }
+
       this.flyALLChildren(isWild ? WILD_21_SCORE : NORMAL_21_SCORE);
       this.totalValue0 = 0;
       this.totalValue1 = 0;
@@ -297,9 +314,21 @@ export default class PokerRoot extends cc.Component {
     return score;
   }
 
+  completeFly() {
+    this.flyCount++;
+    if (this.flyCount >= this.totalFlyCount) {
+      this.canTouch = true;
+    }
+  }
+
+  private flyCount: number = 0;
+  private totalFlyCount: number = 0;
   flyALLChildren(addScore: number) {
     let children = this.node.children.reverse();
     let count = children.length;
+    this.totalFlyCount = count;
+    this.flyCount = 0;
+    this.canTouch = false;
     for (let child of children) {
       let poker = child.getComponent(Poker);
 
@@ -307,8 +336,12 @@ export default class PokerRoot extends cc.Component {
         count * 0.05,
         parseInt(this.node.name) > 1 ? -1 : 1,
         count,
-        addScore == 0
+        addScore == 0,
+        () => {
+          this.completeFly();
+        }
       );
+
       count--;
       if (count == children.length - 1 && addScore > 0) {
         Game.addScore(
@@ -330,10 +363,6 @@ export default class PokerRoot extends cc.Component {
   }
 
   update(dt: number) {
-    // if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
-    //   this.node.color = cc.Color.RED;
-    // } else {
-    //   this.node.color = cc.Color.WHITE;
-    // }
+    this.touchTime += dt;
   }
 }

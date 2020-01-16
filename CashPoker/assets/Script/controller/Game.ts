@@ -76,7 +76,7 @@ class GameMgr {
   }
 
   public addGameTime(time: number) {
-    if (window["noTime"] || Game.isComplete()) return;
+    if (Game.isComplete()) return;
 
     this.gameTime += time;
     this.gameTime = Math.max(this.gameTime, 0);
@@ -374,4 +374,3 @@ class GameMgr {
 }
 
 export const Game = GameMgr.inst;
-CC_DEBUG && (window["Game"] = Game);

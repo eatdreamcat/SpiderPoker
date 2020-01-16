@@ -186,7 +186,7 @@ export const FLIP_SCORE = 50;
 export const BACK_STEP_SCORE = 0;
 
 export const TARGET_POINT = 21;
-export const BOOOOM_LIMIT = 3;
+export const BOOOOM_LIMIT = CC_DEBUG ? 20 : 3;
 export const NORMAL_21_SCORE = 400;
 export const WILD_21_SCORE = 200;
 export const STREAK_SCORE = 250;
