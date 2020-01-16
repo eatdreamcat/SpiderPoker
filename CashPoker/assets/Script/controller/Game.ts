@@ -1,6 +1,6 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState } from "../Poker";
-import { ACTION_TAG, OFFSET_Y } from "../Pokers";
+import { ACTION_TAG, OFFSET_Y, FREE_TIME_LIMIT } from "../Pokers";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
 
@@ -47,6 +47,20 @@ class GameMgr {
   public pokerFlipRoot: cc.Node = null;
 
   private combo: number = -1;
+
+  private freeTime: number = 0;
+
+  public addFreeTime(count: number) {
+    this.freeTime += count;
+    if (this.freeTime >= FREE_TIME_LIMIT) {
+      gEventMgr.emit(GlobalEvent.UPDATE_TIP_ANIMATION, true);
+    }
+  }
+
+  public resetFreeTime() {
+    this.freeTime = 0;
+    gEventMgr.emit(GlobalEvent.UPDATE_TIP_ANIMATION, false);
+  }
 
   public getCombo() {
     return this.combo;

@@ -109,6 +109,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Toggle)
   CheatToggle: cc.Toggle = null;
 
+  @property(cc.Animation)
+  TipAnimation: cc.Animation = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
@@ -158,6 +161,7 @@ export default class GameScene extends cc.Component {
   onLoad() {
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
+    this.TipAnimation.node.active = false;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -200,16 +204,23 @@ export default class GameScene extends cc.Component {
       cc.Node.EventType.TOUCH_START,
       () => {
         if (Game.isComplete()) return;
+        Game.resetFreeTime();
         this.Stop.show(1);
         Game.setPause(true);
       },
       this
     );
 
+    gEventMgr.on(GlobalEvent.UPDATE_TIP_ANIMATION, (isActive: boolean) => {
+      if (this.TipAnimation.node.active == isActive) return;
+      this.TipAnimation.node.active = isActive;
+    });
+
     this.SubmitButton.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {
         if (Game.isComplete()) return;
+        Game.resetFreeTime();
         this.Stop.show(-1);
         Game.setPause(true);
       },
@@ -257,6 +268,7 @@ export default class GameScene extends cc.Component {
       cc.Node.EventType.TOUCH_START,
       () => {
         if (Game.isTimeOver() || Game.isComplete()) return;
+        Game.resetFreeTime();
         if (this.devTime >= 0.3) {
           this.devPoker();
           this.devTime = 0;
@@ -286,6 +298,7 @@ export default class GameScene extends cc.Component {
         if (Game.isTimeOver() || this.backTime < 0.5 || Game.isComplete())
           return;
         this.backTime = 0;
+        Game.resetFreeTime();
         Game.backStep();
       },
       Game
@@ -1065,6 +1078,7 @@ export default class GameScene extends cc.Component {
 
   dispatchPoker() {
     if (Game.isTimeOver() || Game.isComplete()) return;
+    Game.resetFreeTime();
     if (this.PokerClip.childrenCount <= 0 || !this.canDispatchPoker) {
       return;
     }
@@ -1124,6 +1138,7 @@ export default class GameScene extends cc.Component {
     this.backTime += dt;
     if (Game.isGameStarted()) {
       Game.addGameTime(-dt);
+      Game.addFreeTime(dt);
       let gameTime = Game.getGameTime();
       this.TimeLabel.string = CMath.TimeFormat(gameTime);
       if (gameTime <= 60) {

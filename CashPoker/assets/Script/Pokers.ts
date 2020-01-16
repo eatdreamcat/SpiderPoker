@@ -176,3 +176,5 @@ export const enum ACTION_TAG {
 
 export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
+
+export const FREE_TIME_LIMIT = 5;

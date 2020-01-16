@@ -322,6 +322,7 @@ export default class Poker extends cc.Component {
 
   onTouchStart(e: cc.Event.EventTouch) {
     e.bubbles = !this.isNormal();
+    Game.resetFreeTime();
     this.node.stopActionByTag(ACTION_TAG.SHAKE);
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!Game.isGameStarted()) Game.start();
@@ -371,6 +372,7 @@ export default class Poker extends cc.Component {
 
   onMove(e: cc.Event.EventTouch) {
     e.bubbles = false;
+    Game.resetFreeTime();
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!this.canMove) return;
 
@@ -392,6 +394,7 @@ export default class Poker extends cc.Component {
 
   onMoveEnd(e: cc.Event.EventTouch) {
     e.bubbles = false;
+    Game.resetFreeTime();
     if (Game.isTimeOver() || Game.isComplete()) return;
     let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
     if (action && !action.isDone()) return;
