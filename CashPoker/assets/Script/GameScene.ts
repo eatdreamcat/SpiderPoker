@@ -109,8 +109,11 @@ export default class GameScene extends cc.Component {
   @property(cc.Toggle)
   CheatToggle: cc.Toggle = null;
 
-  @property(cc.Animation)
-  TipAnimation: cc.Animation = null;
+  @property(cc.Node)
+  Tip: cc.Node = null;
+
+  @property(cc.SpriteAtlas)
+  TipAtlas: cc.SpriteAtlas = null;
 
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
@@ -124,6 +127,12 @@ export default class GameScene extends cc.Component {
   private scoreStep: number = 0;
 
   private isStart: boolean = false;
+
+  private tipIndex: number = 1;
+
+  private isNewPlayer: boolean = false;
+
+  private tipTimeout: number = -1;
 
   init() {
     this.Stop.hide();
@@ -161,7 +170,7 @@ export default class GameScene extends cc.Component {
   onLoad() {
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
-    this.TipAnimation.node.active = false;
+    this.Tip.active = false;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -205,15 +214,36 @@ export default class GameScene extends cc.Component {
       () => {
         if (Game.isComplete()) return;
         Game.resetFreeTime();
-        this.Stop.show(1);
+        this.Guide.show(true, () => {
+          Game.setPause(false);
+          //gEventMgr.emit(GlobalEvent.PLAY_START);
+        });
         Game.setPause(true);
       },
       this
     );
 
     gEventMgr.on(GlobalEvent.UPDATE_TIP_ANIMATION, (isActive: boolean) => {
-      if (this.TipAnimation.node.active == isActive) return;
-      this.TipAnimation.node.active = isActive;
+      if (this.Tip.active == isActive) return;
+      if (this.tipTimeout != -1) {
+        clearTimeout(this.tipTimeout);
+      }
+      this.Tip.active = isActive;
+      if (this.Tip.active) {
+        this.Tip.getComponent(
+          cc.Sprite
+        ).spriteFrame = this.TipAtlas.getSpriteFrame("tips0" + this.tipIndex);
+
+        if (this.isNewPlayer) {
+          this.tipIndex = (this.tipIndex++ % 4) + 1;
+        } else {
+          this.tipIndex = (this.tipIndex++ % 7) + 1;
+        }
+        this.tipTimeout = setTimeout(() => {
+          this.Tip.active = false;
+          Game.resetFreeTime();
+        }, 2000);
+      }
     });
 
     this.SubmitButton.node.on(
@@ -439,10 +469,12 @@ export default class GameScene extends cc.Component {
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      this.Guide.show(() => {
+      this.Guide.show(false, () => {
         this.nextStep(LOAD_STEP.GUIDE);
       });
+      this.isNewPlayer = true;
     } else {
+      this.isNewPlayer = false;
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
     }

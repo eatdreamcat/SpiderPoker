@@ -27,10 +27,20 @@ export default class Guide extends cc.Component {
   @property(cc.PageView)
   GuideView: cc.PageView = null;
 
+  @property(cc.Button)
+  Resume: cc.Button = null;
+
   private callback: Function = null;
   onLoad() {
     this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
     this.Forward.node.on(cc.Node.EventType.TOUCH_END, this.forwardPage, this);
+    this.Resume.node.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        this.hide();
+      },
+      this
+    );
   }
 
   start() {}
@@ -40,7 +50,8 @@ export default class Guide extends cc.Component {
     if (this.callback) this.callback();
   }
 
-  show(closeCallback?: Function) {
+  show(type: boolean, closeCallback?: Function) {
+    this.Resume.node.active = type;
     this.node.active = true;
     this.callback = closeCallback;
     this.GuideView.scrollToPage(0, 0);
