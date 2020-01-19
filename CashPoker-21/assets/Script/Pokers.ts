@@ -177,6 +177,26 @@ export const enum ACTION_TAG {
   SELECT_POKER
 }
 
+export const enum SPECIAL_TYPE {
+  FIVE_CARDS,
+  COMPLETE_21,
+  BUSTED,
+  COMBO,
+  NO_BUST,
+  SUPER_COMBO,
+  WILD
+}
+
+export const SPECIAL_TYPE_NAME = [
+  "bg_font5C",
+  "bg_font21",
+  "bg_fontbu",
+  "bg_fontco",
+  "bg_fontno",
+  "bg_fontsco",
+  "bg_fontwild"
+];
+
 export const COLOR_GRAY = cc.color(238, 218, 166);
 
 export const OFFSET_Y = -70;
@@ -189,7 +209,12 @@ export const TARGET_POINT = 21;
 export const BOOOOM_LIMIT = CC_DEBUG ? 20 : 3;
 export const NORMAL_21_SCORE = 400;
 export const WILD_21_SCORE = 200;
-export const STREAK_SCORE = 250;
+export const STREAK_SCORE = 300;
 export const OVER_5_SCORE = 600;
+
+export const ADD_SCORE_SPECILA_OFFSET_Y = 650;
+export const NORMAL_SCORE_MOVE_TIME = 0.3;
+
+export const SPECIAL_TIME_OFFSET = 500;
 
 export const TOTAL_POKER_COUNT = Pokers.length;

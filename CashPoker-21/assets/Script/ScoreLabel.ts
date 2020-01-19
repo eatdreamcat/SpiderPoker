@@ -16,7 +16,7 @@ export default class ScoreLabel extends cc.Component {
   Score: cc.Label = null;
   reuse() {
     this.node.scale = 0;
-    console.log(arguments[0][0]);
+    console.error(arguments[0][0]);
     this.Score.string = arguments[0][0];
   }
 

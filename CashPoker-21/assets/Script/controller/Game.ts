@@ -35,6 +35,7 @@ class GameMgr {
   private cyclePokerRoot: HashMap<number, cc.Node> = new HashMap();
   private posOffsetCal: HashMap<number, number> = new HashMap();
   public removeNode: cc.Node;
+  public removeCardNode: cc.Node;
 
   private stepInfoArray: StepInfo[] = [];
 
@@ -71,6 +72,10 @@ class GameMgr {
       }, 1000);
     }
     gEventMgr.emit(GlobalEvent.UPDATE_RECYCLE_POKER, this.recyclePoker);
+  }
+
+  public getRecyclePoker() {
+    return this.recyclePoker;
   }
 
   getCurSelectPoker() {
@@ -125,6 +130,9 @@ class GameMgr {
 
   public addStreak(streak: number) {
     this.streakCount += streak;
+    this.streakCount = Math.min(this.streakCount, 4);
+
+    console.error(" add streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
   }
 
   public getStreak() {
@@ -133,6 +141,7 @@ class GameMgr {
 
   public clearStreak() {
     this.streakCount = 0;
+    console.error(" clearStreak streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
   }
 
   public getGameTime() {
@@ -230,13 +239,13 @@ class GameMgr {
   }
 
   public addRemovePokerCount(count: number) {
-    this.removePokerCount = Game.removeNode.childrenCount;
+    this.removePokerCount = Game.removeCardNode.childrenCount;
     if (this.removePokerCount == TOTAL_POKER_COUNT) {
       console.error(
-        " ---------------- addRemovePokerCount -----------------------"
+        " ---------------- addRemovePokerCount ------openResultTimeDelay-----------------"
       );
       this.calTimeBonus();
-      gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+      //gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
   }
 
@@ -253,7 +262,11 @@ class GameMgr {
     score = Math.floor(score);
     this.score += score;
     this.score = Math.max(this.score, 0);
-    console.log("------------------- score:", this.score, score);
+    console.error(
+      "----------- game addScore-------- score:",
+      this.score,
+      score
+    );
     gEventMgr.emit(GlobalEvent.UPDATE_SCORE, score, pos);
   }
 

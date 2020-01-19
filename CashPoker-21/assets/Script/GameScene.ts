@@ -7,7 +7,11 @@ import {
   OFFSET_Y,
   PokerIndex,
   BACK_STEP_SCORE,
-  BOOOOM_LIMIT
+  BOOOOM_LIMIT,
+  SPECIAL_TYPE_NAME,
+  SPECIAL_TYPE,
+  ADD_SCORE_SPECILA_OFFSET_Y,
+  NORMAL_SCORE_MOVE_TIME
 } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
@@ -57,6 +61,15 @@ export default class GameScene extends cc.Component {
   @property(cc.Button)
   BackButton: cc.Button = null;
 
+  @property(cc.Node)
+  Bust01: cc.Node = null;
+
+  @property(cc.Node)
+  Bust02: cc.Node = null;
+
+  @property(cc.Node)
+  Bust03: cc.Node = null;
+
   @property(cc.Button)
   PauseButton: cc.Button = null;
 
@@ -86,6 +99,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Prefab)
   AddScoreLabel: cc.Prefab = null;
 
+  @property(cc.Prefab)
+  SpecialFont: cc.Prefab = null;
+
   @property(cc.Animation)
   TimeAnimation: cc.Animation = null;
 
@@ -105,16 +121,25 @@ export default class GameScene extends cc.Component {
   CheatToggle: cc.Toggle = null;
 
   @property(cc.Label)
-  RecyclePokerLabel: cc.Label = null;
-
-  @property(cc.Label)
-  TotalRecyclePokerLabel: cc.Label = null;
-
-  @property(cc.Label)
   PokerRestLabel: cc.Label = null;
 
   @property(cc.Node)
   SelectPokerNode: cc.Node = null;
+
+  @property(cc.Node)
+  SpecialWild: cc.Node = null;
+
+  @property(cc.Node)
+  SpecialBust: cc.Node = null;
+
+  @property(cc.SpriteAtlas)
+  SpecialAtlas: cc.SpriteAtlas = null;
+
+  @property(cc.Node)
+  SpecialScore: cc.Node = null;
+
+  @property(cc.Node)
+  RemoveCardNode: cc.Node = null;
 
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
@@ -160,7 +185,10 @@ export default class GameScene extends cc.Component {
   onLoad() {
     Game.removeNode = this.RemoveNode;
     Game.pokerClip = this.PokerClip;
-    this.TotalRecyclePokerLabel.string = BOOOOM_LIMIT.toString();
+    Game.removeCardNode = this.RemoveCardNode;
+    this.Bust01.getChildByName("Cover").active = false;
+    this.Bust02.getChildByName("Cover").active = false;
+    this.Bust03.getChildByName("Cover").active = false;
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -200,7 +228,8 @@ export default class GameScene extends cc.Component {
       }.bind(this),
       this.Poker,
       this.AddScoreLabel,
-      this.SubScoreLabel
+      this.SubScoreLabel,
+      this.SpecialFont
     );
 
     gAudio.init(() => {
@@ -286,7 +315,17 @@ export default class GameScene extends cc.Component {
     gEventMgr.on(
       GlobalEvent.UPDATE_RECYCLE_POKER,
       (count: number) => {
-        this.RecyclePokerLabel.string = count.toString();
+        console.log(" BOOM count: ", count);
+        if (count < 2 && count >= 1) {
+          this.Bust01.getChildByName("Cover").active = true;
+        } else if (count < 3) {
+          this.Bust01.getChildByName("Cover").active = true;
+          this.Bust02.getChildByName("Cover").active = true;
+        } else {
+          this.Bust01.getChildByName("Cover").active = true;
+          this.Bust02.getChildByName("Cover").active = true;
+          this.Bust03.getChildByName("Cover").active = true;
+        }
       },
       this
     );
@@ -444,6 +483,227 @@ export default class GameScene extends cc.Component {
       this
     );
 
+    gEventMgr.on(
+      GlobalEvent.CHECK_COMPLETE,
+      (delay: number) => {
+        if (
+          this.PokerClip.childrenCount == 0 &&
+          this.SelectPokerNode.childrenCount == 0
+        ) {
+          console.error(" openResultTimeDelay:", delay);
+          if (Game.getRecyclePoker() <= 0) {
+            setTimeout(() => {
+              gEventMgr.emit(GlobalEvent.NO_BUST);
+            }, delay);
+          }
+
+          this.scheduleOnce(() => {
+            gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+          }, 2 + delay / 1000);
+        }
+      },
+      this
+    );
+
+    /** 爆掉 */
+    gEventMgr.on(
+      GlobalEvent.BUST,
+      (index: number) => {
+        let bgNode = this.SpecialBust.getChildByName("bust" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.BUSTED]
+        );
+
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + 200),
+          () => {
+            bgNode.stopAllActions();
+            bgNode.scaleY = 0;
+            bgNode.runAction(
+              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2))
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** 超过5张 */
+    gEventMgr.on(
+      GlobalEvent.OVER_FIVE_CARDS,
+      (index: number) => {
+        let bgNode = this.SpecialWild.getChildByName("wild" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.FIVE_CARDS]
+        );
+
+        let scoreBg = this.SpecialScore.getChildByName(
+          "rect" + index
+        ).getChildByName("score");
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + ADD_SCORE_SPECILA_OFFSET_Y),
+          () => {
+            scoreBg.stopAllActions();
+            scoreBg.runAction(
+              cc.sequence(
+                cc.moveTo(0, 0, -800),
+                cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
+              )
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** combo */
+    gEventMgr.on(
+      GlobalEvent.COMBO,
+      (index: number) => {
+        let bgNode = this.SpecialWild.getChildByName("wild" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.COMBO]
+        );
+
+        let scoreBg = this.SpecialScore.getChildByName(
+          "rect" + index
+        ).getChildByName("score");
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + ADD_SCORE_SPECILA_OFFSET_Y),
+          () => {
+            scoreBg.stopAllActions();
+            scoreBg.runAction(
+              cc.sequence(
+                cc.moveTo(0, 0, -800),
+                cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
+              )
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** 超级combo */
+    gEventMgr.on(
+      GlobalEvent.SUPER_COMBO,
+      (index: number) => {
+        let bgNode = this.SpecialWild.getChildByName("wild" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.SUPER_COMBO]
+        );
+        let scoreBg = this.SpecialScore.getChildByName(
+          "rect" + index
+        ).getChildByName("score");
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + ADD_SCORE_SPECILA_OFFSET_Y),
+          () => {
+            scoreBg.stopAllActions();
+            scoreBg.runAction(
+              cc.sequence(
+                cc.moveTo(0, 0, -800),
+                cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
+              )
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** 完成21点 */
+    gEventMgr.on(
+      GlobalEvent.COMPLETE_21,
+      (index: number) => {
+        let bgNode = this.SpecialWild.getChildByName("wild" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.COMPLETE_21]
+        );
+        let scoreBg = this.SpecialScore.getChildByName(
+          "rect" + index
+        ).getChildByName("score");
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + ADD_SCORE_SPECILA_OFFSET_Y),
+          () => {
+            scoreBg.stopAllActions();
+            scoreBg.runAction(
+              cc.sequence(
+                cc.moveTo(0, 0, -800),
+                cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
+              )
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** 没有爆过 */
+    gEventMgr.on(
+      GlobalEvent.NO_BUST,
+      () => {
+        let pos = CMath.ConvertToNodeSpaceAR(this.Bust02, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.NO_BUST]
+        );
+
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y - 200)
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
+    /** 野牌 */
+    gEventMgr.on(
+      GlobalEvent.WILD,
+      (index: number) => {
+        let bgNode = this.SpecialWild.getChildByName("wild" + index);
+        let pos = CMath.ConvertToNodeSpaceAR(bgNode, this.RemoveNode);
+        let spriteFrame = this.SpecialAtlas.getSpriteFrame(
+          SPECIAL_TYPE_NAME[SPECIAL_TYPE.WILD]
+        );
+
+        let node = gFactory.getSpecialFont(
+          spriteFrame,
+          cc.v2(pos.x, pos.y + ADD_SCORE_SPECILA_OFFSET_Y),
+          () => {
+            bgNode.stopAllActions();
+            bgNode.scaleY = 0;
+            bgNode.runAction(
+              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2))
+            );
+          }
+        );
+
+        this.RemoveNode.addChild(node);
+      },
+      this
+    );
+
     //gEventMgr.on(GlobalEvent.RESTART, this.restart, this);
     cc.loader.loadRes("prefabs/Result");
     cc.loader.loadResDir("sounds");
@@ -451,11 +711,6 @@ export default class GameScene extends cc.Component {
 
   onPokerClipRemoveChild() {
     this.PokerRestLabel.string = this.PokerClip.childrenCount.toString();
-    if (this.PokerClip.childrenCount == 0) {
-      this.scheduleOnce(() => {
-        gEventMgr.emit(GlobalEvent.OPEN_RESULT);
-      }, 1);
-    }
   }
 
   onPokerClipAddChild() {
@@ -487,6 +742,20 @@ export default class GameScene extends cc.Component {
     if (this.SelectPokerNode.childrenCount <= 0) {
       this.updateCurSelectPoker();
     }
+
+    // if (
+    //   this.PokerClip.childrenCount == 0 &&
+    //   this.SelectPokerNode.childrenCount == 0
+    // ) {
+    //   if (Game.getRecyclePoker() <= 0) {
+    //     setTimeout(() => {
+    //       gEventMgr.emit(GlobalEvent.NO_BUST);
+    //     }, Game.openResultTimeDelay);
+    //   }
+    //   this.scheduleOnce(() => {
+    //     gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+    //   }, 2 + Game.openResultTimeDelay);
+    // }
   }
 
   updateCurSelectPoker() {

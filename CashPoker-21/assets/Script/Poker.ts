@@ -170,6 +170,8 @@ export default class Poker extends cc.Component {
 
     this.cycled = cycled;
     if (this.cycled) {
+      this.RecycleAnimation.node.opacity = 0;
+      this.RecycleAnimation.stop();
       Game.addRecycleCount(1);
     } else {
       Game.addRecycleCount(-1);
@@ -259,6 +261,12 @@ export default class Poker extends cc.Component {
     gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, () => {}, this);
   }
 
+  private complete: boolean = false;
+
+  setComplete(comp: boolean) {
+    this.complete = comp;
+  }
+
   autoCompleteDone(
     delay: number,
     dir: number,
@@ -266,7 +274,12 @@ export default class Poker extends cc.Component {
     isBoom: boolean = false,
     callback?: Function
   ) {
+    if (this.complete) return;
+    this.setComplete(true);
     let time = 0.15;
+
+    this.RecycleAnimation.node.opacity = 0;
+    this.RecycleAnimation.stop();
 
     if (this.hasMove) {
       console.log(" has move key :", this.key, ", value:", this.value);
@@ -434,7 +447,7 @@ export default class Poker extends cc.Component {
   onTouchStart(e: cc.Event.EventTouch) {
     //if (this.carState == CardState.Back) return;
     e.bubbles = this.isCycled();
-    if (Game.isTimeOver() || Game.isComplete()) return;
+    if (Game.isTimeOver() || Game.isComplete() || this.isCycled()) return;
     if (!Game.isGameStarted()) Game.start();
 
     gEventMgr.emit(GlobalEvent.PLAY_POKER_PLACE);
@@ -1240,18 +1253,33 @@ export default class Poker extends cc.Component {
   }
 
   onSetParent(parent: cc.Node) {
-    if (!parent) {
-      this.setForward(null);
-      return;
-    }
+    // if (!parent) {
+    //   this.setForward(null);
+    //   return;
+    // }
+    // let poker = parent.getComponent(Poker);
+    // if (poker) {
+    //   this.setForward(poker);
+    //   this.setKey(poker.getKey());
+    // } else {
+    //   this.setForward(null);
+    //   this.setKey(parseInt(parent.name));
+    // }
 
-    let poker = parent.getComponent(Poker);
-    if (poker) {
-      this.setForward(poker);
-      this.setKey(poker.getKey());
+    if (parent.name == "RemoveNode") {
+      this.setComplete(true);
     } else {
-      this.setForward(null);
-      this.setKey(parseInt(parent.name));
+      this.setComplete(false);
+      if (
+        this.RecycleAnimation.node.opacity <= 0 &&
+        this.isWildCard() &&
+        !this.complete &&
+        !this.isCycled() &&
+        this.carState == CardState.Front
+      ) {
+        this.RecycleAnimation.node.opacity = 255;
+        this.RecycleAnimation.play();
+      }
     }
   }
 }

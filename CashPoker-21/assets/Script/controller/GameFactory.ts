@@ -93,7 +93,8 @@ enum Step {
   POKER = 1 << 2,
   AddScore = 1 << 3,
   SubScore = 1 << 4,
-  DONE = POKER | AddScore | SubScore
+  SpecialFont = 1 << 5,
+  DONE = POKER | AddScore | SubScore | SpecialFont
 }
 
 class GameFactory {
@@ -109,12 +110,14 @@ class GameFactory {
     callback: Function,
     poker?: cc.Prefab,
     addScoreLabel?: cc.Prefab,
-    subScoreLabel?: cc.Prefab
+    subScoreLabel?: cc.Prefab,
+    specialFont?: cc.Prefab
   ) {
     this.doneCallback = callback;
     this.initPoker(52, poker);
     this.initAddScore(10, addScoreLabel);
     this.initSubScore(10, subScoreLabel);
+    this.initSpecial(10, specialFont);
   }
 
   private nextStep(step: Step) {
@@ -123,6 +126,33 @@ class GameFactory {
     if (this.step >= Step.DONE) {
       this.doneCallback && this.doneCallback();
     }
+  }
+
+  private SpecialPool: HashMap<string, ObjPool> = new HashMap();
+  initSpecial(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.SpecialPool.add("Special", new ObjPool(prefab, initCount));
+      self.nextStep(Step.SpecialFont);
+    } else {
+      cc.loader.loadRes("prefabs/SpecialFont", cc.Prefab, (err, prefabRes) => {
+        if (err) {
+          console.error(err);
+        } else {
+          //let cube = cc.instantiate(prefab);
+          self.SpecialPool.add("Special", new ObjPool(prefabRes, initCount));
+          self.nextStep(Step.SpecialFont);
+        }
+      });
+    }
+  }
+
+  getSpecialFont(...args): cc.Node {
+    return this.SpecialPool.get("Special").get(args);
+  }
+
+  putSpecialFont(poker: cc.Node) {
+    this.SpecialPool.get("Special").put(poker);
   }
 
   private PokerPool: HashMap<string, ObjPool> = new HashMap();

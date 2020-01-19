@@ -7,7 +7,8 @@ import {
   OVER_5_SCORE,
   WILD_21_SCORE,
   NORMAL_21_SCORE,
-  STREAK_SCORE
+  STREAK_SCORE,
+  SPECIAL_TIME_OFFSET
 } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
@@ -126,10 +127,10 @@ export default class PokerRoot extends cc.Component {
     }
 
     console.warn(" on child remove update value!!!: ", this.node.childrenCount);
-    this.updateTotalValue();
+    this.updateTotalValue(false);
   }
 
-  updateTotalValue() {
+  updateTotalValue(isAdd: boolean) {
     this.totalValue0 = 0;
     this.totalValue1 = 0;
     let count = 0;
@@ -139,9 +140,21 @@ export default class PokerRoot extends cc.Component {
       if (poker.isWildCard()) {
         let value = TARGET_POINT - this.totalValue0;
 
-        this.setTotalValue(value, true, false, count);
+        this.setTotalValue(
+          value,
+          true,
+          false,
+          count,
+          count == this.node.children.length && isAdd
+        );
       } else {
-        this.setTotalValue(poker.getValue(), false, false, count);
+        this.setTotalValue(
+          poker.getValue(),
+          false,
+          false,
+          count,
+          count == this.node.children.length && isAdd
+        );
       }
     }
 
@@ -155,14 +168,15 @@ export default class PokerRoot extends cc.Component {
     if (!poker) return;
     poker.setRecycle(true);
     console.warn(" on child add update value!!!:", this.node.childrenCount);
-    this.updateTotalValue();
+    this.updateTotalValue(true);
   }
 
   setTotalValue(
     value: number,
     isWild: boolean,
     isCheck: boolean,
-    count: number
+    count: number,
+    isEnd: boolean
   ): number {
     let addScore = 0;
 
@@ -171,10 +185,10 @@ export default class PokerRoot extends cc.Component {
     totalValue0_test += value;
     totalValue1_test += value;
     if (value == 1) {
-      if (totalValue0_test + 10 == 21) {
-        totalValue0_test = 21;
+      if (totalValue0_test + 10 == TARGET_POINT) {
+        totalValue0_test = TARGET_POINT;
       }
-      if (totalValue1_test != 21) {
+      if (totalValue1_test != TARGET_POINT) {
         totalValue1_test += 10;
       }
     }
@@ -182,17 +196,24 @@ export default class PokerRoot extends cc.Component {
     totalValue0_test = Math.max(0, totalValue0_test);
     totalValue1_test = Math.max(0, totalValue1_test);
 
-    if (totalValue0_test > 21) {
+    if (totalValue0_test > 100 * TARGET_POINT) {
       this.boom(isCheck);
-    } else {
-      if (totalValue0_test == 21 || totalValue1_test == 21) {
+    } else if (isEnd) {
+      if (
+        totalValue0_test >= TARGET_POINT ||
+        totalValue1_test >= TARGET_POINT
+      ) {
         addScore += this.complete(isWild, isCheck);
         console.error(" add Score:", addScore);
       } else {
         if (count >= 5) {
           addScore += this.overFive(isCheck);
         } else {
-          Game.clearStreak();
+          if (!isCheck) {
+            this.scheduleOnce(() => {
+              gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, 0);
+            }, 0.1);
+          }
         }
       }
     }
@@ -209,9 +230,12 @@ export default class PokerRoot extends cc.Component {
     let addScore = 0;
     let totalValue0_test = this.totalValue0;
     let totalValue1_test = this.totalValue1;
-    if (totalValue0_test > 21) {
+    if (totalValue0_test > TARGET_POINT) {
     } else {
-      if (totalValue0_test == 21 || totalValue1_test == 21) {
+      if (
+        totalValue0_test == TARGET_POINT ||
+        totalValue1_test == TARGET_POINT
+      ) {
         addScore += this.complete(isWild, true);
         if (this.node.childrenCount >= 5) {
           addScore += OVER_5_SCORE;
@@ -255,6 +279,10 @@ export default class PokerRoot extends cc.Component {
       this.updateValueLabel();
       Game.clearStreak();
       Game.addRecyclePoker(1);
+      gEventMgr.emit(GlobalEvent.BUST, parseInt(this.node.name));
+      this.scheduleOnce(() => {
+        gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, SPECIAL_TIME_OFFSET);
+      }, 0.1);
     }
   }
 
@@ -264,28 +292,56 @@ export default class PokerRoot extends cc.Component {
     if (Game.getStreak() >= 3) {
       score += (Game.getStreak() - 2) * STREAK_SCORE;
     }
+
+    let timeDelay = 0;
     if (!isCheck) {
       console.log(" 完成 21点");
+
       if (this.node.childrenCount >= 5) {
-        Game.addScore(
-          OVER_5_SCORE,
-          CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode).add(
-            cc.v2(0, -300)
-          )
-        );
+        setTimeout(() => {
+          Game.addScore(
+            OVER_5_SCORE,
+            CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode).add(
+              cc.v2(0, -300)
+            )
+          );
+          gEventMgr.emit(GlobalEvent.OVER_FIVE_CARDS, parseInt(this.node.name));
+        }, SPECIAL_TIME_OFFSET);
+        timeDelay = SPECIAL_TIME_OFFSET;
       }
 
       this.flyALLChildren(isWild ? WILD_21_SCORE : NORMAL_21_SCORE);
+
+      if (isWild) {
+        gEventMgr.emit(GlobalEvent.WILD, parseInt(this.node.name));
+      } else {
+        gEventMgr.emit(GlobalEvent.COMPLETE_21, parseInt(this.node.name));
+      }
+
       this.totalValue0 = 0;
       this.totalValue1 = 0;
       this.updateValueLabel();
       Game.addStreak(1);
       if (Game.getStreak() >= 2) {
-        Game.addScore(
-          (Game.getStreak() - 1) * STREAK_SCORE,
-          CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
-        );
+        let streak = Math.min(Game.getStreak(), 3);
+        setTimeout(() => {
+          Game.addScore(
+            (streak - 1) * STREAK_SCORE,
+            CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
+          );
+          if (streak >= 3) {
+            gEventMgr.emit(GlobalEvent.SUPER_COMBO, parseInt(this.node.name));
+          } else {
+            gEventMgr.emit(GlobalEvent.COMBO, parseInt(this.node.name));
+          }
+        }, timeDelay + SPECIAL_TIME_OFFSET);
       }
+      this.scheduleOnce(() => {
+        gEventMgr.emit(
+          GlobalEvent.CHECK_COMPLETE,
+          timeDelay + SPECIAL_TIME_OFFSET - 100
+        );
+      }, 0.1);
     }
 
     return score;
@@ -299,17 +355,31 @@ export default class PokerRoot extends cc.Component {
     }
     if (!isCheck) {
       console.log(" 超过5张 ");
+      let timeDelay = 0;
       this.flyALLChildren(OVER_5_SCORE);
+      gEventMgr.emit(GlobalEvent.OVER_FIVE_CARDS, parseInt(this.node.name));
       this.totalValue0 = 0;
       this.totalValue1 = 0;
       this.updateValueLabel();
       Game.addStreak(1);
       if (Game.getStreak() >= 2) {
-        Game.addScore(
-          (Game.getStreak() - 1) * STREAK_SCORE,
-          CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
-        );
+        let streak = Math.min(Game.getStreak(), 3);
+        setTimeout(() => {
+          Game.addScore(
+            (streak - 1) * STREAK_SCORE,
+            CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)
+          );
+          if (streak >= 3) {
+            gEventMgr.emit(GlobalEvent.SUPER_COMBO, parseInt(this.node.name));
+          } else {
+            gEventMgr.emit(GlobalEvent.COMBO, parseInt(this.node.name));
+          }
+        }, SPECIAL_TIME_OFFSET);
+        timeDelay += SPECIAL_TIME_OFFSET;
       }
+      this.scheduleOnce(() => {
+        gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, timeDelay);
+      }, 0.1);
     }
     return score;
   }
