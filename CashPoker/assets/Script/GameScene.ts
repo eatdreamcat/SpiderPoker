@@ -115,6 +115,9 @@ export default class GameScene extends cc.Component {
   @property(cc.SpriteAtlas)
   TipAtlas: cc.SpriteAtlas = null;
 
+  @property(cc.Animation)
+  SubmitTip: cc.Animation = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 28;
@@ -134,7 +137,9 @@ export default class GameScene extends cc.Component {
 
   private tipTimeout: number = -1;
 
+  private hasShowSubmitTip: boolean = false;
   init() {
+    this.SubmitTip.node.active = false;
     this.Stop.hide();
     this.Complete.node.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
@@ -224,12 +229,35 @@ export default class GameScene extends cc.Component {
     );
 
     gEventMgr.on(GlobalEvent.UPDATE_TIP_ANIMATION, (isActive: boolean) => {
+      if (!this.hasShowSubmitTip) {
+        if (this.SubmitTip.node.active == isActive) return;
+        this.SubmitTip.node.active = isActive;
+
+        if (this.SubmitTip.node.active) {
+          if (this.tipTimeout != -1) {
+            clearTimeout(this.tipTimeout);
+          }
+          this.tipTimeout = setTimeout(() => {
+            this.SubmitTip.node.active = false;
+            this.hasShowSubmitTip = true;
+            Game.resetFreeTime();
+          }, 3000);
+        }
+
+        return;
+      }
+
+      this.SubmitTip.node.active = false;
       if (this.Tip.active == isActive) return;
       if (this.tipTimeout != -1) {
         clearTimeout(this.tipTimeout);
       }
-      this.Tip.active = isActive;
-      if (this.Tip.active) {
+
+      this.Tip.stopAllActions();
+      if (isActive) {
+        this.Tip.active = isActive;
+        this.Tip.opacity = 0;
+        this.Tip.runAction(cc.fadeIn(0.1));
         this.Tip.getComponent(
           cc.Sprite
         ).spriteFrame = this.TipAtlas.getSpriteFrame("tips0" + this.tipIndex);
@@ -240,9 +268,25 @@ export default class GameScene extends cc.Component {
           this.tipIndex = (this.tipIndex++ % 7) + 1;
         }
         this.tipTimeout = setTimeout(() => {
-          this.Tip.active = false;
+          this.Tip.runAction(
+            cc.sequence(
+              cc.fadeOut(0.1),
+              cc.callFunc(() => {
+                this.Tip.active = false;
+              })
+            )
+          );
           Game.resetFreeTime();
-        }, 2000);
+        }, 3000);
+      } else {
+        this.Tip.runAction(
+          cc.sequence(
+            cc.fadeOut(0.1),
+            cc.callFunc(() => {
+              this.Tip.active = false;
+            })
+          )
+        );
       }
     });
 
