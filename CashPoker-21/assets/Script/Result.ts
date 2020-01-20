@@ -33,6 +33,25 @@ export default class Result extends cc.Component {
 
   @property(cc.Node)
   Stars: cc.Node = null;
+
+  @property(cc.Node)
+  Stacks: cc.Node = null;
+
+  @property(cc.Label)
+  ClearStackLabel: cc.Label = null;
+
+  @property(cc.Label)
+  CardsUsedLabel: cc.Label = null;
+
+  @property(cc.Label)
+  BustedLabel: cc.Label = null;
+
+  @property(cc.Label)
+  ComboLabel: cc.Label = null;
+
+  @property(cc.Animation)
+  Bling: cc.Animation = null;
+
   // LIFE-CYCLE CALLBACKS:
 
   private score: number = 0;
@@ -47,6 +66,48 @@ export default class Result extends cc.Component {
 
   onLoad() {
     Game.calTimeBonus();
+    this.BustedLabel.string = Game.removeBustedNode.childrenCount.toString();
+    this.CardsUsedLabel.string = Game.removeCardNode.childrenCount.toString();
+    this.ComboLabel.string = Game.getTotalStreak().toString();
+    let totalStack = Game.getClearStack();
+    this.ClearStackLabel.string = totalStack.toString();
+
+    let children = this.Stacks.children;
+    if (totalStack > 0) {
+      console.error("totalStack: ", totalStack);
+      for (let i = 0; i < totalStack; i++) {
+        let child = children[i];
+        if (child) {
+          child.active = true;
+          child.runAction(
+            cc.sequence(
+              cc.scaleTo(0, 0, 0),
+              cc.delayTime(i / 10),
+              cc.scaleTo(0.1, 0.9, 0.1),
+              cc.scaleTo(0.1, 0.9, 0.8),
+              cc.callFunc(() => {
+                child.anchorY = 0;
+                child.y -= child.height / 2;
+                child.children[0].y += child.height / 2;
+              }, this),
+              cc.scaleTo(0.1, 1.3, 1.3),
+              cc.scaleTo(0.1, 1.05, 1.05),
+              cc.callFunc(() => {
+                child.anchorY = 0.5;
+                child.y += child.height / 2;
+                child.children[0].y -= child.height / 2;
+              }, this),
+              cc.scaleTo(0.1, 0.86, 0.86),
+              cc.scaleTo(0.1, 1, 1),
+              cc.callFunc(() => {
+                child.getComponent(cc.Animation).play();
+              }, this)
+            )
+          );
+        }
+      }
+    }
+
     gEventMgr.emit(GlobalEvent.SMALL_BGM);
     for (let child of this.Stars.children) {
       let action = cc.repeatForever(
@@ -134,6 +195,10 @@ export default class Result extends cc.Component {
         break;
       case "music2":
         gEventMgr.emit(GlobalEvent.PLAY_OVER_2);
+        break;
+      case "bling":
+        this.Bling.node.active = true;
+        this.Bling.play();
         break;
     }
   }

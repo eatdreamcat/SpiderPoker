@@ -117,27 +117,39 @@ export default class PokerRoot extends cc.Component {
       )
     );
 
-    let addScore = this.checkAddScore(curSelectPoker.isWildCard());
-    // if (curSelectPoker.isWildCard()) {
-    //   let value = TARGET_POINT - this.totalValue0;
-    //   addScore = this.setTotalValue(value, true, true, this.node.childrenCount);
-    // } else {
-    //   addScore = this.setTotalValue(
-    //     curSelectPoker.getValue(),
-    //     false,
-    //     true,
-    //     this.node.childrenCount
-    //   );
-    // }
+    let res = this.checkAddScore(curSelectPoker.isWildCard());
 
-    console.error(" on touch start add score:", addScore);
+    let stack = 0,
+      streak = 0,
+      busted = 0,
+      cardused = 0;
+
+    /** 爆掉 */
+    if (res[1]) {
+      busted += this.node.childrenCount;
+    } else {
+      cardused += this.node.childrenCount;
+      if (res[0] > 0) {
+        stack += 1;
+        Game.addClearStack(1);
+        streak += 1;
+      }
+    }
 
     Game.addStep(
       [curSelectPoker.node],
       [oldParent],
       [lastPos],
       [],
-      [-addScore],
+      [
+        {
+          score: -res[0],
+          stack: -stack,
+          streak: -streak,
+          cardused: -cardused,
+          busted: -busted
+        }
+      ],
       [CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode)]
     );
   }
@@ -273,7 +285,9 @@ export default class PokerRoot extends cc.Component {
     let addScore = 0;
     let totalValue0_test = this.totalValue0;
     let totalValue1_test = this.totalValue1;
+    let isBusted: boolean = false;
     if (totalValue0_test > TARGET_POINT) {
+      isBusted = true;
     } else {
       if (
         totalValue0_test == TARGET_POINT ||
@@ -292,7 +306,7 @@ export default class PokerRoot extends cc.Component {
         }
       }
     }
-    return addScore;
+    return [addScore, isBusted];
   }
 
   updateValueLabel() {
@@ -332,8 +346,8 @@ export default class PokerRoot extends cc.Component {
   /** 完成 */
   complete(isWild: boolean, isCheck: boolean): number {
     let score = isWild ? WILD_21_SCORE : NORMAL_21_SCORE;
-    if (Game.getStreak() >= 3) {
-      score += (Game.getStreak() - 2) * STREAK_SCORE;
+    if (Game.getStreak() >= 2) {
+      score += (Math.min(3, Game.getStreak()) - 1) * STREAK_SCORE;
     }
 
     let timeDelay = 0;
@@ -393,8 +407,8 @@ export default class PokerRoot extends cc.Component {
   /** 超过五张 */
   overFive(isCheck: boolean): number {
     let score = OVER_5_SCORE;
-    if (Game.getStreak() >= 3) {
-      score += (Game.getStreak() - 2) * STREAK_SCORE;
+    if (Game.getStreak() >= 2) {
+      score += (Game.getStreak() - 1) * STREAK_SCORE;
     }
     if (!isCheck) {
       console.log(" 超过5张 ");

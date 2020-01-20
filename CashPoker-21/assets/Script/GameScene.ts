@@ -140,6 +140,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   RemoveCardNode: cc.Node = null;
 
+  @property(cc.Node)
+  RemoveBustNode: cc.Node = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 38;
@@ -185,6 +188,7 @@ export default class GameScene extends cc.Component {
     Game.removeNode = this.RemoveNode;
     Game.pokerClip = this.PokerClip;
     Game.removeCardNode = this.RemoveCardNode;
+    Game.removeBustedNode = this.RemoveBustNode;
     this.Bust01.getChildByName("Cover").active = false;
     this.Bust02.getChildByName("Cover").active = false;
     this.Bust03.getChildByName("Cover").active = false;
@@ -327,16 +331,9 @@ export default class GameScene extends cc.Component {
       GlobalEvent.UPDATE_RECYCLE_POKER,
       (count: number) => {
         console.log(" BOOM count: ", count);
-        if (count < 2 && count >= 1) {
-          this.Bust01.getChildByName("Cover").active = true;
-        } else if (count < 3) {
-          this.Bust01.getChildByName("Cover").active = true;
-          this.Bust02.getChildByName("Cover").active = true;
-        } else {
-          this.Bust01.getChildByName("Cover").active = true;
-          this.Bust02.getChildByName("Cover").active = true;
-          this.Bust03.getChildByName("Cover").active = true;
-        }
+        this.Bust01.getChildByName("Cover").active = count >= 1;
+        this.Bust02.getChildByName("Cover").active = count >= 2;
+        this.Bust03.getChildByName("Cover").active = count >= 3;
       },
       this
     );
@@ -749,6 +746,7 @@ export default class GameScene extends cc.Component {
       }, this)
     );
     action.setTag(ACTION_TAG.SELECT_POKER);
+    child.stopAllActions();
     child.runAction(action);
   }
 
@@ -1037,8 +1035,6 @@ export default class GameScene extends cc.Component {
         )
       );
     });
-
-    Game.addStep(nodes, parents, poses, funcs);
   }
 
   start() {}

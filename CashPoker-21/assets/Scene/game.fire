@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.2840745076671964,
-      "y": 0.2840745076671964,
+      "x": 0.38131510416666664,
+      "y": 0.38131510416666664,
       "z": 1
     },
     "_quat": {
@@ -132,16 +132,19 @@
       },
       {
         "__id__": 222
+      },
+      {
+        "__id__": 228
       }
     ],
     "_active": true,
     "_level": 1,
     "_components": [
       {
-        "__id__": 228
+        "__id__": 230
       },
       {
-        "__id__": 229
+        "__id__": 231
       }
     ],
     "_prefab": null,
@@ -7929,9 +7932,7 @@
       "__id__": 162
     },
     "_enabled": true,
-    "_spriteFrame": {
-      "__uuid__": "f68863ff-5b90-4bf5-bf5a-15d1dbe3f1f2"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 1,
     "_fillType": 0,
@@ -10846,6 +10847,94 @@
     "_id": "bc8ObW1o9O7bYX6DMoQpn3"
   },
   {
+    "__type__": "cc.Node",
+    "_name": "RemoveCardNodeBust",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 2
+    },
+    "_children": [],
+    "_active": true,
+    "_level": 2,
+    "_components": [
+      {
+        "__id__": 229
+      }
+    ],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 212,
+      "g": 239,
+      "b": 95,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 105,
+      "height": 150
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_position": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    },
+    "_scale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_quat": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "groupIndex": 0,
+    "_id": "65An0oa9hP3oY61uSWWBGR"
+  },
+  {
+    "__type__": "cc.Sprite",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 228
+    },
+    "_enabled": false,
+    "_spriteFrame": {
+      "__uuid__": "a23235d1-15db-4b95-8439-a2e005bfff91"
+    },
+    "_type": 0,
+    "_sizeMode": 0,
+    "_fillType": 0,
+    "_fillCenter": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "_fillStart": 0,
+    "_fillRange": 0,
+    "_isTrimmedMode": true,
+    "_state": 0,
+    "_atlas": null,
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
+    "_id": "c9TLqWSBBO+5vnu1DHzW76"
+  },
+  {
     "__type__": "cc.Canvas",
     "_name": "",
     "_objFlags": 0,
@@ -10902,9 +10991,6 @@
     },
     "BackButtonAtlas": {
       "__uuid__": "7a352e2a-baab-4396-a613-be7d0df3a884"
-    },
-    "DrawButtonAtlas": {
-      "__uuid__": "40e22750-3e30-4239-a9d6-9c5c00594c9b"
     },
     "TimeLabel": {
       "__id__": 84
@@ -10968,6 +11054,9 @@
     },
     "RemoveCardNode": {
       "__id__": 220
+    },
+    "RemoveBustNode": {
+      "__id__": 228
     },
     "_id": "89eQy3JCNNsbs6HVvjJfLq"
   }

@@ -14,11 +14,20 @@ export interface StepFunc {
   target: any;
   args: any[];
 }
+
+export interface Data {
+  score: number;
+  cardused: number;
+  busted: number;
+  streak: number;
+  stack: number;
+}
+
 export interface StepInfo {
   node: cc.Node[];
   lastParent: cc.Node[];
   lastPos: cc.Vec2[];
-  scores?: number[];
+  datas?: Data[];
   scoresPos?: cc.Vec2[];
   func?: StepFunc[];
   zIndex?: number[];
@@ -36,6 +45,7 @@ class GameMgr {
   private posOffsetCal: HashMap<number, number> = new HashMap();
   public removeNode: cc.Node;
   public removeCardNode: cc.Node;
+  public removeBustedNode: cc.Node;
 
   private stepInfoArray: StepInfo[] = [];
 
@@ -58,13 +68,18 @@ class GameMgr {
 
   private combo: number = -1;
 
+  private totalStreak: number = 0;
   private streakCount: number = 0;
+  private clearStack: number = 0;
+  private cardUsed: number = 0;
+  private busted: number = 0;
 
   private recyclePoker: number = 0;
 
   public addRecyclePoker(count: number) {
     this.recyclePoker += count;
     this.recyclePoker = Math.max(0, this.recyclePoker);
+    console.error(" recycle bust fuck:", this.recyclePoker);
     if (this.recyclePoker >= BOOOOM_LIMIT && !window["CheatOpen"]) {
       console.error(" recycle poker error!!!!");
       setTimeout(() => {
@@ -128,11 +143,40 @@ class GameMgr {
     console.log(" combo:", this.combo);
   }
 
+  public addCardUsed(used: number) {
+    this.cardUsed += used;
+  }
+
+  public getCardUsed() {
+    return this.cardUsed;
+  }
+
+  public addBusted(bust: number) {
+    this.busted += bust;
+  }
+
+  public getBusted() {
+    return this.busted;
+  }
+
+  public addClearStack(stack: number) {
+    this.clearStack += stack;
+  }
+
+  public getClearStack() {
+    return this.clearStack;
+  }
+
   public addStreak(streak: number) {
     this.streakCount += streak;
-    this.streakCount = Math.min(this.streakCount, 4);
+    this.totalStreak += streak;
+    this.streakCount = Math.min(this.streakCount, 3);
 
     console.error(" add streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
+  }
+
+  public getTotalStreak() {
+    return Math.max(0, this.totalStreak - 1);
   }
 
   public getStreak() {
@@ -314,7 +358,7 @@ class GameMgr {
     lastParent: cc.Node[],
     lastPos: cc.Vec2[],
     func?: StepFunc[],
-    scores?: number[],
+    scores?: Data[],
     scorePos?: cc.Vec2[],
     zIndex?: number[]
   ) {
@@ -324,7 +368,7 @@ class GameMgr {
       lastParent: lastParent,
       lastPos: lastPos,
       func: func,
-      scores: scores,
+      datas: scores,
       scoresPos: scorePos,
       zIndex: zIndex
     });
@@ -387,14 +431,24 @@ class GameMgr {
 
     gEventMgr.emit(GlobalEvent.UPDATE_BACK_BTN_ICON);
     let count = 0;
+
     while (step.node.length > 0) {
       count++;
       let node = step.node.pop();
       let parent = step.lastParent.pop();
+
       let pos = step.lastPos.pop();
       let func = step.func ? step.func.pop() : null;
 
-      let score = step.scores && step.scores.length > 0 ? step.scores.pop() : 0;
+      let datas = step.datas && step.datas.length > 0 ? step.datas.pop() : null;
+      let score = datas ? datas.score : 0;
+      if (datas) {
+        Game.addBusted(datas.busted);
+        Game.addCardUsed(datas.cardused);
+        Game.addClearStack(datas.stack);
+        Game.totalStreak += datas.streak;
+      }
+
       let scorePos =
         step.scoresPos && step.scoresPos.length > 0
           ? step.scoresPos.pop()
@@ -452,7 +506,7 @@ class GameMgr {
         poker.setDefaultPosition(cc.v2(returnPos.x, returnPos.y));
         poker.setPosState(POS_STATE.NORMAL, false);
         node.setParent(parent);
-
+        console.error(" fuck:", parent.name);
         let action = cc.sequence(
           cc.delayTime(count / 500),
           cc.callFunc(() => {
