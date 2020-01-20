@@ -170,11 +170,16 @@ class GameMgr {
   }
 
   public calTimeBonus() {
-    if (this.gameTime >= 300 || this.gameTime <= 0 || this.flipCounts <= 0)
+    this.removePokerCount = this.removeCardNode.childrenCount;
+    if (
+      this.gameTime >= 300 ||
+      this.gameTime <= 0 ||
+      this.removePokerCount <= 0
+    )
       return;
 
     this.timeBonus =
-      ((this.flipCounts / TOTAL_POKER_COUNT) * (1.2 / 0.5) + 0.3) *
+      ((this.removePokerCount / TOTAL_POKER_COUNT) * (1.2 / 0.5) + 0.3) *
       this.gameTime;
 
     this.timeBonus = Math.floor(this.timeBonus);
@@ -245,7 +250,6 @@ class GameMgr {
         " ---------------- addRemovePokerCount ------openResultTimeDelay-----------------"
       );
       this.calTimeBonus();
-      //gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
   }
 
@@ -297,7 +301,7 @@ class GameMgr {
         "-------------emit Complete!!!----------------------flipCounts:",
         this.flipCounts
       );
-      gEventMgr.emit(GlobalEvent.COMPLETE);
+      //gEventMgr.emit(GlobalEvent.COMPLETE);
     }
   }
 

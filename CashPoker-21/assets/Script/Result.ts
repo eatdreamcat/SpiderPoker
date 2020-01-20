@@ -46,6 +46,7 @@ export default class Result extends cc.Component {
   private showScore: number = 0;
 
   onLoad() {
+    Game.calTimeBonus();
     gEventMgr.emit(GlobalEvent.SMALL_BGM);
     for (let child of this.Stars.children) {
       let action = cc.repeatForever(

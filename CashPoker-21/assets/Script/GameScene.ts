@@ -728,20 +728,6 @@ export default class GameScene extends cc.Component {
     if (this.SelectPokerNode.childrenCount <= 0) {
       this.updateCurSelectPoker();
     }
-
-    // if (
-    //   this.PokerClip.childrenCount == 0 &&
-    //   this.SelectPokerNode.childrenCount == 0
-    // ) {
-    //   if (Game.getRecyclePoker() <= 0) {
-    //     setTimeout(() => {
-    //       gEventMgr.emit(GlobalEvent.NO_BUST);
-    //     }, Game.openResultTimeDelay);
-    //   }
-    //   this.scheduleOnce(() => {
-    //     gEventMgr.emit(GlobalEvent.OPEN_RESULT);
-    //   }, 2 + Game.openResultTimeDelay);
-    // }
   }
 
   updateCurSelectPoker() {
