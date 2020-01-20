@@ -112,6 +112,8 @@ if (CC_DEBUG) {
           cc.game.step();
         }
         break;
+      case cc.macro.KEY.space:
+        break;
     }
   });
 }

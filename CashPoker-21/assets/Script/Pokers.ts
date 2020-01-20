@@ -92,6 +92,7 @@ export const Pokers = [
   "spade_,9",
   "heart_,9",
   "club_,9",
+
   "diamond_,10",
   "spade_,10",
   "club_,10",

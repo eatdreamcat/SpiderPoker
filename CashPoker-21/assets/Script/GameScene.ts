@@ -76,8 +76,6 @@ export default class GameScene extends cc.Component {
 
   @property(cc.SpriteAtlas)
   BackButtonAtlas: cc.SpriteAtlas = null;
-  @property(cc.SpriteAtlas)
-  DrawButtonAtlas: cc.SpriteAtlas = null;
 
   @property(cc.Label)
   TimeLabel: cc.Label = null;
@@ -261,6 +259,18 @@ export default class GameScene extends cc.Component {
       this
     );
 
+    if (CC_DEBUG) {
+      cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, event => {
+        switch (event.keyCode) {
+          case cc.macro.KEY.space:
+            if (Game.getCurSelectPoker()) {
+              Game.getCurSelectPoker().setWild();
+            }
+            break;
+        }
+      });
+    }
+
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {
@@ -369,35 +379,6 @@ export default class GameScene extends cc.Component {
             .getComponent(
               cc.Sprite
             ).spriteFrame = this.BackButtonAtlas.getSpriteFrame("btn_backgray");
-        }
-      },
-      this
-    );
-
-    gEventMgr.on(
-      GlobalEvent.UPDATE_DRAW_ICON,
-      () => {
-        switch (Game.getFreeDrawTimes()) {
-          case 1:
-            this.PokerDevl.getComponent(
-              cc.Sprite
-            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_1");
-            break;
-          case 2:
-            this.PokerDevl.getComponent(
-              cc.Sprite
-            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_2");
-            break;
-          case 3:
-            this.PokerDevl.getComponent(
-              cc.Sprite
-            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("free_draw_3");
-            break;
-          default:
-            this.PokerDevl.getComponent(
-              cc.Sprite
-            ).spriteFrame = this.DrawButtonAtlas.getSpriteFrame("draw_20");
-            break;
         }
       },
       this

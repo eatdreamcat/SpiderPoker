@@ -326,6 +326,7 @@ export default class Poker extends cc.Component {
 
     this.scheduleOnce(() => {
       let offsetX = CMath.getRandom(0, 4) * dir;
+      let offsetY = CMath.getRandom(0, 16);
       this.canMove = false;
 
       this.node.runAction(
@@ -343,7 +344,7 @@ export default class Poker extends cc.Component {
             cc.repeat(
               cc.spawn(
                 cc
-                  .moveBy(0.01, dir * 3 + offsetX, 15)
+                  .moveBy(0.01, dir * 3 + offsetX, 15 + offsetY)
                   .easing(cc.easeQuinticActionOut()),
                 cc.rotateBy(0.01, dir * 20).easing(cc.easeQuadraticActionIn())
               ),
@@ -669,6 +670,13 @@ export default class Poker extends cc.Component {
 
   isWildCard() {
     return this.value == 11 && this.pokerColer == PokerColor.Black;
+  }
+
+  setWild() {
+    this.value = 11;
+    this.pokerColer = PokerColor.Black;
+    this.RecycleAnimation.node.opacity = 255;
+    this.RecycleAnimation.play();
   }
 
   checkPos() {
