@@ -32,6 +32,9 @@ export default class PokerRoot extends cc.Component {
   @property(cc.Label)
   totalValue1Label: cc.Label = null;
 
+  @property(cc.Node)
+  TouchNode: cc.Node = null;
+
   private totalValue0: number = 0;
   private totalValue1: number = 0;
 
@@ -42,7 +45,30 @@ export default class PokerRoot extends cc.Component {
   onLoad() {
     this.node.on(cc.Node.EventType.CHILD_ADDED, this.onAddChild, this);
     this.node.on(cc.Node.EventType.CHILD_REMOVED, this.onChildRemove, this);
-    this.node.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+    this.TouchNode.on(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+    this.TouchNode.on(
+      cc.Node.EventType.TOUCH_CANCEL,
+      (e: cc.Event.EventTouch) => {
+        e.bubbles = false;
+      },
+      this
+    );
+
+    this.TouchNode.on(
+      cc.Node.EventType.TOUCH_MOVE,
+      (e: cc.Event.EventTouch) => {
+        e.bubbles = false;
+      },
+      this
+    );
+
+    this.TouchNode.on(
+      cc.Node.EventType.TOUCH_END,
+      (e: cc.Event.EventTouch) => {
+        e.bubbles = false;
+      },
+      this
+    );
 
     this.SingleValueNode.active = true;
     this.MutilpValueNode.active = false;
@@ -53,6 +79,7 @@ export default class PokerRoot extends cc.Component {
   }
 
   onTouchStart(e: cc.Event.EventTouch) {
+    e.bubbles = false;
     if (!Game.isGameStarted()) Game.start();
     if (this.touchTime < this.touchLimitTime) return;
     let curSelectPoker = Game.getCurSelectPoker();
@@ -182,26 +209,42 @@ export default class PokerRoot extends cc.Component {
 
     let totalValue0_test = this.totalValue0;
     let totalValue1_test = this.totalValue1;
-    totalValue0_test += value;
-    totalValue1_test += value;
+
     if (value == 1) {
-      if (totalValue0_test + 10 == TARGET_POINT) {
-        totalValue0_test = TARGET_POINT;
+      let values = [totalValue0_test, totalValue1_test];
+      let result = [];
+      for (let num of [1, 11]) {
+        for (let val of values) {
+          let res = val + num;
+          if (result.indexOf(res) < 0) {
+            result.push(res);
+          }
+        }
       }
-      if (totalValue1_test != TARGET_POINT) {
-        totalValue1_test += 10;
+
+      result.sort((a, b) => {
+        return a - b;
+      });
+      if (result.indexOf(TARGET_POINT) >= 0) {
+        totalValue0_test = totalValue1_test = TARGET_POINT;
+      } else {
+        totalValue0_test = result[0];
+        totalValue1_test = result[1];
       }
+    } else {
+      totalValue0_test += value; // 2
+      totalValue1_test += value; // 12
     }
 
     totalValue0_test = Math.max(0, totalValue0_test);
     totalValue1_test = Math.max(0, totalValue1_test);
 
-    if (totalValue0_test > 100 * TARGET_POINT) {
+    if (totalValue0_test > TARGET_POINT) {
       this.boom(isCheck);
     } else if (isEnd) {
       if (
-        totalValue0_test >= TARGET_POINT ||
-        totalValue1_test >= TARGET_POINT
+        totalValue0_test == TARGET_POINT ||
+        totalValue1_test == TARGET_POINT
       ) {
         addScore += this.complete(isWild, isCheck);
         console.error(" add Score:", addScore);

@@ -50,17 +50,9 @@ export const PokerTypes = {
 // );
 export const Pokers = [
   "spade_,1", //0
-  "diamond_,9",
-
-  "heart_,10",
   "heart_,1", //1
   "club_,1", //2
   "diamond_,1", //3
-  "spade_,9",
-  "heart_,9",
-  "club_,9",
-  "diamond_,10",
-  "spade_,10",
 
   "spade_,2", //4
   "heart_,2", //5
@@ -96,9 +88,14 @@ export const Pokers = [
   "heart_,8",
   "club_,8",
   "diamond_,8",
-
+  "diamond_,9",
+  "spade_,9",
+  "heart_,9",
+  "club_,9",
+  "diamond_,10",
+  "spade_,10",
   "club_,10",
-
+  "heart_,10",
   "spade_,11",
   "heart_,11",
   "club_,11",
@@ -211,6 +208,7 @@ export const NORMAL_21_SCORE = 400;
 export const WILD_21_SCORE = 200;
 export const STREAK_SCORE = 300;
 export const OVER_5_SCORE = 600;
+export const NO_BUST_EXTRA_SCORE = 150;
 
 export const ADD_SCORE_SPECILA_OFFSET_Y = 650;
 export const NORMAL_SCORE_MOVE_TIME = 0.3;

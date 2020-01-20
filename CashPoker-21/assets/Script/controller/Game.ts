@@ -48,7 +48,7 @@ class GameMgr {
 
   private gameStart: boolean = false;
 
-  private gameTime = 300;
+  private gameTime = 180;
 
   public removePokerCount = 0;
 

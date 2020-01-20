@@ -11,7 +11,8 @@ import {
   SPECIAL_TYPE_NAME,
   SPECIAL_TYPE,
   ADD_SCORE_SPECILA_OFFSET_Y,
-  NORMAL_SCORE_MOVE_TIME
+  NORMAL_SCORE_MOVE_TIME,
+  NO_BUST_EXTRA_SCORE
 } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
@@ -494,12 +495,16 @@ export default class GameScene extends cc.Component {
           if (Game.getRecyclePoker() <= 0) {
             setTimeout(() => {
               gEventMgr.emit(GlobalEvent.NO_BUST);
+              Game.addScore(
+                NO_BUST_EXTRA_SCORE,
+                CMath.ConvertToNodeSpaceAR(this.Bust02, Game.removeNode)
+              );
             }, delay);
           }
 
           this.scheduleOnce(() => {
             gEventMgr.emit(GlobalEvent.OPEN_RESULT);
-          }, 2 + delay / 1000);
+          }, 1.5 + delay / 1000);
         }
       },
       this
@@ -552,7 +557,7 @@ export default class GameScene extends cc.Component {
             scoreBg.stopAllActions();
             scoreBg.runAction(
               cc.sequence(
-                cc.moveTo(0, 0, -800),
+                cc.moveTo(0, 0, -836),
                 cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
               )
             );
@@ -584,7 +589,7 @@ export default class GameScene extends cc.Component {
             scoreBg.stopAllActions();
             scoreBg.runAction(
               cc.sequence(
-                cc.moveTo(0, 0, -800),
+                cc.moveTo(0, 0, -836),
                 cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
               )
             );
@@ -615,7 +620,7 @@ export default class GameScene extends cc.Component {
             scoreBg.stopAllActions();
             scoreBg.runAction(
               cc.sequence(
-                cc.moveTo(0, 0, -800),
+                cc.moveTo(0, 0, -836),
                 cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
               )
             );
@@ -646,7 +651,7 @@ export default class GameScene extends cc.Component {
             scoreBg.stopAllActions();
             scoreBg.runAction(
               cc.sequence(
-                cc.moveTo(0, 0, -800),
+                cc.moveTo(0, 0, -836),
                 cc.moveTo(NORMAL_SCORE_MOVE_TIME, 0, 175)
               )
             );
@@ -1010,6 +1015,7 @@ export default class GameScene extends cc.Component {
   devPoker() {}
 
   dispatchPoker() {
+    return;
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (this.PokerClip.childrenCount <= 0 || !this.canDispatchPoker) {
       return;

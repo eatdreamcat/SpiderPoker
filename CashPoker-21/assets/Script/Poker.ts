@@ -275,6 +275,7 @@ export default class Poker extends cc.Component {
     callback?: Function
   ) {
     if (this.complete) return;
+
     this.setComplete(true);
     let time = 0.15;
 
@@ -316,8 +317,8 @@ export default class Poker extends cc.Component {
     });
 
     this.scheduleOnce(() => {
-      let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeNode);
-      this.node.setParent(Game.removeNode);
+      let selfPos = CMath.ConvertToNodeSpaceAR(this.node, Game.removeCardNode);
+      this.node.setParent(Game.removeCardNode);
       this.node.setPosition(selfPos);
       this.node.zIndex = zIndex;
       if (callback) callback();
@@ -447,6 +448,7 @@ export default class Poker extends cc.Component {
   onTouchStart(e: cc.Event.EventTouch) {
     //if (this.carState == CardState.Back) return;
     e.bubbles = this.isCycled();
+    if (["0", "1", "2", "3"].indexOf(this.node.parent.name) >= 0) return;
     if (Game.isTimeOver() || Game.isComplete() || this.isCycled()) return;
     if (!Game.isGameStarted()) Game.start();
 
@@ -523,6 +525,7 @@ export default class Poker extends cc.Component {
   onMoveEnd(e: cc.Event.EventTouch) {
     //if (this.carState == CardState.Back) return;
     e.bubbles = false;
+    if (["0", "1", "2", "3"].indexOf(this.node.parent.name) >= 0) return;
     if (Game.isTimeOver() || Game.isComplete() || this.isCycled()) return;
     let action = this.node.getActionByTag(ACTION_TAG.SHAKE);
     if (action && !action.isDone()) return;
@@ -665,7 +668,7 @@ export default class Poker extends cc.Component {
   }
 
   isWildCard() {
-    return this.value == 11;
+    return this.value == 11 && this.pokerColer == PokerColor.Black;
   }
 
   checkPos() {
@@ -962,6 +965,11 @@ export default class Poker extends cc.Component {
 
   shake() {
     if (this.isCycled()) return;
+    if (
+      ["0", "1", "2", "3", "RemoveCardNode"].indexOf(this.node.parent.name) >= 0
+    )
+      return;
+    console.error(" shake:", this.node.parent.name);
     this.node.group = "default";
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
@@ -1266,7 +1274,7 @@ export default class Poker extends cc.Component {
     //   this.setKey(parseInt(parent.name));
     // }
 
-    if (parent.name == "RemoveNode") {
+    if (parent.name == "RemoveCardNode") {
       this.setComplete(true);
     } else {
       this.setComplete(false);
