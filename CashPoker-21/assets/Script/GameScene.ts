@@ -332,6 +332,7 @@ export default class GameScene extends cc.Component {
     gEventMgr.on(
       GlobalEvent.UPDATE_WILD_COUNT,
       () => {
+        this.WildCount.string = Game.getWildCount().toString();
         this.SubmitButton.interactable = Game.getWildCount() > 0;
         this.WildCount.node.getParent().active = this.SubmitButton.interactable;
         if (this.SubmitButton.interactable) {
@@ -868,9 +869,11 @@ export default class GameScene extends cc.Component {
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      this.Guide.show(() => {
-        this.nextStep(LOAD_STEP.GUIDE);
-      });
+      // this.Guide.show(() => {
+      //   this.nextStep(LOAD_STEP.GUIDE);
+      // });
+      this.Guide.hide();
+      this.nextStep(LOAD_STEP.GUIDE);
     } else {
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
