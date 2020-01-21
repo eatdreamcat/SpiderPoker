@@ -1,6 +1,7 @@
 import { Game } from "./controller/Game";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
+import { TOTAL_POKER_COUNT } from "./Pokers";
 
 const celerx = require("./utils/celerx");
 const { ccclass, property } = cc._decorator;
@@ -131,15 +132,18 @@ export default class Result extends cc.Component {
     this.TimeBonus.string = "0";
     this.FinalScore.string = "0";
     if (Game.getGameTime() > 0) {
-      if (Game.isComplete()) {
-        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_complete");
+      if (Game.isBoom()) {
+        // out of move
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("out_of_move");
       } else {
-        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font02");
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_complete");
       }
     } else {
-      if (Game.isComplete()) {
-        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_complete");
+      if (Game.isBoom()) {
+        // out of move
+        this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("out_of_move");
       } else {
+        // time up
         this.Title.spriteFrame = this.TitleAtlas.getSpriteFrame("bg_font03");
       }
     }

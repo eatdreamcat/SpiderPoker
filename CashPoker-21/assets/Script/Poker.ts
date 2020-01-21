@@ -58,6 +58,9 @@ export default class Poker extends cc.Component {
   @property(cc.Animation)
   RecycleAnimation: cc.Animation = null;
 
+  @property(cc.Animation)
+  WildAnimation: cc.Animation = null;
+
   private static DebugRecycIndex: number = 0;
 
   private carState: CardState;
@@ -608,6 +611,7 @@ export default class Poker extends cc.Component {
     this.pokerColer = PokerColor.Black;
     this.RecycleAnimation.node.opacity = 255;
     this.RecycleAnimation.play();
+    this.WildAnimation.play();
     this.frontCard.spriteFrame = this.pokerAtlas.getSpriteFrame(
       CMath.getRandom() > 0.5 ? "spade_11" : "club_11"
     );

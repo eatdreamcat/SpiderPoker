@@ -56,6 +56,8 @@ class GameMgr {
   public pokerClip: cc.Node = null;
   public curSelectNode: cc.Node = null;
 
+  private wildCount: number = 1;
+
   private gameStart: boolean = false;
 
   private gameTime = 180;
@@ -82,9 +84,7 @@ class GameMgr {
     console.error(" recycle bust fuck:", this.recyclePoker);
     if (this.recyclePoker >= BOOOOM_LIMIT && !window["CheatOpen"]) {
       console.error(" recycle poker error!!!!");
-      setTimeout(() => {
-        gEventMgr.emit(GlobalEvent.OPEN_RESULT);
-      }, 1000);
+      gEventMgr.emit(GlobalEvent.OPEN_RESULT, 1000);
     }
     gEventMgr.emit(GlobalEvent.UPDATE_RECYCLE_POKER, this.recyclePoker);
   }
@@ -118,6 +118,16 @@ class GameMgr {
   public getPosOffset(key: number) {
     let pos = this.posOffsetCal.get(key);
     return pos == null ? 0 : pos;
+  }
+
+  public addWildCount(wild: number) {
+    this.wildCount += wild;
+    this.wildCount = Math.max(0, this.wildCount);
+    gEventMgr.emit(GlobalEvent.UPDATE_WILD_COUNT);
+  }
+
+  public getWildCount() {
+    return this.wildCount;
   }
 
   public getCombo() {
@@ -161,6 +171,9 @@ class GameMgr {
   public addStreak(streak: number) {
     this.streakCount += streak;
     this.totalStreak += streak;
+    if (this.streakCount >= 4) {
+      Game.addWildCount(1);
+    }
     this.streakCount = Math.min(this.streakCount, 3);
 
     console.error(" add streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
@@ -200,7 +213,7 @@ class GameMgr {
     if (this.gameTime <= 0) {
       this.gameStart = false;
 
-      gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+      gEventMgr.emit(GlobalEvent.OPEN_RESULT, 0);
     }
   }
 
@@ -280,7 +293,10 @@ class GameMgr {
 
   public addRemovePokerCount(count: number) {
     this.removePokerCount = Game.removeCardNode.childrenCount;
-    if (this.removePokerCount == TOTAL_POKER_COUNT) {
+    if (
+      this.removePokerCount + Game.removeBustedNode.childrenCount ==
+      TOTAL_POKER_COUNT
+    ) {
       console.error(
         " ---------------- addRemovePokerCount ------openResultTimeDelay-----------------"
       );

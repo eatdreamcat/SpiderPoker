@@ -48,7 +48,7 @@ export default class Stop extends cc.Component {
 
   endNow() {
     Game.calTimeBonus();
-    gEventMgr.emit(GlobalEvent.OPEN_RESULT);
+    gEventMgr.emit(GlobalEvent.OPEN_RESULT, 0);
   }
 
   hide() {

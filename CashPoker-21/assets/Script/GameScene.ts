@@ -143,6 +143,18 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   RemoveBustNode: cc.Node = null;
 
+  @property(cc.SpriteAtlas)
+  WildBtn: cc.SpriteAtlas = null;
+
+  @property(cc.Label)
+  WildCount: cc.Label = null;
+
+  @property(cc.SpriteAtlas)
+  CompleteAtlas: cc.SpriteAtlas = null;
+
+  @property(cc.Sprite)
+  CompleteSprite: cc.Sprite = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 38;
@@ -190,9 +202,12 @@ export default class GameScene extends cc.Component {
     Game.removeCardNode = this.RemoveCardNode;
     Game.removeBustedNode = this.RemoveBustNode;
     Game.curSelectNode = this.SelectPokerNode;
+    this.CompleteSprite.node.active = false;
     this.Bust01.getChildByName("Cover").active = false;
     this.Bust02.getChildByName("Cover").active = false;
     this.Bust03.getChildByName("Cover").active = false;
+
+    this.WildCount.string = Game.getWildCount().toString();
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -280,18 +295,58 @@ export default class GameScene extends cc.Component {
       cc.Node.EventType.TOUCH_END,
       () => {
         if (Game.isComplete()) return;
-        this.Stop.show(1);
+        this.Stop.show(-1);
         Game.setPause(true);
       },
       this
     );
 
+    this.SubmitButton.interactable = Game.getWildCount() > 0;
+    this.WildCount.node.getParent().active = this.SubmitButton.interactable;
+    if (this.SubmitButton.interactable) {
+      this.SubmitButton.node
+        .getChildByName("Background")
+        .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
+        "btn_wild"
+      );
+    } else {
+      this.SubmitButton.node
+        .getChildByName("Background")
+        .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
+        "btn_wildnone"
+      );
+    }
+
     this.SubmitButton.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {
         if (Game.isComplete()) return;
-        this.Stop.show(-1);
-        Game.setPause(true);
+        if (Game.getWildCount() <= 0 || !Game.getCurSelectPoker()) return;
+        Game.getCurSelectPoker().setWild();
+        Game.addWildCount(-1);
+        Game.clearStreak();
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.UPDATE_WILD_COUNT,
+      () => {
+        this.SubmitButton.interactable = Game.getWildCount() > 0;
+        this.WildCount.node.getParent().active = this.SubmitButton.interactable;
+        if (this.SubmitButton.interactable) {
+          this.SubmitButton.node
+            .getChildByName("Background")
+            .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
+            "btn_wild"
+          );
+        } else {
+          this.SubmitButton.node
+            .getChildByName("Background")
+            .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
+            "btn_wildnone"
+          );
+        }
       },
       this
     );
@@ -439,6 +494,7 @@ export default class GameScene extends cc.Component {
       this.updateCurSelectPoker,
       this
     );
+
     gEventMgr.on(GlobalEvent.OPEN_RESULT, this.openResult, this);
 
     this.PokerClip.on(
@@ -481,9 +537,7 @@ export default class GameScene extends cc.Component {
             }, delay);
           }
 
-          this.scheduleOnce(() => {
-            gEventMgr.emit(GlobalEvent.OPEN_RESULT);
-          }, 1.5 + delay / 1000);
+          gEventMgr.emit(GlobalEvent.OPEN_RESULT, delay + 1500);
         }
       },
       this
@@ -747,16 +801,57 @@ export default class GameScene extends cc.Component {
     child.runAction(action);
   }
 
-  openResult() {
+  openResult(delay: number) {
     this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
+
+    if (Game.getGameTime() > 0) {
+      if (Game.isBoom()) {
+        // out of move
+        this.CompleteSprite.spriteFrame = this.CompleteAtlas.getSpriteFrame(
+          "bg_font3"
+        );
+      } else {
+        this.CompleteSprite.spriteFrame = this.CompleteAtlas.getSpriteFrame(
+          "bg_font1"
+        );
+      }
+    } else {
+      if (Game.isBoom()) {
+        // out of move
+        this.CompleteSprite.spriteFrame = this.CompleteAtlas.getSpriteFrame(
+          "bg_font3"
+        );
+      } else {
+        // time up
+        this.CompleteSprite.spriteFrame = this.CompleteAtlas.getSpriteFrame(
+          "bg_font2"
+        );
+      }
+    }
+
+    this.CompleteSprite.node.scaleX = 0;
+    this.CompleteSprite.node.active = true;
+
     cc.loader.loadRes("prefabs/Result", cc.Prefab, (err, result) => {
       if (err) {
         celerx.submitScore(Game.getScore());
       } else {
-        let resultLayer = cc.instantiate(result);
-        resultLayer.name = "Result";
-        this.node.addChild(resultLayer);
+        this.CompleteSprite.node.runAction(
+          cc.sequence(
+            cc.scaleTo(0.2, 1.2, 1),
+            cc.scaleTo(0.1, 0.9, 1),
+            cc.scaleTo(0.1, 1.1, 1),
+            cc.scaleTo(0.1, 1, 1),
+            cc.delayTime(0.5 + delay / 1000),
+            cc.callFunc(() => {
+              this.CompleteSprite.node.active = false;
+              let resultLayer = cc.instantiate(result);
+              resultLayer.name = "Result";
+              this.node.addChild(resultLayer);
+            })
+          )
+        );
       }
     });
   }

@@ -11,6 +11,7 @@ export enum GlobalEvent {
   COMPLETE,
   AUTO_COMPLETE_DONE,
   UPDATE_CUR_SELECT_POKER,
+  UPDATE_WILD_COUNT,
 
   /** 主场景的特殊表现 */
   BUST,
