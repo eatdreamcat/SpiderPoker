@@ -189,6 +189,7 @@ export default class GameScene extends cc.Component {
     Game.pokerClip = this.PokerClip;
     Game.removeCardNode = this.RemoveCardNode;
     Game.removeBustedNode = this.RemoveBustNode;
+    Game.curSelectNode = this.SelectPokerNode;
     this.Bust01.getChildByName("Cover").active = false;
     this.Bust02.getChildByName("Cover").active = false;
     this.Bust03.getChildByName("Cover").active = false;
@@ -714,10 +715,6 @@ export default class GameScene extends cc.Component {
       oldChild.getComponent(Poker).flipCard(0.1);
       oldChild.runAction(cc.moveTo(0.1, targetPos));
     }
-
-    let poker = child.getComponent(Poker);
-    console.log(" on Select poker add child !");
-    Game.setCurSelectPoker(poker);
   }
 
   onSelectPokerRemoveChild(child: cc.Node) {

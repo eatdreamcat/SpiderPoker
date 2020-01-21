@@ -54,7 +54,7 @@ class GameMgr {
   private freeDrawTimes: number = 3;
   private flipCounts: number = 0;
   public pokerClip: cc.Node = null;
-  private curSelectPoker: Poker = null;
+  public curSelectNode: cc.Node = null;
 
   private gameStart: boolean = false;
 
@@ -94,18 +94,9 @@ class GameMgr {
   }
 
   getCurSelectPoker() {
-    if (!this.curSelectPoker) {
-      console.error(" cur select poker is null");
-    }
-    return this.curSelectPoker;
-  }
-
-  setCurSelectPoker(poker: Poker) {
-    if (poker == null) {
-    }
-    console.log(" set cur select poker ------------------");
-    console.log(poker);
-    this.curSelectPoker = poker;
+    return this.curSelectNode.children[0]
+      ? this.curSelectNode.children[0].getComponent(Poker)
+      : null;
   }
 
   public addPosOffset(key: number, offset: number) {

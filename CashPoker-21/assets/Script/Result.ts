@@ -125,7 +125,8 @@ export default class Result extends cc.Component {
         child.runAction(action);
       }, CMath.getRandom(0, 0.5) * 1000);
     }
-    this.Light.active = false;
+    this.Light.active = true;
+    this.Light.runAction(cc.repeatForever(cc.rotateBy(5, 360)));
     this.Score.string = "0";
     this.TimeBonus.string = "0";
     this.FinalScore.string = "0";

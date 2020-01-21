@@ -81,11 +81,19 @@ export default class PokerRoot extends cc.Component {
   onTouchStart(e: cc.Event.EventTouch) {
     e.bubbles = false;
     if (!Game.isGameStarted()) Game.start();
-    if (this.touchTime < this.touchLimitTime) return;
+    if (this.touchTime < this.touchLimitTime) {
+      console.error(" touch time limit!!!!!!!!!!!");
+      return;
+    }
     let curSelectPoker = Game.getCurSelectPoker();
-    Game.setCurSelectPoker(null);
-    if (!curSelectPoker) return;
-    if (!this.canTouch) return;
+    if (!curSelectPoker || curSelectPoker.isCycled()) {
+      console.error(" curSelectPoker is null!! ");
+      return;
+    }
+    if (!this.canTouch) {
+      console.error(" curSelectPoker is null!! ");
+      return;
+    }
     if (Game.isBoom() || Game.isComplete()) return;
 
     this.touchTime = 0;
