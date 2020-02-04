@@ -13,6 +13,8 @@ export enum GlobalEvent {
   UPDATE_CUR_SELECT_POKER,
   UPDATE_WILD_COUNT,
 
+  UPDATE_STREAK_COUNT,
+
   /** 主场景的特殊表现 */
   BUST,
   COMPLETE_21,

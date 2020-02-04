@@ -155,6 +155,15 @@ export default class GameScene extends cc.Component {
   @property(cc.Sprite)
   CompleteSprite: cc.Sprite = null;
 
+  @property(cc.Sprite)
+  combo1: cc.Sprite = null;
+
+  @property(cc.Sprite)
+  combo2: cc.Sprite = null;
+
+  @property(cc.Animation)
+  AddWildEffect: cc.Animation = null;
+
   private step: LOAD_STEP = LOAD_STEP.READY;
   private canDispatchPoker: boolean = false;
   private readonly dispatchCardCount = 38;
@@ -202,6 +211,8 @@ export default class GameScene extends cc.Component {
     Game.removeCardNode = this.RemoveCardNode;
     Game.removeBustedNode = this.RemoveBustNode;
     Game.curSelectNode = this.SelectPokerNode;
+    this.combo1.node.active = false;
+    this.combo2.node.active = false;
     this.CompleteSprite.node.active = false;
     this.Bust01.getChildByName("Cover").active = false;
     this.Bust02.getChildByName("Cover").active = false;
@@ -222,6 +233,14 @@ export default class GameScene extends cc.Component {
     });
 
     CC_DEBUG && this.celerStart();
+
+    for (let child of this.SpecialBust.children) {
+      child.scaleY = 0;
+    }
+
+    for (let child of this.SpecialWild.children) {
+      child.scaleY = 0;
+    }
 
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
@@ -329,18 +348,43 @@ export default class GameScene extends cc.Component {
       this
     );
 
+    gEventMgr.on(GlobalEvent.UPDATE_STREAK_COUNT, ()=>{
+      this.combo1.node.active = Game.getStreak() >= 2 && Game.getWildCount() == 0;
+      //this.combo2.node.active = Game.getStreak() >= 3 && Game.getWildCount() == 0;
+    }, this);
+
     gEventMgr.on(
       GlobalEvent.UPDATE_WILD_COUNT,
-      () => {
+      (wild: number) => {
+        if (wild > 0) {
+          this.AddWildEffect.play();
+        }
+        
         this.WildCount.string = Game.getWildCount().toString();
         this.SubmitButton.interactable = Game.getWildCount() > 0;
         this.WildCount.node.getParent().active = this.SubmitButton.interactable;
+
         if (this.SubmitButton.interactable) {
-          this.SubmitButton.node
+          if (Game.getWildCount() == 1) {
+            this.combo2.node.active = true;
+            setTimeout(()=>{
+              if (Game.getWildCount() > 0) {
+                this.SubmitButton.node
             .getChildByName("Background")
             .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
             "btn_wild"
           );
+              }
+          this.combo2.node.active = false;
+            }, 300);
+          } else {
+            this.combo2.node.active = false;
+            this.SubmitButton.node
+            .getChildByName("Background")
+            .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
+            "btn_wild"
+          );
+          }
         } else {
           this.SubmitButton.node
             .getChildByName("Background")
@@ -556,14 +600,14 @@ export default class GameScene extends cc.Component {
 
         let node = gFactory.getSpecialFont(
           spriteFrame,
-          cc.v2(pos.x, pos.y + 200),
+          cc.v2(pos.x, pos.y + 120),
           () => {
             bgNode.stopAllActions();
             bgNode.scaleY = 0;
             bgNode.runAction(
-              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2))
+              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2), cc.scaleTo(0, 1, 0))
             );
-          }
+          },true
         );
 
         this.RemoveNode.addChild(node);
@@ -733,7 +777,7 @@ export default class GameScene extends cc.Component {
             bgNode.stopAllActions();
             bgNode.scaleY = 0;
             bgNode.runAction(
-              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2))
+              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2), cc.scaleTo(0, 1,0))
             );
           }
         );
@@ -869,11 +913,11 @@ export default class GameScene extends cc.Component {
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      // this.Guide.show(() => {
-      //   this.nextStep(LOAD_STEP.GUIDE);
-      // });
-      this.Guide.hide();
-      this.nextStep(LOAD_STEP.GUIDE);
+      this.Guide.show(() => {
+        this.nextStep(LOAD_STEP.GUIDE);
+      });
+      // this.Guide.hide();
+      // this.nextStep(LOAD_STEP.GUIDE);
     } else {
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);

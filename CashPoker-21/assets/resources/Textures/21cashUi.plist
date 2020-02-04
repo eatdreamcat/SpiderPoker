@@ -15,7 +15,37 @@
                 <key>spriteSourceSize</key>
                 <string>{227,211}</string>
                 <key>textureRect</key>
-                <string>{{1,1},{227,211}}</string>
+                <string>{{1,63},{227,211}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>btn_wild1.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{84,60}</string>
+                <key>spriteSourceSize</key>
+                <string>{84,60}</string>
+                <key>textureRect</key>
+                <string>{{35,1},{84,60}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>btn_wild2.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{84,60}</string>
+                <key>spriteSourceSize</key>
+                <string>{84,60}</string>
+                <key>textureRect</key>
+                <string>{{121,1},{84,60}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -30,9 +60,9 @@
                 <key>spriteSourceSize</key>
                 <string>{31,32}</string>
                 <key>textureRect</key>
-                <string>{{459,1},{31,32}}</string>
+                <string>{{1,1},{31,32}}</string>
                 <key>textureRotated</key>
-                <false/>
+                <true/>
             </dict>
             <key>btn_wildnone.png</key>
             <dict>
@@ -45,7 +75,7 @@
                 <key>spriteSourceSize</key>
                 <string>{227,211}</string>
                 <key>textureRect</key>
-                <string>{{230,1},{227,211}}</string>
+                <string>{{1,276},{227,211}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -59,13 +89,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>wildbtn.png</string>
+            <string>21cashUi.png</string>
             <key>size</key>
-            <string>{491,213}</string>
+            <string>{229,488}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:0a8a1034770c8f303f6b12069e2bc3bf:8bef6bee69a05280a9f699b184f9d0ee:826f245e86ff0efb23bbf1c09d2f62fd$</string>
+            <string>$TexturePacker:SmartUpdate:ec89d6778e415dccd04bd1c47c881b83:0955915635400be1b1074eaa237404c9:630ef9f33f650753e6d9700b13e59844$</string>
             <key>textureFileName</key>
-            <string>wildbtn.png</string>
+            <string>21cashUi.png</string>
         </dict>
     </dict>
 </plist>

@@ -173,6 +173,8 @@ export default class Result extends cc.Component {
 
           window.location.reload();
         } else {
+          if (this.hasSubmit) return;
+          this.hasSubmit = true;
           celerx.submitScore(Game.getScore());
         }
       },
@@ -215,6 +217,7 @@ export default class Result extends cc.Component {
   private finalScoreComplete: boolean = false;
 
   private sumbit: boolean = false;
+  private hasSubmit: boolean = false;
 
   check() {
     if (this.sumbit) return;
@@ -227,6 +230,8 @@ export default class Result extends cc.Component {
       this.sumbit = true;
       console.log("submit");
       this.scheduleOnce(() => {
+        if (this.hasSubmit) return;
+        this.hasSubmit = true;
         celerx.submitScore(Game.getScore());
       }, 2);
     }

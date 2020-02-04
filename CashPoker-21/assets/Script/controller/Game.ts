@@ -123,7 +123,7 @@ class GameMgr {
   public addWildCount(wild: number) {
     this.wildCount += wild;
     this.wildCount = Math.max(0, this.wildCount);
-    gEventMgr.emit(GlobalEvent.UPDATE_WILD_COUNT);
+    gEventMgr.emit(GlobalEvent.UPDATE_WILD_COUNT, wild);
   }
 
   public getWildCount() {
@@ -171,11 +171,11 @@ class GameMgr {
   public addStreak(streak: number) {
     this.streakCount += streak;
     this.totalStreak += streak;
-    if (this.streakCount >= 4) {
+    if (this.streakCount >= 3) {
       Game.addWildCount(1);
     }
     this.streakCount = Math.min(this.streakCount, 3);
-
+    gEventMgr.emit(GlobalEvent.UPDATE_STREAK_COUNT);
     console.error(" add streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
   }
 
@@ -189,6 +189,7 @@ class GameMgr {
 
   public clearStreak() {
     this.streakCount = 0;
+    gEventMgr.emit(GlobalEvent.UPDATE_STREAK_COUNT);
     console.error(" clearStreak streak !!!!!!!!!!!!!!!!!! ,", this.streakCount);
   }
 
@@ -547,4 +548,4 @@ class GameMgr {
 }
 
 export const Game = GameMgr.inst;
-CC_DEBUG && (window["Game"] = Game);
+//CC_DEBUG && (window["Game"] = Game);
