@@ -211,7 +211,7 @@ export const STREAK_SCORE = 300;
 export const OVER_5_SCORE = 600;
 export const NO_BUST_EXTRA_SCORE = 150;
 
-export const ADD_SCORE_SPECILA_OFFSET_Y = 650;
+export const ADD_SCORE_SPECILA_OFFSET_Y = 680;
 export const NORMAL_SCORE_MOVE_TIME = 0.3;
 
 export const SPECIAL_TIME_OFFSET = 500;

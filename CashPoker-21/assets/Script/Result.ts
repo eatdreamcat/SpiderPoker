@@ -66,9 +66,14 @@ export default class Result extends cc.Component {
   private showScore: number = 0;
 
   onLoad() {
+    Game.setPause(true);
     Game.calTimeBonus();
+    let childTotal = 0;
+    Game.getPlacePokerRoot().forEach((key, val)=>{
+      childTotal +=val.childrenCount
+    });
     this.BustedLabel.string = Game.removeBustedNode.childrenCount.toString();
-    this.CardsUsedLabel.string = Game.removeCardNode.childrenCount.toString();
+    this.CardsUsedLabel.string = (childTotal+Game.removeCardNode.childrenCount).toString();
     this.ComboLabel.string = Game.getTotalStreak().toString();
     let totalStack = Game.getClearStack();
     this.ClearStackLabel.string = totalStack.toString();
@@ -164,7 +169,8 @@ export default class Result extends cc.Component {
     this.scoreStep = Math.ceil(this.showScore / 30);
     this.timeBonusStep = Math.ceil(Game.getTimeBonus() / 30);
     this.finalScoreStep = Math.ceil(Game.getScore() / 30);
-
+    gEventMgr.emit(GlobalEvent.PLAY_OVER_1);
+    gEventMgr.emit(GlobalEvent.PLAY_OVER_2);
     this.ConfirmButton.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {

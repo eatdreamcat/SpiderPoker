@@ -349,7 +349,7 @@ export default class Poker extends cc.Component {
             Game.addCombo(1);
 
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
-            gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
+            !isBoom && gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
           }, this),
           cc.sequence(
             cc.repeat(
@@ -607,6 +607,7 @@ export default class Poker extends cc.Component {
   }
 
   setWild() {
+    gEventMgr.emit(GlobalEvent.PLAY_CHANGE_2_WILD)
     this.value = 11;
     this.pokerColer = PokerColor.Black;
     this.RecycleAnimation.node.opacity = 255;

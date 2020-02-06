@@ -357,6 +357,7 @@ export default class GameScene extends cc.Component {
       GlobalEvent.UPDATE_WILD_COUNT,
       (wild: number) => {
         if (wild > 0) {
+          gEventMgr.emit(GlobalEvent.PLAY_WILD_ANI)
           this.AddWildEffect.play();
         }
         

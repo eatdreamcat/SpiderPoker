@@ -44,7 +44,7 @@ export default class SpecialFont extends cc.Component {
           cc.scaleTo(0.1, 0.9),
           cc.scaleTo(0.1, 1.1),
           cc.scaleTo(0.1, 1),
-          cc.delayTime(0.1),
+          cc.delayTime(0.2),
           cc.fadeOut(0.1),
           cc.callFunc(() => {
             gFactory.putSpecialFont(this.node);

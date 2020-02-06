@@ -150,6 +150,15 @@ class AudioController {
       },
       this
     );
+
+    gEventMgr.on(GlobalEvent.PLAY_BUST, ()=>{this.play("bust", false, 2.5)}, this);
+
+    gEventMgr.on(GlobalEvent.PLAY_CHANGE_2_WILD, ()=>{
+      this.play("change2wild")
+    }, this)
+    gEventMgr.on(GlobalEvent.PLAY_WILD_ANI, ()=>{
+      this.play("wild_ani")
+    }, this);
   }
 
   stop(audioID: number, clipName?: string) {

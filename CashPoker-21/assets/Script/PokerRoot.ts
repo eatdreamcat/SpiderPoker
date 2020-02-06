@@ -344,6 +344,7 @@ export default class PokerRoot extends cc.Component {
       this.updateValueLabel();
       Game.clearStreak();
       Game.addRecyclePoker(1);
+      gEventMgr.emit(GlobalEvent.PLAY_BUST)
       gEventMgr.emit(GlobalEvent.BUST, parseInt(this.node.name));
       this.scheduleOnce(() => {
         gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, SPECIAL_TIME_OFFSET);
