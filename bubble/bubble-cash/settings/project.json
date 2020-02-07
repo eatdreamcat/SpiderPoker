@@ -2,10 +2,6 @@
   "collision-matrix": [
     [
       true
-    ],
-    [
-      false,
-      false
     ]
   ],
   "design-resolution-height": 1920,
@@ -24,16 +20,14 @@
   "fit-height": true,
   "fit-width": true,
   "group-list": [
-    "default",
-    "top"
+    "default"
   ],
-  "last-module-event-record-time": 1580960914677,
+  "last-module-event-record-time": 0,
   "simulator-orientation": false,
   "simulator-resolution": {
     "height": 640,
     "width": 960
   },
-  "start-scene": "current",
-  "use-customize-simulator": true,
+  "use-customize-simulator": false,
   "use-project-simulator-setting": false
 }
