@@ -11,21 +11,16 @@
 const {ccclass, property} = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class GameScene extends cc.Component {
 
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
-
+    
     // LIFE-CYCLE CALLBACKS:
 
-    // onLoad () {}
+    onLoad () {}
 
     start () {
 
     }
 
-    // update (dt) {}
+    update (dt: number) {}
 }
