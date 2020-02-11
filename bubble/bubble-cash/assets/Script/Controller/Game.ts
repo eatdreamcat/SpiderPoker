@@ -17,6 +17,14 @@ class GameCtrl {
     public getMatrix() {
         return this.bubbleMatrix;
     }
+
+    public prepare() {
+        this.bubbleMatrix.initBubbleData();
+    }
+
+    public start() {
+
+    }
 }
 
 export const Game = GameCtrl.inst;
