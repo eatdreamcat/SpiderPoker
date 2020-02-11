@@ -26,5 +26,12 @@ export const BubbleColors = [BubbleType.Yellow, BubbleType.Red, BubbleType.Purpl
 /** 泡泡高度offset */
 export const BubbleHeightOffset = -15;
 
-export const BubbleYOffset = 485;
+export const BubbleYOffset = 1240;
 export const BubbleXOffset = 20;
+
+/**
+ * 泡泡尺寸
+ */
+export const BubbleSize = cc.size(86, 86);
+
+

@@ -113,6 +113,7 @@ if (CC_DEBUG) {
         }
         break;
       case cc.macro.KEY.space:
+        cc.director.emit("space-press");
         break;
     }
   });

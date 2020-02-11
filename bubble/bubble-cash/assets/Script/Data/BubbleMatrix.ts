@@ -1,5 +1,6 @@
 import { BubbleType, BubbleColors } from "../Const";
 import Bubble from "../Bubble";
+import { Game } from "../Controller/Game";
 
 /**
  * 泡泡矩阵数据
@@ -38,6 +39,39 @@ import Bubble from "../Bubble";
         return this.matrixData;
     }
 
+    /** 增加一行 */
+    addRow(rowCount: number) {
+        let oldLength = this.matrixData.length;
+        this.matrixData.length += rowCount * MatrixSize;
+        for (let i = oldLength; i < this.matrixData.length; i++) {
+            this.matrixData[i] = {
+                color: BubbleType.Blank,
+                bubble: null
+            }
+        }
+    }
+
+    /** 下移行 */
+    moveRow(row: number) {
+        this.addRow(row);
+
+        let addCount = row * MatrixSize;
+        for(let i = this.matrixData.length - 1; i >= addCount; i--) {
+            this.matrixData[i].color = this.matrixData[i - addCount].color;
+            this.matrixData[i].bubble = this.matrixData[i - addCount].bubble;
+            if (this.matrixData[i].bubble) {
+                this.matrixData[i].bubble.setIndex(i);
+            }
+        }
+
+        for (let i = 0; i < addCount - 1; i ++) {
+            this.matrixData[i].color = this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];;
+            this.matrixData[i].bubble = null;
+        }
+
+       
+    }
+
     ij2index(i: number, j: number) {
         return i*MatrixSize + j;
     }
@@ -67,10 +101,7 @@ import Bubble from "../Bubble";
         
         let neibers: number[] = [];
         let index2i = this.index2i(index);
-        let index2j = this.index2j(index);
-
-        // if (index2i < range || index2i > MatrixSize - range - 1) return [];
-        // if (index2j < range || index2j > MatrixSize - range - 1) return [];
+        let moveTimes = Game.getMoveTimes();
 
         for(let i = 0; i <= range; i++) {
             let newi = index2i + i;
@@ -85,29 +116,29 @@ import Bubble from "../Bubble";
                 let neiberIndex3 = index + i * MatrixSize - j;
                 let neiberIndex4 = index - i * MatrixSize - j;
 
-                if(neibers.indexOf(neiberIndex1) < 0 && neiberIndex1 >= 0 && neiberIndex1 <= MatrixSize*MatrixSize - 1) {
-                    if (isSame || newi % 2 == 0 || j < rangej) {
+                if(neibers.indexOf(neiberIndex1) < 0 && neiberIndex1 >= 0 && neiberIndex1 < this.matrixData.length) {
+                    if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
                         neibers.push(neiberIndex1);
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && neiberIndex2 <= MatrixSize*MatrixSize - 1) {
-                    if (isSame || newi % 2 == 0 || j < rangej) {
+                if(neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && neiberIndex2 < this.matrixData.length) {
+                    if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
                         neibers.push(neiberIndex2);
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex3) < 0 && neiberIndex3 >= 0 && neiberIndex3 <= MatrixSize*MatrixSize - 1) {
-                    if (isSame || newi % 2 || j < rangej) {
+                if(neibers.indexOf(neiberIndex3) < 0 && neiberIndex3 >= 0 && neiberIndex3 < this.matrixData.length) {
+                    if (isSame || (newi + moveTimes) % 2 || j < rangej) {
                         neibers.push(neiberIndex3);
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex4) < 0 && neiberIndex4 >= 0 && neiberIndex4 <= MatrixSize*MatrixSize - 1) {
-                    if (isSame || newi % 2 || j < rangej) {
+                if(neibers.indexOf(neiberIndex4) < 0 && neiberIndex4 >= 0 && neiberIndex4 < this.matrixData.length) {
+                    if (isSame || (newi + moveTimes) % 2 || j < rangej) {
                         neibers.push(neiberIndex4);
                     } 
                 }
