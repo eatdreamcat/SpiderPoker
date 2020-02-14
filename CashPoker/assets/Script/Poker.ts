@@ -1,6 +1,6 @@
 import { Game } from "./controller/Game";
 import { gFactory } from "./controller/GameFactory";
-import { OFFSET_Y, ACTION_TAG } from "./Pokers";
+import { OFFSET_Y, ACTION_TAG, Empty_Offset } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 
@@ -74,6 +74,8 @@ export default class Poker extends cc.Component {
 
   private isReadyAutoComplete: boolean = false;
 
+  private isguide: boolean = false;
+
   private recycleActionInfo: {
     startTime: number;
     duration: number;
@@ -81,10 +83,8 @@ export default class Poker extends cc.Component {
   reuse() {
     this.isReadyAutoComplete = false;
     let pokerInfo: string = arguments[0][0][0];
-    console.log(
-      " ----------------------- poker reuse ---------------------------"
-    );
-    console.log(arguments[0][0][0]);
+    this.isguide = arguments[0][0][1];
+    
     this.value = parseInt(pokerInfo.split(",")[1]);
     let type = pokerInfo.split(",")[0];
     this.pokerColer =
@@ -126,6 +126,8 @@ export default class Poker extends cc.Component {
     this.node.targetOff(this);
     gEventMgr.targetOff(this);
     this.cycled = false;
+    this.setForward(null);
+    this.setNext(null);
   }
 
   getNext() {
@@ -170,6 +172,7 @@ export default class Poker extends cc.Component {
 
   onLoad() {
     this.RecycleAnimation.node.opacity = 0;
+    this.RecycleAnimation.node.active = false;
     this.placeLimit.width = this.node.width / 2;
     this.placeLimit.height = this.node.height * 0.75;
     this.node.getChildByName("Label").active = false; // CC_DEBUG;
@@ -193,6 +196,10 @@ export default class Poker extends cc.Component {
     gEventMgr.once(GlobalEvent.COMPLETE, this.autoComplete, this);
 
     gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, this.autoCompleteDone, this);
+
+    gEventMgr.on(GlobalEvent.CLEAR_ALL_POKER, () => {
+      gFactory.putPoker(this.node);
+    }, this);
   }
 
   autoCompleteDone() {
@@ -221,7 +228,7 @@ export default class Poker extends cc.Component {
           cc.delayTime((13 - this.value) / 10 + CMath.getRandom(0, 2)),
           cc.callFunc(() => {
             this.frontCard.node.opacity = 255;
-            this.node.group = "top";
+            this.node.group = this.isguide ? "top-guide" : "top"
             this.node.zIndex = this.value;
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
           }, this),
@@ -360,11 +367,12 @@ export default class Poker extends cc.Component {
           index = key;
         }
       }
-    });
+    }, true);
 
     if (index >= 0) {
       // console.log(" recycle count auto place to recycled root:", index);
       this.placeToNewCycleNode(index);
+      
     }
 
     return index >= 0;
@@ -374,14 +382,17 @@ export default class Poker extends cc.Component {
     e.bubbles = false;
     Game.resetFreeTime();
     if (Game.isTimeOver() || Game.isComplete()) return;
-    if (!this.canMove) return;
+    if (!this.canMove) {
+      console.log(' cant move ')
+      return;
+    }
 
     if (this.isCycled() && this.next) return;
 
     let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
     if (action && !action.isDone()) return;
 
-    this.node.group = "top";
+    this.node.group = this.isguide ? "top-guide" : "top"
     let move = e.getDelta();
     this.node.x += move.x;
     this.node.y += move.y;
@@ -417,7 +428,7 @@ export default class Poker extends cc.Component {
           this.placeToNewCycleNode(recycleIndex);
         } else if (!this.checkAutoRecycle()) {
           if (CMath.Distance(this.node.position, this.defaultPos) < 5) {
-            this.node.group = "default";
+            this.node.group = this.isguide ? "guide" : "default";
             this.node.setPosition(this.defaultPos);
             if (!this.next) this.shake();
           } else {
@@ -426,7 +437,7 @@ export default class Poker extends cc.Component {
               cc.sequence(
                 cc.moveTo(0.1, this.defaultPos.x, this.defaultPos.y),
                 cc.callFunc(() => {
-                  this.node.group = "default";
+                  this.node.group = this.isguide ? "guide" : "default"
                 }, this)
               )
             );
@@ -607,13 +618,14 @@ export default class Poker extends cc.Component {
     this.node.setParent(root);
     this.node.setPosition(selfPos);
 
-    let offset = 0;
+    let offset = Empty_Offset;
     if (root.getComponent(Poker)) {
       offset = OFFSET_Y;
     }
 
     this.setDefaultPosition(cc.v2(0, offset));
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
+    gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP)
     this.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),
@@ -621,7 +633,7 @@ export default class Poker extends cc.Component {
           if (addFlip) {
             Game.addFlipCounts(1);
           }
-          this.node.group = "default";
+          this.node.group = this.isguide ? "guide" : "default"
         }, this)
       )
     );
@@ -632,6 +644,8 @@ export default class Poker extends cc.Component {
   }
 
   placeToNewCycleNode(index: number, delay: number = 0) {
+
+    console.log(' guide;', this.isguide)
     let root = Game.getCycledPokerRoot().get(index);
     if (this.node.getParent() == root) {
       console.error(" click too quick recycle count");
@@ -719,20 +733,26 @@ export default class Poker extends cc.Component {
     this.setKey(null);
     this.setNext(null);
     Game.addCycledPokerRoot(index, this.node);
-    this.node.group = "top";
+    
     this.setDefaultPosition(cc.v2(0, 0));
 
     let action = cc.sequence(
       cc.delayTime(delay),
-
+      
+      cc.callFunc(()=>{
+        this.node.group = this.isguide ? "top-guide" : "top"
+      }),
       cc.moveTo(time, 0, 0),
       cc.callFunc(() => {
+        
         gEventMgr.emit(GlobalEvent.DEV_POKERS);
         gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
+        gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP)
       }),
       cc.delayTime(0),
       cc.callFunc(() => {
-        this.node.group = "default";
+        this.node.group = this.isguide ? "guide" : "default";
+        this.RecycleAnimation.node.active = true;
         this.RecycleAnimation.play();
         if (!Game.checkIsRecycleComplete() && completeFunc) {
           setTimeout(completeFunc, index / 5);
@@ -767,7 +787,7 @@ export default class Poker extends cc.Component {
 
   shake() {
     if (this.isCycled()) return;
-    this.node.group = "default";
+    this.node.group = this.isguide ? "guide" : "default"
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
       cc.repeat(
@@ -973,6 +993,10 @@ export default class Poker extends cc.Component {
 
   isFront() {
     return this.carState == CardState.Front;
+  }
+
+  setGuide(guide: boolean) {
+    this.isguide = guide;
   }
 
   flipCard(duration: number = 1, canMove: boolean = true, callback?: Function) {

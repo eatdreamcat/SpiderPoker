@@ -38,6 +38,12 @@ export default class Stop extends cc.Component {
   @property(Guide)
   Guide: Guide = null;
 
+  @property(cc.Node)
+  Block: cc.Node = null;
+
+  @property(cc.Animation)
+  DrawCardAni: cc.Animation = null;
+
   onLoad() {
     this.EndButton.node.on(cc.Node.EventType.TOUCH_END, this.endNow, this);
     this.ResumeButton.node.on(cc.Node.EventType.TOUCH_END, this.Resume, this);
@@ -46,7 +52,15 @@ export default class Stop extends cc.Component {
     this.Content["_enableBold"](true);
   }
 
-  endNow() {
+  endNow(e: cc.Event.EventCustom) {
+
+    if (!this.node.active) return;
+    if (e.getUserData && typeof e.getUserData() == "function") {
+      e.getUserData()();
+      this.hide();
+      return;
+    }
+
     Game.calTimeBonus();
     gEventMgr.emit(GlobalEvent.OPEN_RESULT);
   }
@@ -60,10 +74,16 @@ export default class Stop extends cc.Component {
    *
    * @param type > 0 暂停，< 0 是提前结算
    */
-  show(type: number) {
+  show(type: number, guide?: boolean) {
     this.node.active = true;
     gEventMgr.emit(GlobalEvent.PLAY_PAUSE);
     gEventMgr.emit(GlobalEvent.SMALL_BGM);
+    
+
+    this.Block.active = !guide;
+    this.Guide.Corn.node.active = false;
+    this.DrawCardAni.node.active = guide;
+    this.DrawCardAni.play();
     if (type > 0) {
       this.EndButton.node.active = false;
       this.ResumeButton.node.x = 0;
@@ -78,17 +98,19 @@ export default class Stop extends cc.Component {
   }
 
   ShowHelp() {
+    if (!this.node.active) return;
     this.hide();
-    this.Guide.show(true, () => {
+    this.Guide.show(() => {
       Game.setPause(false);
-      //gEventMgr.emit(GlobalEvent.PLAY_START);
+      
     });
   }
 
   Resume() {
+    if (!this.node.active) return;
     this.hide();
     Game.setPause(false);
-    //gEventMgr.emit(GlobalEvent.PLAY_START);
+   
   }
 
   start() {}

@@ -130,11 +130,18 @@ export class HashMap<K, V> {
   /**
    * 遍历列表，回调(K,V)
    */
-  public forEach(f: { (key: K, value: V): void }) {
+  public forEach(f: { (key: K, value: V): void }, reverse? :boolean) {
     var count: number = this._list.length;
-    for (let index = 0; index < count; index++) {
-      const element: KeyValue<K, V> = this._list[index];
-      f(element.key, element.value);
+    if (reverse) {
+      for (let index = count - 1; index >= 0; index--) {
+        const element: KeyValue<K, V> = this._list[index];
+        f(element.key, element.value);
+      }
+    } else {
+      for (let index = 0; index < count; index++) {
+        const element: KeyValue<K, V> = this._list[index];
+        f(element.key, element.value);
+      }
     }
   }
 

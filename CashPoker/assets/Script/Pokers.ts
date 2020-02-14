@@ -48,6 +48,79 @@ export const PokerTypes = {
 // console.log(
 //   "----------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA------------------"
 // );
+
+export const Empty_Offset = -110;
+
+export const GuidePokers = [
+
+  "diamond_,1", //3
+  "spade_,1", //0
+  "heart_,1", //1
+  "club_,1", //2
+  
+
+  "spade_,2", //4
+  "heart_,2", //5
+  "club_,2", //6
+  "club_,5", //7
+
+  "spade_,3", //8
+  "heart_,3", //9
+  "club_,3", //10
+  "diamond_,3", //11
+
+  "spade_,4", //12
+  "heart_,13", //13
+  "club_,4",  //14
+  "diamond_,4",//15
+
+  "spade_,5", //16
+  "heart_,5", //17
+  "diamond_,2",  //18
+  "spade_,6", //19
+
+  "club_,6", //20
+  "heart_,6", //21
+  "diamond_,5",  //22
+  "diamond_,6", //23
+
+  "heart_,7", //24
+  "spade_,7", //25
+  "club_,8",  //26
+  "diamond_,7", //27
+
+  "spade_,8", //28
+  "heart_,8", //29
+  "club_,7",  //30
+  "diamond_,8", //31
+
+  "spade_,9", //32
+  "heart_,9", //33
+  "club_,9",  //34
+  "diamond_,9", //35
+
+  "spade_,10", //36
+  "heart_,10", //37
+  "club_,10",  //38
+  "diamond_,10", //39
+
+  "spade_,11", //40
+  "heart_,11", //41
+  "club_,11",  //42
+  "diamond_,11", //43
+
+  "spade_,12", //44
+  "heart_,12", //45
+  "club_,12",  //46
+  "diamond_,12", //47
+
+  "spade_,13", //48
+  "heart_,4", //49
+  "club_,13", //50
+  "diamond_,13" //51
+];
+
+
 export const Pokers = [
   "spade_,1", //0
   "heart_,1", //1

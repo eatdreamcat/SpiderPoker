@@ -1,6 +1,6 @@
 import { HashMap } from "../utils/HashMap";
 import Poker, { CardState } from "../Poker";
-import { ACTION_TAG, OFFSET_Y, FREE_TIME_LIMIT } from "../Pokers";
+import { ACTION_TAG, OFFSET_Y, FREE_TIME_LIMIT, Empty_Offset } from "../Pokers";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
 
@@ -49,6 +49,17 @@ class GameMgr {
   private combo: number = -1;
 
   private freeTime: number = 0;
+
+  public initAllData() {
+    this.timeBonus = 0;
+    this.flipCounts = 0;
+    this.gameTime = 300;
+    this.removePokerCount = 0;
+    this.combo = -1;
+    this.freeTime = 0;
+    this.freeDrawTimes = 3;
+    this.stepInfoArray.length = 0;
+  }
 
   public addFreeTime(count: number) {
     this.freeTime += count;
@@ -314,7 +325,9 @@ class GameMgr {
         Game.addScore(score);
       }
 
-      if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot") {
+      let poker = node.getComponent(Poker);
+
+      if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot" || (poker && poker.isCycled())) {
         let selfPos = CMath.ConvertToNodeSpaceAR(node, parent);
         node.setPosition(selfPos);
       } else {
@@ -330,7 +343,7 @@ class GameMgr {
 
       node.group = "top";
 
-      let poker = node.getComponent(Poker);
+      
 
       if (poker) {
         let returnPos =
@@ -342,7 +355,7 @@ class GameMgr {
         if (!parent.getComponent(Poker)) {
           if (parent.name != "PokerFlipRoot") {
             returnPos.x = 0;
-            returnPos.y = 0;
+            returnPos.y = parent.name != "PokerDevl" ? Empty_Offset : 0;
           }
         } else {
           if (parent.getComponent(Poker).isCycled()) {

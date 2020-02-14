@@ -3731,7 +3731,7 @@ declare namespace cc {
 		var newVec2 = node.parent.convertToWorldSpaceAR(cc.v2(100, 100));
 		``` 
 		*/
-		parent.convertToWorldSpaceAR(nodePoint: Vec2): Vec2;		
+		convertToWorldSpaceAR(nodePoint: Vec2): Vec2;		
 		/**
 		!#en
 		Returns the matrix that transform the node's (local) space coordinates into the parent's space coordinates.<br/>

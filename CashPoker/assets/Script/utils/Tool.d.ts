@@ -43,6 +43,11 @@ interface CMath {
    * @param spaceNode 目标坐标空间节点
    */
   ConvertToNodeSpaceAR(node: cc.Node, spaceNode: cc.Node): cc.Vec2;
+
+  /**
+   * 获取节点世界坐标下的包围合，不包含子节点
+   */
+  GetBoxToWorld(node: cc.Node, exceptNode?: cc.Node): cc.Rect;
 }
 
 // interface celerx {
