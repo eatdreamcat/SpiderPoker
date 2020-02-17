@@ -195,6 +195,10 @@ class GameMgr {
     return this.gameStart;
   }
 
+  public resetscore() {
+    this.score = 0;
+  }
+
   public addScore(score: number, pos: cc.Vec2 = cc.v2(-200, 700)) {
     if (score == 0) return;
     score = Math.floor(score);

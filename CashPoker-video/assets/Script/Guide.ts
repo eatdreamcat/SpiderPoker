@@ -33,6 +33,9 @@ export default class Guide extends cc.Component {
   @property(cc.Animation)
   GuideHand: cc.Animation = null;
 
+  @property(cc.SpriteFrame)
+  GuideEnd: cc.SpriteFrame = null;
+
   @property(cc.Sprite)
   Corn: cc.Sprite = null;
 
@@ -69,8 +72,10 @@ export default class Guide extends cc.Component {
   private guideSteps: GuideStep[] = [];
   private isGuide: boolean = false;
   private index: number = 1;
+  private guideDefaultY: number = 0;
   onLoad() {
-
+    
+    this.guideDefaultY = this.Corn.node.y;
     this.GuideHand.node.active = false;
     this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
     this.Forward.node.on(cc.Node.EventType.TOUCH_END, this.forwardPage, this);
@@ -104,12 +109,7 @@ export default class Guide extends cc.Component {
     gEventMgr.on(GlobalEvent.POP_GUIDE_STEP, ()=>{
       if (this.guideSteps.length <= 0) return;
 
-      let curStep = this.guideSteps.shift();
-      for(let touch of curStep.touches) {
-        if (touch.end) {
-          touch.end();
-        }
-      }
+      this.popStep();
 
       this.nextGuide();
     }, this);
@@ -122,10 +122,10 @@ export default class Guide extends cc.Component {
 
   onBlockTouch(e: cc.Event.EventTouch) {
         
-    if (this.guideSteps.length <= 0) {
-      this.hide();
-      return;
-    }
+    // if (this.guideSteps.length <= 0) {
+    //   this.hide();
+    //   return;
+    // }
 
     
     let curStep = this.guideSteps[0];
@@ -201,6 +201,37 @@ onBlockTouchEnd(e: cc.Event.EventTouch) {
 
 }
 
+
+popStep() {
+  if (this.guideSteps.length <= 0) return;
+
+      let curStep = this.guideSteps.shift();
+      for(let touch of curStep.touches) {
+        if (touch.end) {
+          touch.end();
+        }
+      }
+}
+
+showEnd() {
+  console.log(" show end ");
+  this.Corn.node.active = true;
+  this.Corn.node.y = this.guideDefaultY;
+  this.Corn.spriteFrame = this.GuideEnd;
+  this.OK.node.active = true;
+  
+  this.OK.node.targetOff(this);
+  this.OK.node.on(
+    cc.Node.EventType.TOUCH_END,
+    () => {
+      
+      this.popStep();
+      this.nextGuide();
+    },
+    this
+  );
+}
+
 onBlockTouchMove(e: cc.Event.EventTouch) {
         
   if (this.guideSteps.length <= 0) {
@@ -248,8 +279,11 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
   nextGuide() {
 
     let count = this.guideSteps.length;
-    if (count <= 0) return;
+    if (count <= 0) {
+      this.hide();
+      return;
 
+    }
     
     this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("guide"+this.index);
     this.Corn.node.y = -265; 
@@ -258,16 +292,22 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     let actions: cc.FiniteTimeAction[] = [];
     let speed = 550;
 
-    if (curStep.touches.length > 0) {
+    let touchActions = [];
+    for (let touch of curStep.touches) {
+      if (touch.isAction) touchActions.push(touch.node)
+    }
+
+    if (touchActions.length > 0) {
       let pos
       if (curStep.touches.length > 1) {
-        pos = CMath.ConvertToNodeSpaceAR(curStep.touches[1].node, this.GuideHand.node.parent);
+        pos = CMath.ConvertToNodeSpaceAR(touchActions[1], this.GuideHand.node.parent);
         
       } else {
-        pos = CMath.ConvertToNodeSpaceAR(curStep.touches[0].node, this.GuideHand.node.parent);
+        pos = CMath.ConvertToNodeSpaceAR(touchActions[0], this.GuideHand.node.parent);
       }
       this.GuideHand.node.position = pos;
     }
+
     for (let touch of curStep.touches) {
       touch.node.group = "guide"
       touch.start();
@@ -275,21 +315,31 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
       let pos = CMath.ConvertToNodeSpaceAR(touch.node, this.GuideHand.node.parent);
       let time = CMath.Distance(pos, this.GuideHand.node.position);
       let action = cc.moveTo(time / speed, pos);
+      
       actions.push(action);
+      if (actions.length ==1) {
+        actions.push(cc.fadeTo(0.3, 0));
+        actions.push(cc.delayTime(0.3));
+      }
       }
     }
 
+    if (actions.length == 2) actions.pop();
+
     this.GuideHand.node.active = actions.length > 0;
     this.GuideHand.node.stopAllActions();
+    this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {
+      actions.push(cc.fadeTo(0.4, 255));
+      
       this.GuideHand.node.runAction(cc.repeatForever(cc.sequence(actions)));
     } 
   }
 
   hide() {
-   
+    console.error(" hide ")
     this.node.active = false;
-    if (this.callback && !this.isGuide) this.callback();
+    this.callback && this.callback();
   }
 
   show(closeCallback: Function) {

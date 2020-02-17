@@ -71,6 +71,9 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   PokerFlipRoot: cc.Node = null;
 
+  @property(cc.Node)
+  GuideEmpty2: cc.Node = null;
+
   @property(cc.SpriteAtlas)
   BackButtonAtlas: cc.SpriteAtlas = null;
   @property(cc.SpriteAtlas)
@@ -175,12 +178,7 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
-      if (
-        child.getComponent(cc.Sprite) &&
-        child.getComponent(cc.Sprite).enabled
-      ) {
-        child.getComponent(cc.Sprite).enabled = CC_DEBUG;
-      }
+      
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
@@ -347,6 +345,21 @@ export default class GameScene extends cc.Component {
                 node6.getComponent(Poker).setGuide(false);
               }
               node6.group = "default";
+            },
+            isButton: false,
+            //isAction: true
+          },
+
+          {
+            node: this.GuideEmpty2,
+            callback: () =>{},
+            start: () => {
+             
+
+            },
+            end: () =>{
+            
+              
             },
             isButton: false,
             isAction: true
@@ -555,8 +568,9 @@ export default class GameScene extends cc.Component {
          node: this.Stop.EndButton.node,
          callback: () => {
           this.Stop.EndButton.node.group = "default";
-          this.nextStep(LOAD_STEP.GUIDE);
-          gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
+          // this.nextStep(LOAD_STEP.GUIDE);
+          this.Guide.showEnd();
+          //gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
           
         },
         start: () => {
@@ -991,7 +1005,9 @@ export default class GameScene extends cc.Component {
   prepareGame() {
 
     this.Top.group = "default";
-    Game.addScore(-Game.getScore());
+    // Game.addScore(-Game.getScore());
+    Game.resetscore();
+    this.showScore = 0;
     this.TimeAnimation.node.active = false;
     this.TimeLabel.font = this.SmallGreen;
     this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame(

@@ -52,6 +52,10 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   PokerDevl: cc.Node = null;
 
+
+  @property(cc.Node)
+  GuideEmpty: cc.Node = null;
+
   @property(cc.Node)
   RemoveNode: cc.Node = null;
 
@@ -66,6 +70,9 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Node)
   PokerFlipRoot: cc.Node = null;
+
+  @property(cc.Node)
+  GuideEmpty2: cc.Node = null;
 
   @property(cc.SpriteAtlas)
   BackButtonAtlas: cc.SpriteAtlas = null;
@@ -171,12 +178,7 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
-      if (
-        child.getComponent(cc.Sprite) &&
-        child.getComponent(cc.Sprite).enabled
-      ) {
-        child.getComponent(cc.Sprite).enabled = CC_DEBUG;
-      }
+      
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
@@ -216,6 +218,18 @@ export default class GameScene extends cc.Component {
             start: ()=>{},
             end: ()=>{}
           },
+          
+          {
+            node: this.CycleRoot.children[0],
+            isButton: false,
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              this.CycleRoot.children[0].group = "default";
+            },
+            isAction: true
+          },
+
           {
             node: nodeA,
             isButton: false,
@@ -231,18 +245,6 @@ export default class GameScene extends cc.Component {
             isAction: true
           },
 
-          {
-            node: this.CycleRoot.children[0],
-            isButton: false,
-            callback: () => {},
-            start: () => {},
-            end: () => {
-              this.CycleRoot.children[0].group = "default";
-            },
-            isAction: true
-          },
-
-          
         ]
       },
 
@@ -343,6 +345,21 @@ export default class GameScene extends cc.Component {
                 node6.getComponent(Poker).setGuide(false);
               }
               node6.group = "default";
+            },
+            isButton: false,
+            //isAction: true
+          },
+
+          {
+            node: this.GuideEmpty2,
+            callback: () =>{},
+            start: () => {
+             
+
+            },
+            end: () =>{
+            
+              
             },
             isButton: false,
             isAction: true
@@ -485,9 +502,36 @@ export default class GameScene extends cc.Component {
               nodeTop.group = "default";
             },
             isButton: false,
+          },
+          {
+            node: node5_1,
+            callback: () =>{},
+            start: () => {
+              if (node5_1.getComponent(Poker)) {
+                node5_1.getComponent(Poker).setGuide(true)
+              }
+  
+            },
+            end: () =>{
+              if (node5_1.getComponent(Poker)) {
+                node5_1.getComponent(Poker).setGuide(false);
+              }
+              node5_1.group = "default";
+            },
+            isButton: false,
             isAction: true
           },
-
+          {
+            node: this.GuideEmpty,
+            callback: ()=>{},
+            start: ()=>{},
+            end:()=>{
+              this.GuideEmpty.group = "default"
+            },
+            isButton: true,
+            
+            isAction: true
+          },
           {
             node: root1,
             callback: ()=>{},
@@ -496,7 +540,7 @@ export default class GameScene extends cc.Component {
               root1.group = "default"
             },
             isButton: true,
-            isAction: true
+            
           },
 
         ]
@@ -524,8 +568,9 @@ export default class GameScene extends cc.Component {
          node: this.Stop.EndButton.node,
          callback: () => {
           this.Stop.EndButton.node.group = "default";
-          this.nextStep(LOAD_STEP.GUIDE);
-          gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
+          // this.nextStep(LOAD_STEP.GUIDE);
+          this.Guide.showEnd();
+          //gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
           
         },
         start: () => {

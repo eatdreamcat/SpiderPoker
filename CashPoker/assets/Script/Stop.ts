@@ -56,7 +56,7 @@ export default class Stop extends cc.Component {
 
     if (!this.node.active) return;
     if (e.getUserData && typeof e.getUserData() == "function") {
-      e.getUserData()();
+       e.getUserData()();
       this.hide();
       return;
     }
