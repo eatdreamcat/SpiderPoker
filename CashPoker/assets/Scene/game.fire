@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.16471820345351457,
-      "y": 0.16471820345351457,
+      "x": 0.20677083333333332,
+      "y": 0.20677083333333332,
       "z": 1
     },
     "_quat": {
@@ -133,16 +133,19 @@
       },
       {
         "__id__": 143
+      },
+      {
+        "__id__": 191
       }
     ],
     "_active": true,
     "_level": 1,
     "_components": [
       {
-        "__id__": 191
+        "__id__": 192
       },
       {
-        "__id__": 192
+        "__id__": 193
       }
     ],
     "_prefab": null,
@@ -8797,6 +8800,63 @@
     "_id": "3eGtwyhh5Gm7wImr7nJuM9"
   },
   {
+    "__type__": "cc.Node",
+    "_name": "GuideEmpty",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 2
+    },
+    "_children": [],
+    "_active": true,
+    "_level": 2,
+    "_components": [],
+    "_prefab": null,
+    "_opacity": 255,
+    "_color": {
+      "__type__": "cc.Color",
+      "r": 255,
+      "g": 255,
+      "b": 255,
+      "a": 255
+    },
+    "_contentSize": {
+      "__type__": "cc.Size",
+      "width": 0,
+      "height": 0
+    },
+    "_anchorPoint": {
+      "__type__": "cc.Vec2",
+      "x": 0.5,
+      "y": 0.5
+    },
+    "_position": {
+      "__type__": "cc.Vec3",
+      "x": 261,
+      "y": 678,
+      "z": 0
+    },
+    "_scale": {
+      "__type__": "cc.Vec3",
+      "x": 1,
+      "y": 1,
+      "z": 1
+    },
+    "_rotationX": 0,
+    "_rotationY": 0,
+    "_quat": {
+      "__type__": "cc.Quat",
+      "x": 0,
+      "y": 0,
+      "z": 0,
+      "w": 1
+    },
+    "_skewX": 0,
+    "_skewY": 0,
+    "_zIndex": 0,
+    "groupIndex": 0,
+    "_id": "0fDJMgcYNE/I1yCykkl0b6"
+  },
+  {
     "__type__": "cc.Canvas",
     "_name": "",
     "_objFlags": 0,
@@ -8832,6 +8892,9 @@
     },
     "PokerDevl": {
       "__id__": 16
+    },
+    "GuideEmpty": {
+      "__id__": 191
     },
     "RemoveNode": {
       "__id__": 97

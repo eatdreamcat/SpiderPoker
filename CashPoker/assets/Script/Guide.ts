@@ -258,16 +258,22 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     let actions: cc.FiniteTimeAction[] = [];
     let speed = 550;
 
-    if (curStep.touches.length > 0) {
+    let touchActions = [];
+    for (let touch of curStep.touches) {
+      if (touch.isAction) touchActions.push(touch.node)
+    }
+
+    if (touchActions.length > 0) {
       let pos
       if (curStep.touches.length > 1) {
-        pos = CMath.ConvertToNodeSpaceAR(curStep.touches[1].node, this.GuideHand.node.parent);
+        pos = CMath.ConvertToNodeSpaceAR(touchActions[1], this.GuideHand.node.parent);
         
       } else {
-        pos = CMath.ConvertToNodeSpaceAR(curStep.touches[0].node, this.GuideHand.node.parent);
+        pos = CMath.ConvertToNodeSpaceAR(touchActions[0], this.GuideHand.node.parent);
       }
       this.GuideHand.node.position = pos;
     }
+
     for (let touch of curStep.touches) {
       touch.node.group = "guide"
       touch.start();
@@ -275,13 +281,23 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
       let pos = CMath.ConvertToNodeSpaceAR(touch.node, this.GuideHand.node.parent);
       let time = CMath.Distance(pos, this.GuideHand.node.position);
       let action = cc.moveTo(time / speed, pos);
+      
       actions.push(action);
+      if (actions.length ==1) {
+        actions.push(cc.fadeTo(0.3, 0));
+        actions.push(cc.delayTime(0.3));
+      }
       }
     }
 
+    if (actions.length == 2) actions.pop();
+
     this.GuideHand.node.active = actions.length > 0;
     this.GuideHand.node.stopAllActions();
+    this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {
+      actions.push(cc.fadeTo(0.4, 255));
+      
       this.GuideHand.node.runAction(cc.repeatForever(cc.sequence(actions)));
     } 
   }

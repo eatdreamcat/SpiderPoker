@@ -52,6 +52,10 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   PokerDevl: cc.Node = null;
 
+
+  @property(cc.Node)
+  GuideEmpty: cc.Node = null;
+
   @property(cc.Node)
   RemoveNode: cc.Node = null;
 
@@ -216,6 +220,18 @@ export default class GameScene extends cc.Component {
             start: ()=>{},
             end: ()=>{}
           },
+          
+          {
+            node: this.CycleRoot.children[0],
+            isButton: false,
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              this.CycleRoot.children[0].group = "default";
+            },
+            isAction: true
+          },
+
           {
             node: nodeA,
             isButton: false,
@@ -231,18 +247,6 @@ export default class GameScene extends cc.Component {
             isAction: true
           },
 
-          {
-            node: this.CycleRoot.children[0],
-            isButton: false,
-            callback: () => {},
-            start: () => {},
-            end: () => {
-              this.CycleRoot.children[0].group = "default";
-            },
-            isAction: true
-          },
-
-          
         ]
       },
 
@@ -485,9 +489,36 @@ export default class GameScene extends cc.Component {
               nodeTop.group = "default";
             },
             isButton: false,
+          },
+          {
+            node: node5_1,
+            callback: () =>{},
+            start: () => {
+              if (node5_1.getComponent(Poker)) {
+                node5_1.getComponent(Poker).setGuide(true)
+              }
+  
+            },
+            end: () =>{
+              if (node5_1.getComponent(Poker)) {
+                node5_1.getComponent(Poker).setGuide(false);
+              }
+              node5_1.group = "default";
+            },
+            isButton: false,
             isAction: true
           },
-
+          {
+            node: this.GuideEmpty,
+            callback: ()=>{},
+            start: ()=>{},
+            end:()=>{
+              this.GuideEmpty.group = "default"
+            },
+            isButton: true,
+            
+            isAction: true
+          },
           {
             node: root1,
             callback: ()=>{},
@@ -496,7 +527,7 @@ export default class GameScene extends cc.Component {
               root1.group = "default"
             },
             isButton: true,
-            isAction: true
+            
           },
 
         ]
