@@ -21,7 +21,9 @@ export enum LOAD_STEP {
   /** 场景加载完成 */
   AUDIO = 2 << 3,
   CELER = 2 << 4,
-  GUIDE = 2 << 5,
+  GUIDE = 2 << 1,
+
+  CELER_READY = AUDIO  | PREFABS | READY,
 
   GUIDE_READY = LOAD_STEP.READY |
   LOAD_STEP.PREFABS |
@@ -544,7 +546,7 @@ export default class GameScene extends cc.Component {
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
     this.Tip.active = false;
-    celerx.ready();
+    // celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
     celerx.onStart(
@@ -557,7 +559,7 @@ export default class GameScene extends cc.Component {
       return parseInt(Game.getScore().toString());
     });
 
-    CC_DEBUG && this.celerStart();
+    
 
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
@@ -892,10 +894,8 @@ export default class GameScene extends cc.Component {
     if (match && match.sharedRandomSeed) {
       CMath.randomSeed = match.sharedRandomSeed;
       CMath.sharedSeed = match.sharedRandomSeed;
-      this.nextStep(LOAD_STEP.CELER);
     } else {
       CMath.randomSeed = Math.random();
-      CC_DEBUG && this.nextStep(LOAD_STEP.CELER);
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
@@ -905,6 +905,8 @@ export default class GameScene extends cc.Component {
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
     }
+
+    this.nextStep(LOAD_STEP.CELER);
   }
 
   /**
@@ -912,7 +914,7 @@ export default class GameScene extends cc.Component {
    */
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
-    
+    console.log(' step:', LOAD_STEP[this.step], "," , this.step, ", now:" , LOAD_STEP[loadStep]);
     if (this.step >= LOAD_STEP.DONE && !this.isStart) {
       console.log("  startGame ---------------------- ");
       this.isStart = true;
@@ -922,6 +924,9 @@ export default class GameScene extends cc.Component {
       console.log("  start guide ------------")
       this.startGuide();
       
+    } else if (this.step >= LOAD_STEP.CELER_READY) {
+      celerx.ready();
+      CC_DEBUG && this.celerStart();
     }
   }
 
