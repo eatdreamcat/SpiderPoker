@@ -91,8 +91,8 @@ export default class Guide extends cc.Component {
       cc.Node.EventType.TOUCH_END,
       () => {
         this.hide();
-        this.guideSteps.length = 0;
-        if (this.callback) this.callback();
+        
+        
       },
       this
     );
@@ -107,7 +107,7 @@ export default class Guide extends cc.Component {
     );
 
     gEventMgr.on(GlobalEvent.POP_GUIDE_STEP, ()=>{
-      if (this.guideSteps.length <= 0) return;
+      if (this.guideSteps.length <= 0 || !this.node.active) return;
 
       this.popStep();
 
@@ -206,6 +206,17 @@ popStep() {
   if (this.guideSteps.length <= 0) return;
 
       let curStep = this.guideSteps.shift();
+      for(let touch of curStep.touches) {
+        if (touch.end) {
+          touch.end();
+        }
+      }
+}
+
+clearStep() {
+  if (this.guideSteps.length <= 0) return;
+
+      for (let curStep of this.guideSteps)
       for(let touch of curStep.touches) {
         if (touch.end) {
           touch.end();
@@ -338,8 +349,11 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
   hide() {
     console.error(" hide ")
+    if (!this.node.active) return;
+    this.clearStep();
     this.node.active = false;
     this.callback && this.callback();
+    this.callback = null;
   }
 
   show(closeCallback: Function) {

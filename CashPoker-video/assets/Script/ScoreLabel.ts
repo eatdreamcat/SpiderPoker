@@ -20,7 +20,9 @@ export default class ScoreLabel extends cc.Component {
     this.Score.string = arguments[0][0];
   }
 
-  unuse() {}
+  unuse() {
+    this.node.group = "top"
+  }
   onLoad() {}
 
   start() {}

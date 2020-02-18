@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.1482500607974696,
-      "y": 0.1482500607974696,
+      "x": 0.20677083333333332,
+      "y": 0.20677083333333332,
       "z": 1
     },
     "_quat": {
@@ -6501,7 +6501,7 @@
     "node": {
       "__id__": 144
     },
-    "_enabled": true,
+    "_enabled": false,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_spriteFrame": {

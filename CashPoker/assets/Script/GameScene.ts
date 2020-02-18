@@ -608,7 +608,9 @@ export default class GameScene extends cc.Component {
 
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
-    this.CheatToggle.node.on("toggle", () => {}, this);
+    this.CheatToggle.node.on("toggle", () => {
+      window["cheat"] = this.CheatToggle.isChecked;
+    }, this);
 
     // init prefabs
 
@@ -965,21 +967,24 @@ export default class GameScene extends cc.Component {
       this.isStart = true;
       this.Guide.hide();
       this.startGame();
-    } else if (this.step >= LOAD_STEP.GUIDE_READY && this.isNewPlayer) {
+    } else if (this.step >= LOAD_STEP.GUIDE_READY && this.isNewPlayer && !this.guideDone) {
       console.log("  start guide ------------")
       this.startGuide();
       
-    } else if (this.step >= LOAD_STEP.CELER_READY) {
+    } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
       celerx.ready();
       CC_DEBUG && this.celerStart();
+      this.isCelerStart = true;
     }
   }
 
-
+  private isCelerStart: boolean = false;
+  private guideDone: boolean = false;
   startGuide() {
 
+    this.guideDone  = true;
     let pokers = GuidePokers.concat([]).reverse();
-    
+    Game.allPokers.length = 0;
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
       let pokerNode = gFactory.getPoker([pokers.pop()]);
@@ -987,6 +992,7 @@ export default class GameScene extends cc.Component {
       pokerNode.x = 0;
       pokerNode.y = 0;
       this.PokerDevl.addChild(pokerNode);
+      Game.allPokers.push(pokerNode.getComponent(Poker));
     }
 
     this.startDevPoker([0, 7, 13, 18, 19, 22, 25, 26, 27], [22, 27], ()=>{
@@ -1004,6 +1010,13 @@ export default class GameScene extends cc.Component {
 
   prepareGame() {
 
+    for (let poker of Game.allPokers) {
+      gFactory.putPoker(poker.node);
+      console.log('put poker ')
+    }
+    
+    
+    Game.allPokers.length = 0;
     this.Top.group = "default";
     // Game.addScore(-Game.getScore());
     Game.resetscore();
@@ -1019,18 +1032,13 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
-      if (
-        child.getComponent(cc.Sprite) &&
-        child.getComponent(cc.Sprite).enabled
-      ) {
-        child.getComponent(cc.Sprite).enabled = CC_DEBUG;
-      }
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
     for (let child of this.CycleRoot.children) {
       Game.addCycledPokerRoot(parseInt(child.name), child);
     }
+
   }
 
   startGame() {
@@ -1039,10 +1047,11 @@ export default class GameScene extends cc.Component {
     Game.initAllData();
     this.prepareGame();
 
-    gEventMgr.emit(GlobalEvent.CLEAR_ALL_POKER);
+    
 
 
     let pokers = Pokers.concat([]);
+    console.error(pokers.length)
     
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
@@ -1058,8 +1067,12 @@ export default class GameScene extends cc.Component {
       pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
       pokerNode.y = 0;
+
       this.PokerDevl.addChild(pokerNode);
     }
+
+    console.log(" ------------------------ start game ------------------------");
+    console.error(this.PokerDevl.childrenCount)
     
 
     this.startDevPoker([0, 7, 13, 18, 22, 25, 27], []);
@@ -1704,6 +1717,8 @@ export default class GameScene extends cc.Component {
   update(dt: number) {
     this.devTime += dt;
     this.backTime += dt;
+    
+    
     if (Game.isGameStarted()) {
       Game.addGameTime(-dt);
       Game.addFreeTime(dt);

@@ -59,7 +59,7 @@ class ObjPool {
   get(..._) {
     var last = this._pool.length - 1;
     if (last < 0) {
-      console.warn(" last < 0 ");
+      CC_DEBUG && console.error(" last < 0 ");
       this.initPool(1);
     }
     last = this._pool.length - 1;

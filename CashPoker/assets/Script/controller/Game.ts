@@ -50,6 +50,8 @@ class GameMgr {
 
   private freeTime: number = 0;
 
+  public allPokers: Poker[] = [];
+
   public initAllData() {
     this.timeBonus = 0;
     this.flipCounts = 0;
@@ -59,6 +61,7 @@ class GameMgr {
     this.freeTime = 0;
     this.freeDrawTimes = 3;
     this.stepInfoArray.length = 0;
+    this.recycleCount = 0;
   }
 
   public addFreeTime(count: number) {

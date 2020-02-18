@@ -123,11 +123,14 @@ export default class Poker extends cc.Component {
   }
 
   unuse() {
+    console.log(' poker unuse ')
     this.node.targetOff(this);
     gEventMgr.targetOff(this);
     this.cycled = false;
     this.setForward(null);
     this.setNext(null);
+    this.isguide = false;
+    this.node.group = "default";
   }
 
   getNext() {
@@ -197,9 +200,7 @@ export default class Poker extends cc.Component {
 
     gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, this.autoCompleteDone, this);
 
-    gEventMgr.on(GlobalEvent.CLEAR_ALL_POKER, () => {
-      gFactory.putPoker(this.node);
-    }, this);
+    
   }
 
   autoCompleteDone() {
@@ -335,6 +336,7 @@ export default class Poker extends cc.Component {
     if (!Game.isGameStarted()) Game.start();
 
     gEventMgr.emit(GlobalEvent.PLAY_POKER_PLACE);
+    
   }
 
   checkAutoRecycle() {
@@ -855,7 +857,7 @@ export default class Poker extends cc.Component {
 
   public static checkBeNext(poker: Poker, next: Poker) {
     if (!next || !poker) return false;
-
+    if (window["cheat"]) return true;
     return (
       poker.getValue() - next.getValue() == 1 &&
       poker.getPokerColor() != next.getPokerColor()
