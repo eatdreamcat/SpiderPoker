@@ -30,6 +30,9 @@ export default class Guide extends cc.Component {
   @property(cc.SpriteAtlas)
   GuideAtlas: cc.SpriteAtlas = null;
 
+  @property(cc.SpriteFrame)
+  GuideStart: cc.SpriteFrame = null;
+
   @property(cc.Animation)
   GuideHand: cc.Animation = null;
 
@@ -66,6 +69,15 @@ export default class Guide extends cc.Component {
   @property(cc.Node)
   GuideBlock: cc.Node = null;
 
+  @property(cc.Node)
+  DownloadNode: cc.Node = null;
+
+  @property(cc.Button)
+  DownloadButton: cc.Button = null;
+
+  @property(cc.Button)
+  ReplayButton: cc.Button = null;
+
 
   private callback: Function = null;
 
@@ -78,6 +90,20 @@ export default class Guide extends cc.Component {
     this.guideDefaultY = this.Corn.node.y;
     this.GuideHand.node.active = false;
     this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
+
+    this.DownloadButton.node.on(cc.Node.EventType.TOUCH_END, () =>{
+      window.location.href = "https://www.celer.network";
+    }, this);
+    
+    this.ReplayButton.node.on(cc.Node.EventType.TOUCH_END, ()=>{
+      this.clearStep();
+    
+      this.node.active = false;
+      this.DownloadNode.active = false;
+      gEventMgr.emit(GlobalEvent.RESTART_PLAY_AD);
+      
+    }, this)
+
     this.Forward.node.on(cc.Node.EventType.TOUCH_END, this.forwardPage, this);
     this.Resume.node.on(
       cc.Node.EventType.TOUCH_END,
@@ -118,14 +144,27 @@ export default class Guide extends cc.Component {
     this.Block.on(cc.Node.EventType.TOUCH_CANCEL, this.onBlockTouchCancel, this);
     this.Block.on(cc.Node.EventType.TOUCH_END, this.onBlockTouchEnd, this);
     this.Block.on(cc.Node.EventType.TOUCH_MOVE, this.onBlockTouchMove, this);
+
+    gEventMgr.on(GlobalEvent.OPEN_RESULT, () =>{
+      
+      this.clearStep()
+      this.Corn.node.active = true;
+      this.Corn.node.y = this.guideDefaultY;
+      this.Corn.spriteFrame = this.GuideEnd;
+      this.DownloadNode.active = true;
+      this.GuideHand.node.active = false;
+
+    }, this);
+
+    this.DownloadNode.active = false;
   }
 
   onBlockTouch(e: cc.Event.EventTouch) {
         
-    // if (this.guideSteps.length <= 0) {
-    //   this.hide();
-    //   return;
-    // }
+    if (this.guideSteps.length <= 0) {
+      
+      return;
+    }
 
     
     let curStep = this.guideSteps[0];
@@ -152,7 +191,7 @@ export default class Guide extends cc.Component {
 onBlockTouchCancel(e: cc.Event.EventTouch) {
         
   if (this.guideSteps.length <= 0) {
-    this.hide();
+    
     return;
   }
 
@@ -179,7 +218,7 @@ onBlockTouchCancel(e: cc.Event.EventTouch) {
 onBlockTouchEnd(e: cc.Event.EventTouch) {
         
   if (this.guideSteps.length <= 0) {
-    this.hide();
+   
     return;
   }
 
@@ -272,7 +311,11 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
   startGuide(closeCallback?: Function) {
     
+    console.log(' start guide ');
     this.OK.node.active = true;
+    this.Block.active = true;
+    this.Corn.node.active = true;
+    this.DownloadNode.active = false;
     this.isGuide = true;
     this.node.active = true;
     this.Next.node.active = false;
@@ -280,8 +323,11 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.GuideView.node.active = false;
     this.Resume.node.active = false;
     this.GuideBlock.active = false;
-    this.Skip.node.active = true;
+    this.Skip.node.active = false;
     this.callback = closeCallback;
+    this.Corn.spriteFrame = this.GuideStart;
+
+    console.log(this.Block.active)
 
     //this.nextGuide()
 
@@ -291,13 +337,15 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
     let count = this.guideSteps.length;
     if (count <= 0) {
-      this.hide();
+      //this.hide();
+      this.GuideHand.node.active = false;
       return;
 
     }
     
     this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("guide"+this.index);
     this.Corn.node.y = -265; 
+    this.Corn.node.active = false;
     this.index++;
     let curStep = this.guideSteps[0];
     let actions: cc.FiniteTimeAction[] = [];

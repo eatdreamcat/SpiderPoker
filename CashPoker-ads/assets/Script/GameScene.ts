@@ -1,7 +1,7 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
-import Poker from "./Poker";
-import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex, Empty_Offset, GuidePokers } from "./Pokers";
+import Poker, { CardState } from "./Poker";
+import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex, Empty_Offset, GuidePokers, Poker_Root, Poker_Fly } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Stop from "./Stop";
@@ -189,398 +189,132 @@ export default class GameScene extends cc.Component {
 
 
   registerGuide() {
-
-    let nodeA = Game.getPlacePokerRoot().get(0);
-    let node2 = Game.getPlacePokerRoot().get(3);
-    let nodeK = Game.getPlacePokerRoot().get(2);
-    let root0 = this.PlaceRoot.children[0]
-    let root4 = this.PlaceRoot.children[4];
-    let node5 = Game.getPlacePokerRoot().get(4);
-    let node6 = node5.parent;
-    let root6 = this.PlaceRoot.children[6];
-    let node7 = Game.getPlacePokerRoot().get(6);
-    let node8 = node7.parent;
-
-    let nodeTop = this.PokerDevl.children[this.PokerDevl.childrenCount - 3];
-    let node5_1 = Game.getPlacePokerRoot().get(1);
-    let root1 = this.PlaceRoot.children[1]
+    
+    let poker_8 = Game.getPlacePokerRoot().get(1);
+    let poker_A_3 = this.PlaceRoot.children[2].children[0];
+    let poker_7 = poker_A_3.getComponent(Poker).getNext().node;
+    let poker_2_club = Game.getPlacePokerRoot().get(3);
+    let poker_2_spade = Game.getPlacePokerRoot().get(4);
+    let poker_A_diamond = this.PokerFlipRoot.children[0];
 
     this.Guide.register([
-
-      /** 移动A到回收槽 */
-
+      /** 把 7 移动到 8 */
       {
         touches: [
-          {
-            node: this.Top,
-            isButton: false,
-            callback: ()=>{},
-            start: ()=>{},
-            end: ()=>{}
-          },
+         
           
           {
-            node: this.CycleRoot.children[0],
-            isButton: false,
-            callback: () => {},
-            start: () => {},
-            end: () => {
-              this.CycleRoot.children[0].group = "default";
-            },
-            isAction: true
-          },
-
-          {
-            node: nodeA,
-            isButton: false,
-            callback: () => {},
-            start: () => {
-              if (nodeA.getComponent(Poker)) {
-                nodeA.getComponent(Poker).setGuide(true)
-              }
-            },
-            end: () => {
-              
-            },
-            isAction: true
-          },
-
-        ]
-      },
-
-      /** 移动2到回收槽 */
-
-      {
-        touches: [
-          {
-            node: nodeA,
-            isButton: false,
-            callback: () => {},
-            start: () => {},
-            end: () => {
-              if (nodeA.getComponent(Poker)) {
-                nodeA.getComponent(Poker).setGuide(false);
-              }
-              nodeA.group = "default";
-            },
-            isAction: true
-          },
-
-          {
-            node: node2,
-            isButton: false,
-            callback: () => {},
-            start: () => {
-              if (node2.getComponent(Poker)) {
-                node2.getComponent(Poker).setGuide(true)
-              }
-            },
-            end: () => {
-              if (node2.getComponent(Poker)) {
-                node2.getComponent(Poker).setGuide(false);
-              }
-              node2.group = "default";
-            },
-            isAction: true
-          }
-        ]
-      },
-
-      /** 
-       * 移动6-5 到 8-7列
-       */
-      {
-        touches: [
-
-
-          // {
-          //   node: node5,
-          //   callback: () =>{},
-          //   start: () => {
-          //     if (node5.getComponent(Poker)) {
-          //       node5.getComponent(Poker).setGuide(true)
-          //     }
-          //   },
-          //   end: () =>{
-          //     if (node5.getComponent(Poker)) {
-          //       node5.getComponent(Poker).setGuide(false);
-          //     }
-          //     node5.group = "default";
-          //   },
-          //   isButton: false
-          // },
-
-          
-          
-          {
-            node: node7,
-            callback: () =>{},
-            start: () => {
-              if (node7.getComponent(Poker)) {
-                node7.getComponent(Poker).setGuide(true)
-              }
-            },
-            end: () =>{
-              if (node7.getComponent(Poker)) {
-                node7.getComponent(Poker).setGuide(false);
-              }
-              node7.group = "default";
-            },
-            isButton: false,
-            
-            isAction: true
-          },
-
-          {
-            node: node6,
-            callback: () =>{},
-            start: () => {
-              if (node6.getComponent(Poker)) {
-                node6.getComponent(Poker).setGuide(true)
-              }
-
-            },
-            end: () =>{
-              if (node6.getComponent(Poker)) {
-                node6.getComponent(Poker).setGuide(false);
-              }
-              node6.group = "default";
-            },
-            isButton: false,
-            //isAction: true
-          },
-
-          {
-            node: this.GuideEmpty2,
-            callback: () =>{},
-            start: () => {
-             
-
-            },
-            end: () =>{
-            
-              
-            },
-            isButton: false,
-            isAction: true
-          },
-
-
-          // {
-          //   node: node8,
-          //   callback: () =>{},
-          //   start: () => {
-          //     if (node8.getComponent(Poker)) {
-          //       node8.getComponent(Poker).setGuide(true)
-          //     }
-          //   },
-          //   end: () =>{
-          //     if (node8.getComponent(Poker)) {
-          //       node8.getComponent(Poker).setGuide(false);
-          //     }
-          //     node8.group = "default";
-          //   },
-          //   isButton: false
-          // },
-
-          {
-            node: root4,
-            callback: () => {},
-            start: ()=>{},
-            end: ()=>{
-              root4.group = "default";
-            },
-            isButton: false
-          },
-
-          {
-            node: root6,
-            callback: () => {},
-            start: ()=>{},
-            end: ()=>{
-              root6.group = "default";
-            },
-            isButton: false
-          }
-        ]
-      },
-
-      /**
-       * 移动红色的K
-       */
-      {
-        touches: [
-          {
-          node: root0,
-          callback: ()=>{},
-          start: ()=>{},
-          end: ()=>{
-            root0.group = "default";
-          },
-          isButton: false,
-          isAction: true
-        },
-        {
-          node: nodeK,
-          callback: () =>{},
-          start: () => {
-            if (nodeK.getComponent(Poker)) {
-              nodeK.getComponent(Poker).setGuide(true)
-            }
-
-          },
-          end: () =>{
-            if (nodeK.getComponent(Poker)) {
-              nodeK.getComponent(Poker).setGuide(false);
-            }
-            nodeK.group = "default";
-          },
-          isButton: false,
-          isAction: true
-        },
-
-      ]
-      },
-
-      /** 翻牌 */
-      {
-        touches:[
-          {
-            node: this.PokerDevl,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              this.PokerDevl.group = "default"
-            },
-            isButton: true,
-            //isAction: true
-          }
-          ,{
-            node: this.DrawCardAni.node,
-            callback: ()=>{},
+            node: poker_8,
             start: ()=>{
-              this.DrawCardAni.node.active = true;
-              this.DrawCardAni.play();
-            },
-            end:()=>{
-              this.DrawCardAni.node.active = false;
-              this.DrawCardAni.node.group = "default"
-            },
-            isButton: true
-          }
-        ]
-      },
-
-      /** 把上面的牌放到合适的位置 */
-      {
-        touches: [
-          {
-            node: this.PokerFlipRoot,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              this.PokerFlipRoot.group = "default"
-            },
-            isButton: true
-          },
-
-          
-
-          {
-            node: nodeTop,
-            callback: () =>{},
-            start: () => {
-              if (nodeTop.getComponent(Poker)) {
-                nodeTop.getComponent(Poker).setGuide(true)
-              }
-  
+              poker_8.getComponent(Poker).setGuide(true);
             },
             end: () =>{
-              if (nodeTop.getComponent(Poker)) {
-                nodeTop.getComponent(Poker).setGuide(false);
-              }
-              nodeTop.group = "default";
+              poker_8.getComponent(Poker).setGuide(false);
+              poker_8.group = "default"
             },
-            isButton: false,
-          },
-          {
-            node: node5_1,
-            callback: () =>{},
-            start: () => {
-              if (node5_1.getComponent(Poker)) {
-                node5_1.getComponent(Poker).setGuide(true)
-              }
-  
-            },
-            end: () =>{
-              if (node5_1.getComponent(Poker)) {
-                node5_1.getComponent(Poker).setGuide(false);
-              }
-              node5_1.group = "default";
-            },
+            callback:()=>{},
             isButton: false,
             isAction: true
           },
+
+          {
+            node: poker_7,
+            start: ()=>{
+              poker_7.getComponent(Poker).setGuide(true);
+            },
+            end: () =>{
+              poker_7.getComponent(Poker).setGuide(true);
+              poker_7.group = "default"
+            },
+            callback:()=>{},
+            isButton: false,
+          },
+
           {
             node: this.GuideEmpty,
-            callback: ()=>{},
             start: ()=>{},
-            end:()=>{
-              this.GuideEmpty.group = "default"
+            end: ()=>{},
+            callback: ()=>{},
+            isAction: true,
+            isButton: false
+          },
+        ]
+      },
+
+      /** 把 A 移动到 2 */
+      {
+        touches: [
+         
+          {
+            node: poker_2_club,
+            start: ()=>{
+              poker_2_club.getComponent(Poker).setGuide(true);
             },
-            isButton: true,
-            
+            end: () =>{
+              poker_2_club.getComponent(Poker).setGuide(false);
+              poker_2_club.group = "default"
+            },
+            callback:()=>{},
+            isButton: false,
             isAction: true
           },
+
           {
-            node: root1,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              root1.group = "default"
+            node: poker_A_3,
+            start: ()=>{
+              poker_A_3.getComponent(Poker).setGuide(true);
             },
-            isButton: true,
-            
+            end: () =>{
+              poker_A_3.getComponent(Poker).setGuide(true);
+              poker_A_3.group = "default"
+            },
+            callback:()=>{},
+            isButton: false,
+            isAction: true
           },
+
 
         ]
       },
 
-      /** 提交分数 */
+      /** 把 A 移动到 2 */
       {
-      touches: [
-        {
-        node: this.SubmitButton.node,
-        callback: () => {
-          this.SubmitButton.node.group = "default";
-          this.SubmitTip.node.active = false;
-        },
-        start: () => {
-          this.SubmitTip.node.active = true;
-        },
-        end: () => {
-          
-        },
-        isButton: true
-       },
+        touches: [
+         
+          {
+            node: poker_2_spade,
+            start: ()=>{
+              poker_2_spade.getComponent(Poker).setGuide(true);
+            },
+            end: () =>{
+              poker_2_spade.getComponent(Poker).setGuide(false);
+              poker_2_spade.group = "default"
+            },
+            callback:()=>{},
+            isButton: false,
+            isAction: true
+          },
 
-       {
-         node: this.Stop.EndButton.node,
-         callback: () => {
-          this.Stop.EndButton.node.group = "default";
-          // this.nextStep(LOAD_STEP.GUIDE);
-          this.Guide.showEnd();
-          //gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
+          {
+            node: poker_A_diamond,
+            start: ()=>{
+              poker_A_diamond.getComponent(Poker).setGuide(true);
+            },
+            end: () =>{
+              poker_A_diamond.getComponent(Poker).setGuide(true);
+              poker_A_diamond.group = "default"
+            },
+            callback:()=>{},
+            isButton: false,
+            isAction: true
+          },
+
           
-        },
-        start: () => {
-        },
-        end: () => {},
-         isButton: true
-       }
-    ]
-      
-    }]);
+        ]
+      },
+
+
+    ]);
   }
 
 
@@ -631,6 +365,8 @@ export default class GameScene extends cc.Component {
 
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
 
+
+    gEventMgr.on(GlobalEvent.RESTART_PLAY_AD, this.startAdVersion, this);
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
       () => {
@@ -915,10 +651,12 @@ export default class GameScene extends cc.Component {
 
   openResult(isForceOpen?: boolean) {
 
+
+    this.Complete.node.active = false;
     if (!this.isStart && !isForceOpen) 
     {
-      this.Guide.hide();
-      this.nextStep(LOAD_STEP.GUIDE);
+      // this.Guide.hide();
+      // this.nextStep(LOAD_STEP.GUIDE);
       return;
     }
     
@@ -969,8 +707,8 @@ export default class GameScene extends cc.Component {
       this.startGame();
     } else if (this.step >= LOAD_STEP.GUIDE_READY && this.isNewPlayer && !this.guideDone) {
       console.log("  start guide ------------")
-      this.startGuide();
-      
+      // this.startGuide();
+      this.startAdVersion();
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
       celerx.ready();
       CC_DEBUG && this.celerStart();
@@ -1006,6 +744,88 @@ export default class GameScene extends cc.Component {
     });
 
     
+  }
+
+  startAdVersion() {
+
+
+    this.Complete.node.active = false;
+    Game.initAllData();
+    this.prepareGame();
+    this.guideDone  = true;
+    for (let poker of Game.allPokers) {
+      if (poker.node.parent)
+         gFactory.putPoker(poker.node);
+    }
+    Game.allPokers.length = 0;
+    Game.setFlipCount(43);
+    Game.resetscore();
+    Game.setScore(43 * 20);
+    this.showScore = 43 * 20;
+    this.score = 43 * 20;
+    this.ScoreLabel.string = this.score.toString();
+    Game.setGameTime(10);
+
+    let gameTime = Game.getGameTime();
+      this.TimeLabel.string = CMath.TimeFormat(gameTime);
+
+    let count = 0;
+    /** 底下的牌 */
+    for (let key = 0; key < Poker_Root.length; key ++) {
+    let pokers = Poker_Root[key];
+    
+      
+      for (let pokerInfo of pokers) {
+        let root = Game.getPlacePokerRoot().get(key);
+        let info = pokerInfo.split('|');
+        let pokerNode = gFactory.getPoker([info[0]]);
+        pokerNode.name = (count++).toString();
+        Game.allPokers.push(pokerNode.getComponent(Poker))
+        if (info[1] == "1") {
+          pokerNode.getComponent(Poker).setCardState(CardState.Front);
+          pokerNode.getComponent(Poker).setNormal();
+        }
+        root.addChild(pokerNode);
+        if (root.getComponent(Poker)) {
+          if(root.getComponent(Poker).getCardState() == CardState.Back) {
+            pokerNode.y = OFFSET_Y / 3;
+          } else {
+            pokerNode.y = OFFSET_Y;
+          }
+        } else {
+          pokerNode.y = Empty_Offset;
+        }
+        pokerNode.getComponent(Poker).setDefaultPosition();
+        Game.getPlacePokerRoot().add(key, pokerNode);
+      }
+
+      
+    }
+
+    console.log(Game.getPlacePokerRoot().values);
+
+    /** 发完的牌 */
+    for(let pokerInfo of Poker_Fly) {
+      let info = pokerInfo.split('|');
+        let pokerNode = gFactory.getPoker([info[0]]);
+        Game.allPokers.push(pokerNode.getComponent(Poker))
+        
+        if (info[1] == "1") {
+          pokerNode.getComponent(Poker).setCardState(CardState.Front);
+          pokerNode.getComponent(Poker).setNormal();
+        }
+        this.PokerFlipRoot.addChild(pokerNode);
+    }
+
+
+    this.registerGuide();
+
+    // 开始新手引导
+    this.Guide.startGuide(()=>{
+      this.nextStep(LOAD_STEP.GUIDE)
+    });
+
+    console.log(this.Guide.node.active);
   }
 
   prepareGame() {

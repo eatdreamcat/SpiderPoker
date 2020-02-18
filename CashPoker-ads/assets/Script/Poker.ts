@@ -111,6 +111,7 @@ export default class Poker extends cc.Component {
       console.error(pokerInfo.split(",")[0] + this.value);
     }
     this.setCardState(CardState.Back);
+    this.init();
     this.initEvent();
   }
 
@@ -131,6 +132,8 @@ export default class Poker extends cc.Component {
     this.setNext(null);
     this.isguide = false;
     this.node.group = "default";
+    this.node.rotation = 0;
+    this.node.x = 0;
   }
 
   getNext() {
@@ -173,7 +176,7 @@ export default class Poker extends cc.Component {
     return this.carState;
   }
 
-  onLoad() {
+  init() {
     this.RecycleAnimation.node.opacity = 0;
     this.RecycleAnimation.node.active = false;
     this.placeLimit.width = this.node.width / 2;
@@ -181,7 +184,7 @@ export default class Poker extends cc.Component {
     this.node.getChildByName("Label").active = false; // CC_DEBUG;
     this.defualtChildCount = this.node.childrenCount;
     // console.log(" default children count:", this.defualtChildCount);
-    this.setCardState(CardState.Back);
+    // this.setCardState(CardState.Back);
     this.node["_onSetParent"] = this.onSetParent.bind(this);
   }
 
@@ -270,7 +273,7 @@ export default class Poker extends cc.Component {
       this.isCycled()
     ) {
       this.isReadyAutoComplete = true;
-      console.error(" isAutoComplete:", this.isReadyAutoComplete);
+      // console.error(" isAutoComplete:", this.isReadyAutoComplete);
     } else {
       this.isReadyAutoComplete = false;
     }
@@ -453,9 +456,15 @@ export default class Poker extends cc.Component {
     let index = -1;
     Game.getPlacePokerRoot().forEach((key: number, root: cc.Node) => {
       let poker = root.getComponent(Poker);
-      if (this.node.name == root.name && poker) return;
+      if (this.node.name == root.name && poker) {
+        //console.error('this.node.name == root.name && poker:', this.node.name, root.name);
+        return;
+      }
 
-      if (poker && poker.getKey() == this.getKey()) return;
+      if (poker && poker.getKey() == this.getKey()) {
+        // console.error('poker && poker.getKey() == this.getKey():', poker.getKey() , this.getKey(), this.getNext(), this.getForward());
+        return;
+      }
 
       if (
         (poker && Poker.checkBeNext(poker, this)) ||
@@ -470,7 +479,7 @@ export default class Poker extends cc.Component {
         }
       }
     });
-
+    
     return index;
   }
 
@@ -969,7 +978,7 @@ export default class Poker extends cc.Component {
   }
 
   setCardState(state: CardState, canMove: boolean = true) {
-    // console.log("setCardState:", this.value, this.key, canMove);
+    // console.error("setCardState:", CardState[state],"-",this.value, this.key, canMove);
     this.carState = state;
     this.frontCard.node.scaleX = this.carState == CardState.Front ? 1 : 0;
     this.backCard.node.scaleX = this.carState == CardState.Back ? 1 : 0;
@@ -1056,9 +1065,16 @@ export default class Poker extends cc.Component {
     if (this.isReadyAutoComplete) {
       this.isReadyAutoComplete = !this.checkAutoRecycle();
     }
+
+    // if (Game.getPlacePokerRoot().keyOf(this.node) != null) {
+    //   this.frontCard.node.color = cc.Color.GREEN;
+    // } else {
+    //   this.frontCard.node.color = cc.Color.WHITE;
+    // }
   }
 
   onSetParent(parent: cc.Node) {
+    console.log('onSetParent')
     if (!parent) {
       this.setForward(null);
       return;

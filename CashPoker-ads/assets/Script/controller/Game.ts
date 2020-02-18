@@ -53,6 +53,7 @@ class GameMgr {
   public allPokers: Poker[] = [];
 
   public initAllData() {
+    this.gameStart = false;
     this.timeBonus = 0;
     this.flipCounts = 0;
     this.gameTime = 300;
@@ -92,6 +93,14 @@ class GameMgr {
 
   public getGameTime() {
     return this.gameTime;
+  }
+
+  public setScore(score: number) {
+    this.score = score;
+  }
+
+  public setGameTime(time: number) {
+    this.gameTime = time;
   }
 
   public addRecycleCount(count: number) {
@@ -223,6 +232,10 @@ class GameMgr {
 
   public getFreeDrawTimes() {
     return this.freeDrawTimes;
+  }
+
+  public setFlipCount(count: number) {
+    this.flipCounts = count;
   }
 
   public addFlipCounts(count: number) {

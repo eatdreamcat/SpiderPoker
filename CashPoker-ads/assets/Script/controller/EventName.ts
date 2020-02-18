@@ -11,6 +11,7 @@ export enum GlobalEvent {
   AUTO_COMPLETE_DONE,
 
   UPDATE_TIP_ANIMATION,
+  RESTART_PLAY_AD,
 
   POP_GUIDE_STEP,
 

@@ -251,3 +251,119 @@ export const OFFSET_Y = -70;
 export const OFFSET_X = 0;
 
 export const FREE_TIME_LIMIT = 5;
+
+
+/** 特殊版本 
+ * "spade_, 黑桃",
+  "heart_,红心",
+  "club_,梅花",
+  "diamond_,方块",
+*/
+
+/** 第1列初始牌 */
+export const Poker_1: string[] = [
+  "spade_,13|1",
+  "heart_,12|1",
+  "spade_,11|1",
+  "heart_,10|1",
+  "club_,9|1",
+  "diamond_,8|1",
+  "spade_,7|1",
+  "heart_,6|1",
+  "spade_,5|1",
+  "diamond_,4|1",
+  "club_,3|1",
+  "diamond_,2|1",
+  "club_,1|1"
+];
+
+/** 第2列初始牌 */
+export const Poker_2: string[] = [
+  "club_,13|1",
+  "diamond_,12|1",
+  "club_,11|1",
+  "diamond_,10|1",
+  "spade_,9|1",
+  "heart_,8|1",
+];
+
+/** 第3列初始牌 */
+export const Poker_3: string[] = [
+  "heart_,1|0",
+  "club_,7|1",
+  "diamond_,6|1",
+  "club_,5|1",
+  "heart_,4|1",
+  "spade_,3|1",
+  "heart_,2|1",
+  "spade_,1|1"
+];
+
+/** 第4列初始牌 */
+export const Poker_4: string[] = [
+  "diamond_,13|1",
+  "club_,12|1",
+  "heart_,11|1",
+  "spade_,10|1",
+  "diamond_,9|1",
+  "club_,8|1",
+  "diamond_,7|1",
+  "spade_,6|1",
+  "diamond_,5|1",
+  "club_,4|1",
+  "heart_,3|1",
+  "club_,2|1",
+];
+
+/** 第5列初始牌 */
+export const Poker_5: string[] = [
+  "heart_,13|1",
+  "spade_,12|1",
+  "diamond_,11|1",
+  "club_,10|1",
+  "heart_,9|1",
+  "spade_,8|1",
+  "heart_,7|1",
+  "club_,6|1",
+  "heart_,5|1",
+  "spade_,4|1",
+  "diamond_,3|1",
+  "spade_,2|1"
+];
+
+/** 第6列初始牌 */
+export const Poker_6: string[] = [];
+
+/** 第7列初始牌 */
+export const Poker_7: string[] = [];
+
+export const Poker_Root = [
+  Poker_1,
+  Poker_2,
+  Poker_3,
+  Poker_4,
+  Poker_5,
+  Poker_6,
+  Poker_7
+];
+
+/** 第1列回收槽 */
+export const Poker_Cyc_1 = [];
+
+/** 第2列回收槽 */
+export const Poker_Cyc_2 = [];
+
+/** 第3列回收槽 */
+export const Poker_Cyc_3 = [];
+
+/** 第4列回收槽 */
+export const Poker_Cyc_4 = [];
+
+export const Cycle_Poker = [Poker_Cyc_1, Poker_Cyc_2, Poker_Cyc_3,Poker_Cyc_4]
+
+/** 发牌区 */
+export const Poker_Dev = [];
+
+export const Poker_Fly = [
+  "diamond_,1|1"
+];
