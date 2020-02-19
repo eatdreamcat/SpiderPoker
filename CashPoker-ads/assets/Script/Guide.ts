@@ -398,7 +398,7 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
     if (actions.length == 2) actions.pop();
 
-    this.GuideHand.node.active = actions.length > 0;
+    this.GuideHand.node.active = false;
     this.GuideHand.node.stopAllActions();
     this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {

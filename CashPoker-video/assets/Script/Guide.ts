@@ -139,9 +139,9 @@ export default class Guide extends cc.Component {
     gEventMgr.on(GlobalEvent.POP_GUIDE_STEP, ()=>{
       if (this.guideSteps.length <= 0 || !this.node.active) return;
 
-      this.popStep();
+      // this.popStep();
 
-      this.nextGuide();
+      // this.nextGuide();
     }, this);
 
     this.Block.on(cc.Node.EventType.TOUCH_START, this.onBlockTouch, this);
@@ -321,7 +321,7 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.DownloadButton.node.getChildByName("guide-light1").opacity = 0;
     this.GuideBack.active = false;
     this.OK.node.active = true;
-    this.Block.active = true;
+    this.Block.active = false;
     this.Corn.node.active = true;
     this.DownloadNode.active = false;
     this.isGuide = true;
@@ -347,6 +347,7 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     if (count <= 0) {
       //this.hide();
       this.GuideHand.node.active = false;
+      this.Corn.node.active = false;
       return;
 
     }
@@ -393,7 +394,7 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
     if (actions.length == 2) actions.pop();
 
-    this.GuideHand.node.active = actions.length > 0;
+    this.GuideHand.node.active = false//actions.length > 0;
     this.GuideHand.node.stopAllActions();
     this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {

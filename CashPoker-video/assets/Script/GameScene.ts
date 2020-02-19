@@ -683,7 +683,7 @@ export default class GameScene extends cc.Component {
       CMath.randomSeed = Math.random();
     }
 
-    if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
+    if (true) {
       this.isNewPlayer = true;
     } else {
       this.isNewPlayer = false;
@@ -711,7 +711,7 @@ export default class GameScene extends cc.Component {
       this.startAdVersion();
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
       celerx.ready();
-      CC_DEBUG && this.celerStart();
+      this.celerStart();
       this.isCelerStart = true;
     }
   }
@@ -818,7 +818,7 @@ export default class GameScene extends cc.Component {
     }
 
 
-    this.registerGuide();
+    // this.registerGuide();
 
     // 开始新手引导
     this.Guide.startGuide(()=>{

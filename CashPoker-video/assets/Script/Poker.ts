@@ -840,7 +840,7 @@ export default class Poker extends cc.Component {
         let forward = this.forward.forward;
         this.scheduleOnce(() => {
           forward.frontCard.node.opacity = 0;
-        }, 0.1);
+        }, 0.6);
       }
       return;
     }
