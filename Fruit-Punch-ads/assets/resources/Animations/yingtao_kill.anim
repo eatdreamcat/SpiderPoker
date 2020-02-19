@@ -1,0 +1,61 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "yingtao_kill",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.5166666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "a6740c65-c3bd-4dee-9508-2fc614a077cd"
+            }
+          },
+          {
+            "frame": 0.08333333333333333,
+            "value": {
+              "__uuid__": "d28db3c8-5831-4726-aa8e-08f3e6fbceaa"
+            }
+          },
+          {
+            "frame": 0.16666666666666666,
+            "value": {
+              "__uuid__": "af525c3e-4998-4675-a689-f6eae4ac2c7f"
+            }
+          },
+          {
+            "frame": 0.25,
+            "value": {
+              "__uuid__": "1e975fc0-0772-47f7-bffe-9064205aa7ef"
+            }
+          },
+          {
+            "frame": 0.3333333333333333,
+            "value": {
+              "__uuid__": "32f43b51-7ae5-4cb2-b9ee-0b312df656ce"
+            }
+          },
+          {
+            "frame": 0.4166666666666667,
+            "value": {
+              "__uuid__": "c842774a-b8a8-4353-9cbc-02f32ea271ab"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "dab964c5-342e-4af8-b73c-3ef245d585a4"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

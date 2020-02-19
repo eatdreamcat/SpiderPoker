@@ -1,0 +1,61 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "fanqie_kill",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.5166666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "32ecda1c-6f95-44a0-aed2-f2b978f57601"
+            }
+          },
+          {
+            "frame": 0.08333333333333333,
+            "value": {
+              "__uuid__": "37e2482d-44f9-4f95-8d35-68e204062565"
+            }
+          },
+          {
+            "frame": 0.16666666666666666,
+            "value": {
+              "__uuid__": "0e9bc1cc-06a5-43fd-89fb-6eee277af08a"
+            }
+          },
+          {
+            "frame": 0.25,
+            "value": {
+              "__uuid__": "ea0c0307-8e08-4f4d-816d-b4cfc7f495d3"
+            }
+          },
+          {
+            "frame": 0.3333333333333333,
+            "value": {
+              "__uuid__": "0ed57025-8522-4ec7-aa38-7f2989ef7528"
+            }
+          },
+          {
+            "frame": 0.4166666666666667,
+            "value": {
+              "__uuid__": "c6a2e5b5-69f6-4f79-8490-9464adbe4237"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "ed191d11-cd0b-4b30-a67f-a9e5ed4645b4"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

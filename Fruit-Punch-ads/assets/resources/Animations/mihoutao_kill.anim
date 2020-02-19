@@ -1,0 +1,61 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "mihoutao_kill",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.5166666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "3ad757c7-c1a0-4d24-b32d-30e865046a9e"
+            }
+          },
+          {
+            "frame": 0.08333333333333333,
+            "value": {
+              "__uuid__": "891d6ef3-4aaa-4a84-8011-b2a7a10718b1"
+            }
+          },
+          {
+            "frame": 0.16666666666666666,
+            "value": {
+              "__uuid__": "1fa28f39-73f9-4fb7-9961-17dd4abb8967"
+            }
+          },
+          {
+            "frame": 0.25,
+            "value": {
+              "__uuid__": "eff1049d-baff-48be-89fc-507ebc0a5d74"
+            }
+          },
+          {
+            "frame": 0.3333333333333333,
+            "value": {
+              "__uuid__": "ce0af84e-8fac-4309-b3a6-eae7d2cc59a3"
+            }
+          },
+          {
+            "frame": 0.4166666666666667,
+            "value": {
+              "__uuid__": "02c489ca-28f5-4b70-8fef-2aa359d4b6af"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "e7ff08df-4529-4249-98ac-f03654e4eedd"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

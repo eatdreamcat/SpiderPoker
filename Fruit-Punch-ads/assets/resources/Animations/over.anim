@@ -1,0 +1,225 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "over",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 2.25,
+  "sample": 60,
+  "speed": 1.5,
+  "wrapMode": 1,
+  "curveData": {
+    "props": {
+      "scale": [
+        {
+          "frame": 0,
+          "value": {
+            "__type__": "cc.Vec2",
+            "x": 0,
+            "y": 0
+          }
+        },
+        {
+          "frame": 0.16666666666666666,
+          "value": {
+            "__type__": "cc.Vec2",
+            "x": 1,
+            "y": 1
+          }
+        }
+      ]
+    },
+    "paths": {
+      "ContentPanel/bg_result_img1": {
+        "props": {
+          "scaleY": [
+            {
+              "frame": 0,
+              "value": 0
+            },
+            {
+              "frame": 0.16666666666666666,
+              "value": 0
+            },
+            {
+              "frame": 0.3333333333333333,
+              "value": 1.2
+            },
+            {
+              "frame": 0.4166666666666667,
+              "value": 1
+            },
+            {
+              "frame": 0.5,
+              "value": 1.1
+            },
+            {
+              "frame": 0.6,
+              "value": 1
+            }
+          ]
+        }
+      },
+      "ContentPanel/bg_result_img1/bg_result_img2": {
+        "props": {
+          "scaleY": [
+            {
+              "frame": 0.6,
+              "value": 0
+            },
+            {
+              "frame": 0.75,
+              "value": 1.2
+            },
+            {
+              "frame": 0.8333333333333334,
+              "value": 1
+            },
+            {
+              "frame": 0.9166666666666666,
+              "value": 1.1
+            },
+            {
+              "frame": 1,
+              "value": 1
+            }
+          ]
+        }
+      },
+      "ContentPanel/bg_result_img1/bg_result_img2/bg_result_img3": {
+        "props": {
+          "scaleY": [
+            {
+              "frame": 1,
+              "value": 0
+            },
+            {
+              "frame": 1.1666666666666667,
+              "value": 1.2
+            },
+            {
+              "frame": 1.25,
+              "value": 1
+            },
+            {
+              "frame": 1.3333333333333333,
+              "value": 1.1
+            },
+            {
+              "frame": 1.4166666666666667,
+              "value": 1
+            }
+          ]
+        }
+      },
+      "ContentPanel/bg_result_img1/bg_result_img2/bg_result_img3/bg_result_img4": {
+        "props": {
+          "scaleY": [
+            {
+              "frame": 1.4166666666666667,
+              "value": 0
+            },
+            {
+              "frame": 1.5833333333333333,
+              "value": 1.2
+            },
+            {
+              "frame": 1.6666666666666667,
+              "value": 1
+            },
+            {
+              "frame": 1.75,
+              "value": 1.1
+            },
+            {
+              "frame": 1.8333333333333333,
+              "value": 1
+            }
+          ]
+        }
+      },
+      "ContentPanel/bg_result_img1/bg_result_img2/bg_result_img3/bg_result_img4/bg_result_img5": {
+        "props": {
+          "scaleY": [
+            {
+              "frame": 1.8333333333333333,
+              "value": 0
+            },
+            {
+              "frame": 2,
+              "value": 1.2
+            },
+            {
+              "frame": 2.0833333333333335,
+              "value": 1
+            },
+            {
+              "frame": 2.1666666666666665,
+              "value": 1.1
+            },
+            {
+              "frame": 2.25,
+              "value": 1
+            }
+          ]
+        }
+      }
+    }
+  },
+  "events": [
+    {
+      "frame": 0.16666666666666666,
+      "func": "playOverTab",
+      "params": []
+    },
+    {
+      "frame": 0.6,
+      "func": "playOverTab",
+      "params": []
+    },
+    {
+      "frame": 0.6,
+      "func": "showLineScore",
+      "params": []
+    },
+    {
+      "frame": 1,
+      "func": "showComboScore",
+      "params": []
+    },
+    {
+      "frame": 1,
+      "func": "playOverTab",
+      "params": []
+    },
+    {
+      "frame": 1.4166666666666667,
+      "func": "showBestScore",
+      "params": []
+    },
+    {
+      "frame": 1.4166666666666667,
+      "func": "playOverTab",
+      "params": []
+    },
+    {
+      "frame": 1.8333333333333333,
+      "func": "showWildScore",
+      "params": []
+    },
+    {
+      "frame": 1.8333333333333333,
+      "func": "playOverTab",
+      "params": []
+    },
+    {
+      "frame": 2.25,
+      "func": "showMostScore",
+      "params": []
+    },
+    {
+      "frame": 2.25,
+      "func": "playOverTab",
+      "params": []
+    }
+  ]
+}
