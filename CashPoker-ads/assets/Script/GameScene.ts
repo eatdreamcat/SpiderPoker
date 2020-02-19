@@ -764,7 +764,7 @@ export default class GameScene extends cc.Component {
     this.showScore = 43 * 20;
     this.score = 43 * 20;
     this.ScoreLabel.string = this.score.toString();
-    Game.setGameTime(10);
+    Game.setGameTime(180);
 
     let gameTime = Game.getGameTime();
       this.TimeLabel.string = CMath.TimeFormat(gameTime);

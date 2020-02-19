@@ -27,6 +27,10 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class Guide extends cc.Component {
 
+
+  @property(cc.Node)
+  GuideBack: cc.Node = null;
+
   @property(cc.SpriteAtlas)
   GuideAtlas: cc.SpriteAtlas = null;
 
@@ -148,11 +152,13 @@ export default class Guide extends cc.Component {
     gEventMgr.on(GlobalEvent.OPEN_RESULT, () =>{
       
       this.clearStep()
+      this.GuideBack.active = true;
       this.Corn.node.active = true;
       this.Corn.node.y = this.guideDefaultY;
       this.Corn.spriteFrame = this.GuideEnd;
       this.DownloadNode.active = true;
       this.GuideHand.node.active = false;
+      this.DownloadButton.getComponent(cc.Animation).play();
 
     }, this);
 
@@ -312,6 +318,8 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
   startGuide(closeCallback?: Function) {
     
     console.log(' start guide ');
+    this.DownloadButton.node.getChildByName("guide-light1").opacity = 0;
+    this.GuideBack.active = false;
     this.OK.node.active = true;
     this.Block.active = true;
     this.Corn.node.active = true;
