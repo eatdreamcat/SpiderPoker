@@ -112,8 +112,8 @@ export default class GameScene extends cc.Component {
   @property(cc.Animation)
   LightAnimation: cc.Animation = null;
 
-  @property(Stop)
-  Stop: Stop = null;
+  // @property(Stop)
+  // Stop: Stop = null;
 
   @property(cc.Animation)
   DrawCardAni: cc.Animation = null;
@@ -165,7 +165,7 @@ export default class GameScene extends cc.Component {
   init() {
 
     this.SubmitTip.node.active = false;
-    this.Stop.hide();
+    // this.Stop.hide();
     this.Complete.node.active = false;
     this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
     this.ScoreLabel.string = "0";
@@ -451,9 +451,9 @@ export default class GameScene extends cc.Component {
 
         if (e.getUserData) {
           e.getUserData()();
-          this.Stop.show(-1, e.getUserData());
+          // this.Stop.show(-1, e.getUserData());
         } else {
-          this.Stop.show(-1);
+          // this.Stop.show(-1);
         }
         
         Game.setPause(true);
@@ -661,7 +661,7 @@ export default class GameScene extends cc.Component {
     }
     
 
-    this.Stop.hide();
+    // this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
     cc.loader.loadRes("prefabs/Result", cc.Prefab, (err, result) => {
       if (err) {
@@ -683,7 +683,7 @@ export default class GameScene extends cc.Component {
       CMath.randomSeed = Math.random();
     }
 
-    if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
+    if (true) {
       this.isNewPlayer = true;
     } else {
       this.isNewPlayer = false;
@@ -711,7 +711,7 @@ export default class GameScene extends cc.Component {
       this.startAdVersion();
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
       celerx.ready();
-      CC_DEBUG && this.celerStart();
+      this.celerStart();
       this.isCelerStart = true;
     }
   }

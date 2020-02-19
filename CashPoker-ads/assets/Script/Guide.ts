@@ -49,29 +49,29 @@ export default class Guide extends cc.Component {
   @property(cc.SpriteAtlas)
   ButtonAtlas: cc.SpriteAtlas = null;
 
-  @property(cc.Button)
-  Next: cc.Button = null;
+  // @property(cc.Button)
+  // Next: cc.Button = null;
 
   @property(cc.Button)
   OK: cc.Button = null;
 
-  @property(cc.Button)
-  Forward: cc.Button = null;
+  // @property(cc.Button)
+  // Forward: cc.Button = null;
 
-  @property(cc.PageView)
-  GuideView: cc.PageView = null;
+  // @property(cc.PageView)
+  // GuideView: cc.PageView = null;
 
-  @property(cc.Button)
-  Resume: cc.Button = null;
+  // @property(cc.Button)
+  // Resume: cc.Button = null;
 
-  @property(cc.Button)
-  Skip: cc.Button = null;
+  // @property(cc.Button)
+  // Skip: cc.Button = null;
 
   @property(cc.Node)
   Block: cc.Node = null;
 
-  @property(cc.Node)
-  GuideBlock: cc.Node = null;
+  // @property(cc.Node)
+  // GuideBlock: cc.Node = null;
 
   @property(cc.Node)
   DownloadNode: cc.Node = null;
@@ -93,10 +93,15 @@ export default class Guide extends cc.Component {
     
     this.guideDefaultY = this.Corn.node.y;
     this.GuideHand.node.active = false;
-    this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
+    // this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
 
     this.DownloadButton.node.on(cc.Node.EventType.TOUCH_END, () =>{
-      window.location.href = "https://www.celer.network";
+      
+      if (window["FbPlayableAd"] && window["FbPlayableAd"]["onACTAClick"]) {
+        window["FbPlayableAd"]["onACTAClick"]();
+      } else {
+        //window.location.href = "https://www.celer.network";
+      }
     }, this);
     
     this.ReplayButton.node.on(cc.Node.EventType.TOUCH_END, ()=>{
@@ -108,24 +113,24 @@ export default class Guide extends cc.Component {
       
     }, this)
 
-    this.Forward.node.on(cc.Node.EventType.TOUCH_END, this.forwardPage, this);
-    this.Resume.node.on(
-      cc.Node.EventType.TOUCH_END,
-      () => {
-        this.hide();
-      },
-      this
-    );
+    // this.Forward.node.on(cc.Node.EventType.TOUCH_END, this.forwardPage, this);
+    // this.Resume.node.on(
+    //   cc.Node.EventType.TOUCH_END,
+    //   () => {
+    //     this.hide();
+    //   },
+    //   this
+    // );
 
-    this.Skip.node.on(
-      cc.Node.EventType.TOUCH_END,
-      () => {
-        this.hide();
+    // this.Skip.node.on(
+    //   cc.Node.EventType.TOUCH_END,
+    //   () => {
+    //     this.hide();
         
         
-      },
-      this
-    );
+    //   },
+    //   this
+    // );
 
     this.OK.node.on(
       cc.Node.EventType.TOUCH_END,
@@ -326,12 +331,12 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.DownloadNode.active = false;
     this.isGuide = true;
     this.node.active = true;
-    this.Next.node.active = false;
-    this.Forward.node.active = false;
-    this.GuideView.node.active = false;
-    this.Resume.node.active = false;
-    this.GuideBlock.active = false;
-    this.Skip.node.active = false;
+    // this.Next.node.active = false;
+    // this.Forward.node.active = false;
+    // this.GuideView.node.active = false;
+    // this.Resume.node.active = false;
+    // this.GuideBlock.active = false;
+    // this.Skip.node.active = false;
     this.callback = closeCallback;
     this.Corn.spriteFrame = this.GuideStart;
 
@@ -418,61 +423,61 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.Corn.node.active = false;
     this.GuideHand.node.active = false;
     this.isGuide = false;
-    this.Resume.node.active = true;
-    this.Next.node.active = true;
-    this.GuideView.node.active = true;
-    this.Skip.node.active = false;
+    // this.Resume.node.active = true;
+    // this.Next.node.active = true;
+    // this.GuideView.node.active = true;
+    // this.Skip.node.active = false;
 
-    this.Next.node.active = true;
-    this.Forward.node.active = true;
-    this.GuideBlock.active = true;
+    // this.Next.node.active = true;
+    // this.Forward.node.active = true;
+    // this.GuideBlock.active = true;
 
-    this.node.active = true;
-    this.callback = closeCallback;
-    this.GuideView.scrollToPage(0, 0);
-    this.Forward.node.active = false;
-    this.Next.node
-      .getChildByName("Background")
-      .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(
-      "btn_new"
-    );
+    // this.node.active = true;
+    // this.callback = closeCallback;
+    // this.GuideView.scrollToPage(0, 0);
+    // this.Forward.node.active = false;
+    // this.Next.node
+    //   .getChildByName("Background")
+    //   .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(
+    //   "btn_new"
+    // );
   }
 
-  nextPage() {
-    if (
-      this.GuideView.getCurrentPageIndex() >=
-      this.GuideView.content.childrenCount - 1
-    ) {
-      this.hide();
-    } else {
-      let nextPageIndex =
-        (this.GuideView.getCurrentPageIndex() + 1) %
-        this.GuideView.content.childrenCount;
-      this.GuideView.setCurrentPageIndex(nextPageIndex);
-      if (nextPageIndex >= this.GuideView.content.childrenCount - 1) {
-        this.Next.node
-          .getChildByName("Background")
-          .getComponent(
-            cc.Sprite
-          ).spriteFrame = this.ButtonAtlas.getSpriteFrame("new_close");
-      }
-      this.Forward.node.active = nextPageIndex != 0;
-    }
-  }
+  // nextPage() {
+  //   if (
+  //     this.GuideView.getCurrentPageIndex() >=
+  //     this.GuideView.content.childrenCount - 1
+  //   ) {
+  //     this.hide();
+  //   } else {
+  //     let nextPageIndex =
+  //       (this.GuideView.getCurrentPageIndex() + 1) %
+  //       this.GuideView.content.childrenCount;
+  //     this.GuideView.setCurrentPageIndex(nextPageIndex);
+  //     if (nextPageIndex >= this.GuideView.content.childrenCount - 1) {
+  //       this.Next.node
+  //         .getChildByName("Background")
+  //         .getComponent(
+  //           cc.Sprite
+  //         ).spriteFrame = this.ButtonAtlas.getSpriteFrame("new_close");
+  //     }
+  //     this.Forward.node.active = nextPageIndex != 0;
+  //   }
+  // }
 
-  forwardPage() {
-    if (this.GuideView.getCurrentPageIndex() <= 0) {
-    } else {
-      let nextPageIndex =
-        (this.GuideView.getCurrentPageIndex() - 1) %
-        this.GuideView.content.childrenCount;
-      this.GuideView.setCurrentPageIndex(nextPageIndex);
-      this.Forward.node.active = nextPageIndex != 0;
-      this.Next.node
-        .getChildByName("Background")
-        .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(
-        "btn_new"
-      );
-    }
-  }
+  // forwardPage() {
+  //   if (this.GuideView.getCurrentPageIndex() <= 0) {
+  //   } else {
+  //     let nextPageIndex =
+  //       (this.GuideView.getCurrentPageIndex() - 1) %
+  //       this.GuideView.content.childrenCount;
+  //     this.GuideView.setCurrentPageIndex(nextPageIndex);
+  //     this.Forward.node.active = nextPageIndex != 0;
+  //     this.Next.node
+  //       .getChildByName("Background")
+  //       .getComponent(cc.Sprite).spriteFrame = this.ButtonAtlas.getSpriteFrame(
+  //       "btn_new"
+  //     );
+  //   }
+  // }
 }
