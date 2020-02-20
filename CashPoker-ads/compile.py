@@ -13,6 +13,7 @@ import HTMLParser
 import re
 import base64
 
+
 if sys.getdefaultencoding() != 'utf-8':
   reload(sys)
   sys.setdefaultencoding('utf-8')
@@ -38,7 +39,9 @@ resMapMatchKey = '{#resMap}'
 
 addScriptPathList = [settingScrPath, mainScrPath, engineScrPath, toolSrcPath, projectScrPath]
 
-fileByteList = ['.png', '.jpg', '.mp3', '.ttf']
+fileByteList = [] 
+
+fileExceptList = ['.png', '.jpg','.mp3','.ttf'] 
 
 base64PreList = {
   '.png' : 'data:image/png;base64,',
@@ -64,7 +67,14 @@ def read_in_chunks(filePath, chunk_size=1024*1024):
   elif extName == '':
     return None
   
+  
+  if extName in fileExceptList:
+    return None
+  
+  
   file_object = open(filePath)
+  print('------ remove :' + filePath)
+  os.remove(filePath)
   return file_object.read()
 
 def writeToPath(path, data):
@@ -82,7 +92,11 @@ def getResMap(jsonObj, path):
       if dataStr != None:
         absPath = 'res' + absPath.replace(resPath, '')
         jsonObj[absPath] = dataStr
-        print(absPath)
+        global totalCount
+        totalCount += 1
+        print(absPath + ":" + str(totalCount))
+
+totalCount = 0
 
 def getResMapScript():
   jsonObj = {}

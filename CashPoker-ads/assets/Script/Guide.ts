@@ -97,11 +97,7 @@ export default class Guide extends cc.Component {
 
     this.DownloadButton.node.on(cc.Node.EventType.TOUCH_END, () =>{
       
-      if (window["FbPlayableAd"] && window["FbPlayableAd"]["onACTAClick"]) {
-        window["FbPlayableAd"]["onACTAClick"]();
-      } else {
-        //window.location.href = "https://www.celer.network";
-      }
+      FbPlayableAd.onCTAClick();
     }, this);
     
     this.ReplayButton.node.on(cc.Node.EventType.TOUCH_END, ()=>{

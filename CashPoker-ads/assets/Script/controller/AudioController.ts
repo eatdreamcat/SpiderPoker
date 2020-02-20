@@ -169,7 +169,7 @@ class AudioController {
     isBgm: boolean = false,
     timePass: number = 0
   ): number {
-    return
+    //return
     if (!AudioController.canPlay && !AudioController.hasBindTouch) {
       AudioController.hasBindTouch = true;
       let self = this;
