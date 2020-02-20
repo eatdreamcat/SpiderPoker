@@ -161,6 +161,7 @@ export default class Guide extends cc.Component {
       this.Corn.node.active = true;
       this.Corn.node.y = this.guideDefaultY;
       this.Corn.spriteFrame = this.GuideEnd;
+      
       this.DownloadNode.active = true;
       this.GuideHand.node.active = false;
       this.DownloadButton.getComponent(cc.Animation).play();
@@ -398,7 +399,7 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
     if (actions.length == 2) actions.pop();
 
-    this.GuideHand.node.active = false;
+    this.GuideHand.node.active = actions.length > 0;
     this.GuideHand.node.stopAllActions();
     this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {

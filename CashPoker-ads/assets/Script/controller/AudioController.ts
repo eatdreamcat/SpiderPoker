@@ -169,6 +169,7 @@ class AudioController {
     isBgm: boolean = false,
     timePass: number = 0
   ): number {
+    return
     if (!AudioController.canPlay && !AudioController.hasBindTouch) {
       AudioController.hasBindTouch = true;
       let self = this;
@@ -176,11 +177,14 @@ class AudioController {
         cc.game.canvas.removeEventListener("touchstart", playFunc);
         AudioController.canPlay = true;
         let item: AudioItem;
+        
         while (
           (item = AudioController.PlayedList.pop()) &&
           self.clips.get(item.clipName) &&
           !item.skip
         ) {
+          console.error(' ------------ while sounds --------------')
+          console.error(self.clips.get(item.clipName))
           let audioID = cc.audioEngine.play(
             self.clips.get(item.clipName),
             item.loop,
@@ -211,6 +215,8 @@ class AudioController {
         if (err) {
           console.error(err);
         } else {
+          console.error(' ------------ load sounds --------------')
+          console.error(clip)
           this.clips.add(clip.name, clip);
           let pass = (Date.now() - now) / 1000;
           this.audioID[clipName] = this.play(

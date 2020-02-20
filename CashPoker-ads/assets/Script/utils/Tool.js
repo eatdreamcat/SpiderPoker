@@ -10,6 +10,9 @@ if (CC_DEBUG) {
   console.warn = function(...args) {};
   console.error = function(...args) {};
 }
+
+cc.DebugMode = cc.debug.DebugMode;
+
 CMath = {};
 CMath.Clamp = function(val, max, min) {
   return Math.max(Math.min(val, max), min);
