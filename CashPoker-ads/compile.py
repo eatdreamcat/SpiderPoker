@@ -22,6 +22,7 @@ RootDir = os.getcwd()
 print(RootDir)
 
 htmlPath = RootDir + '/build/web-mobile/index.html'
+resJsPath = RootDir + '/build/web-mobile/res.js'
 settingScrPath = RootDir + '/build/web-mobile/src/settings.js'
 mainScrPath = RootDir + '/build/web-mobile/main.js'
 engineScrPath = RootDir + '/build/web-mobile/cocos2d-js-min.js'
@@ -125,7 +126,8 @@ def start():
   htmlStr = htmlStr.replace(engineMatchKey, engineStr, 1)
 
   resStr = getResMapScript()
-  htmlStr = htmlStr.replace(resMapMatchKey, resStr, 1)
+  writeToPath(resJsPath, resStr)
+  htmlStr = htmlStr.replace(resMapMatchKey, '<script type="text/javascript" charset="utf-8" src="./res.js"></script>', 1)
 
   writeToPath(htmlPath, htmlStr)
 
