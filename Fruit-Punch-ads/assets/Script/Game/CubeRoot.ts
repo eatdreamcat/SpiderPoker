@@ -219,6 +219,7 @@ export default class CubeRoot extends cc.Component {
 
   onTouchStart(eventTouch: cc.Event.EventTouch) {
     if (this.isReady || !Game.canDrag || !Game.isStart) return;
+    if (parseInt(this.node.name) < this.node.parent.childrenCount - 1) return;
     gEventMgr.emit(GlobalEvent.PLAY_TOUCH);
     if (this.shapeData.shapeID == 10033) {
       gEventMgr.emit(GlobalEvent.PLAY_SPECIAL_B_BGM, true);
@@ -265,6 +266,7 @@ export default class CubeRoot extends cc.Component {
   /** 拖拽结束，判断是否可以放置到放置区，不行就回到原位 */
   onTouchEnd() {
     if (!Game.isStart) return;
+    if (parseInt(this.node.name) < this.node.parent.childrenCount - 1) return;
     console.log(" end :", Game.canPlace);
 
     if (Game.canPlace) {
@@ -328,6 +330,8 @@ export default class CubeRoot extends cc.Component {
     if (!this.isReady) {
       return;
     }
+
+    if (parseInt(this.node.name) < this.node.parent.childrenCount - 1) return;
 
     Game.resetPreScore();
     this.node.x += eventTouch.getDeltaX() * this.dragSense.x;

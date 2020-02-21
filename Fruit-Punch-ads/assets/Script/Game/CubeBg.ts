@@ -384,10 +384,11 @@ export default class CubeBg extends cc.Component {
     this.preCheck();
   }
 
-  updateFruitData(fruitID: number) {
+  updateFruitData(fruitID: number, setOld: boolean = false) {
     this.fruitData = null;
     this.fruitData = TableMgr.inst.getFruits(fruitID);
     if (this.isPlaying) return;
+    if (setOld) this.OldFruitID = fruitID;
     this.cube.spriteFrame = this[this.fruitData.Icon];
     // cc.loader.loadRes(
     //   "Textures/Fruits/" + this.fruitData.Icon,
@@ -505,7 +506,7 @@ export default class CubeBg extends cc.Component {
       this.setCubeActive(true);
       this.cube.getComponent(cc.Animation).stop();
       this.isPlaying = false;
-      this.updateFruitData(Game.curSelectFruitID);
+      this.updateFruitData(Game.curSelectFruitID, isTest);
     }
 
     this.shake(false);

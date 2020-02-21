@@ -58,13 +58,13 @@ export default class GameScene extends cc.Component {
   @property(cc.Label)
   RainbowScoreBg: cc.Label = null;
 
-  @property(cc.Button)
-  Forward: cc.Button = null;
-  @property(cc.Button)
-  Next: cc.Button = null;
+  // @property(cc.Button)
+  // Forward: cc.Button = null;
+  // @property(cc.Button)
+  // Next: cc.Button = null;
 
-  @property(cc.Node)
-  ButtonNode: cc.Node = null;
+  // @property(cc.Node)
+  // ButtonNode: cc.Node = null;
   @property(cc.SpriteFrame)
   Close: cc.SpriteFrame = null;
   @property(cc.SpriteFrame)
@@ -76,8 +76,8 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Animation)
   Lodinging: cc.Animation = null;
-  @property(cc.PageView)
-  GuidePage: cc.PageView = null;
+  // @property(cc.PageView)
+  // GuidePage: cc.PageView = null;
 
   private adjustCount: number = 0;
 
@@ -92,11 +92,11 @@ export default class GameScene extends cc.Component {
     this.RainbowEffect.node.opacity = 0;
     this.RainbowScore.string = "";
     this.RainbowScoreBg.string = "";
-    this.GuidePage.node.active = false;
-    this.ButtonNode.active = false;
+    // this.GuidePage.node.active = false;
+    // this.ButtonNode.active = false;
 
-    this.Next.node.on(cc.Node.EventType.TOUCH_START, this.nextPage, this);
-    this.Forward.node.on(cc.Node.EventType.TOUCH_START, this.forwardPage, this);
+    // this.Next.node.on(cc.Node.EventType.TOUCH_START, this.nextPage, this);
+    // this.Forward.node.on(cc.Node.EventType.TOUCH_START, this.forwardPage, this);
     celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
@@ -149,39 +149,39 @@ export default class GameScene extends cc.Component {
     this.DragPanel.removeAllChildren();
   }
 
-  nextPage() {
-    if (
-      this.GuidePage.getCurrentPageIndex() >=
-      this.GuidePage.content.childrenCount - 1
-    ) {
-      this.GuidePage.node.runAction(
-        cc.sequence(
-          cc.scaleTo(0.2, 0),
-          cc.callFunc(() => {
-            this.GuidePage.node.active = false;
-            this.ButtonNode.active = false;
-          }, this)
-        )
-      );
+  // nextPage() {
+  //   if (
+  //     this.GuidePage.getCurrentPageIndex() >=
+  //     this.GuidePage.content.childrenCount - 1
+  //   ) {
+  //     this.GuidePage.node.runAction(
+  //       cc.sequence(
+  //         cc.scaleTo(0.2, 0),
+  //         cc.callFunc(() => {
+  //           this.GuidePage.node.active = false;
+  //           this.ButtonNode.active = false;
+  //         }, this)
+  //       )
+  //     );
 
-      this.nextStep(LOAD_STEP.GUIDE);
-    } else {
-      this.GuidePage.setCurrentPageIndex(
-        (this.GuidePage.getCurrentPageIndex() + 1) %
-          this.GuidePage.content.childrenCount
-      );
-    }
-  }
+  //     this.nextStep(LOAD_STEP.GUIDE);
+  //   } else {
+  //     this.GuidePage.setCurrentPageIndex(
+  //       (this.GuidePage.getCurrentPageIndex() + 1) %
+  //         this.GuidePage.content.childrenCount
+  //     );
+  //   }
+  // }
 
-  forwardPage() {
-    if (this.GuidePage.getCurrentPageIndex() <= 0) {
-    } else {
-      this.GuidePage.setCurrentPageIndex(
-        (this.GuidePage.getCurrentPageIndex() - 1) %
-          this.GuidePage.content.childrenCount
-      );
-    }
-  }
+  // forwardPage() {
+  //   if (this.GuidePage.getCurrentPageIndex() <= 0) {
+  //   } else {
+  //     this.GuidePage.setCurrentPageIndex(
+  //       (this.GuidePage.getCurrentPageIndex() - 1) %
+  //         this.GuidePage.content.childrenCount
+  //     );
+  //   }
+  // }
 
   celerStart() {
     let match = celerx.getMatch();
@@ -193,14 +193,7 @@ export default class GameScene extends cc.Component {
     }
     this.nextStep(LOAD_STEP.CELER);
 
-    if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      this.GuidePage.node.active = true;
-      this.ButtonNode.active = true;
-    } else {
-      this.GuidePage.node.active = false;
-      this.ButtonNode.active = false;
-      this.nextStep(LOAD_STEP.GUIDE);
-    }
+    this.nextStep(LOAD_STEP.GUIDE);
   }
 
   /**
@@ -655,7 +648,9 @@ export default class GameScene extends cc.Component {
       console.error(" 方块生成个数不足!!!!!!!!!!!!!!!!!!!");
     }
     for (let shape of shapeList) {
-      this.DragPanel.addChild(gFactory.getCubeRoot(shape));
+      let root = gFactory.getCubeRoot(shape);
+      root.name = this.DragPanel.childrenCount.toString();
+      this.DragPanel.addChild(root);
     }
   }
 
@@ -729,14 +724,14 @@ export default class GameScene extends cc.Component {
   }
 
   update(dt: number) {
-    if (this.ButtonNode.active) {
-      this.Forward.node.active = this.GuidePage.getCurrentPageIndex() > 0;
-      this.Next.node.children[0].getComponent(cc.Sprite).spriteFrame =
-        this.GuidePage.getCurrentPageIndex() <
-        this.GuidePage.content.childrenCount - 1
-          ? this.NextSprite
-          : this.Close;
-    }
+    // if (this.ButtonNode.active) {
+    //   this.Forward.node.active = this.GuidePage.getCurrentPageIndex() > 0;
+    //   this.Next.node.children[0].getComponent(cc.Sprite).spriteFrame =
+    //     this.GuidePage.getCurrentPageIndex() <
+    //     this.GuidePage.content.childrenCount - 1
+    //       ? this.NextSprite
+    //       : this.Close;
+    // }
     Game.update(dt);
     this.updateTime();
     if (

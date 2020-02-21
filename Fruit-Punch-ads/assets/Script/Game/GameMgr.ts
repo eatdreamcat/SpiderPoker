@@ -91,10 +91,10 @@ class GameMgr {
 
   /** 测试 */
   private testCubeIndex: number[] = [
-    100, 100,   0, 100, 100, 100, 100, 100,
-    100, 100,   0,   0, 100, 100, 100, 100,
-    100, 100, 100,   0, 100, 100, 100, 100,
-      0,   0, 100, 100, 100, 100,   0,   0,
+    100, 100,100,   0, 100, 100, 100, 100,
+    100, 100,  0,   0, 100, 100, 100, 100,
+    100, 100,  0, 100, 100, 100, 100, 100,
+      0,   0, 100, 100,   0,   0,   0,   0,
       0, 100, 100, 100, 100, 100, 100, 100,
       0, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100,   0, 100, 100, 100,
@@ -105,7 +105,7 @@ class GameMgr {
   /** 预放置区的方块数据 */
   private preCubeIndex: number[] = [];
   /** 当前选择的水果 */
-  public curSelectFruitID: number = 20000;
+  private _curSelectFruitID: number = -100;
   /** 可直接消除的水果数 */
   public killDirectlyCount: number = 0;
 
@@ -118,6 +118,21 @@ class GameMgr {
 
   /** 生成形状组合的次数 */
   private callShapeCount: number = 0;
+
+  public get curSelectFruitID() {
+    if (!this._curSelectFruitID || this._curSelectFruitID < 0) {
+      let fruits = [20000, 20001, 20002, 20003, 20004, 20005];
+      let randomID = fruits[Math.floor(CMath.getRandom()*fruits.length)];
+      
+      return randomID;
+    }
+
+    return this._curSelectFruitID;
+  }
+
+  public set curSelectFruitID(id: number) {
+    this._curSelectFruitID = id;
+  }
 
   /** 初始化游戏 */
   start() {
@@ -135,7 +150,7 @@ class GameMgr {
       if (this.testCubeIndex[i] > 0) {
         this.cubeIndex[i] = 100;
       } else {
-        this.cubeIndex[i] = -10000;
+        this.cubeIndex[i] = -100000;
       }
     }
 
@@ -274,25 +289,23 @@ class GameMgr {
         if (weight <= val.value) {
           let shapeWeightData = TableMgr.inst.getShapeWeight(val.key);
 
-          let shapeList = shapeWeightData.ShapeList.concat();
-          // 前三轮不出现道具和前三种方块组合
-          if (this.callShapeCount < 3) {
-            for (let j = 0; j < shapeList.length; j++) {
-              if (
-                [10000, 10001, 10002, 10032, 10033].indexOf(shapeList[j]) >= 0
-              ) {
-                shapeList.splice(j, 1);
-                j--;
-              }
-            }
-          }
+          
+          // // 前三轮不出现道具和前三种方块组合
+          // if (this.callShapeCount < 3) {
+          //   for (let j = 0; j < shapeList.length; j++) {
+          //     if (
+          //       [10000, 10001, 10002, 10032, 10033].indexOf(shapeList[j]) >= 0
+          //     ) {
+          //       shapeList.splice(j, 1);
+          //       j--;
+          //     }
+          //   }
+          // }
 
-          if (shapeList.length <= 0) continue;
+          if (shapeWeightData.ShapeList.length <= 0) continue;
 
-          let index = CMath.getRandom(0, 1) * (shapeList.length - 1);
-          //console.warn(shapeWeightData, index);
-
-          shapeData.shapeID = shapeList[Math.round(index)];
+          
+          shapeData.shapeID = shapeWeightData.ShapeList.pop();
           let shapeJson = TableMgr.inst.getShape(shapeData.shapeID);
           // 避免同一轮出现同种道具
           if (
@@ -339,8 +352,10 @@ class GameMgr {
     if (this.testCubeIndex[index] > 0) {
       this.cubeIndex[index] = 100;
     } else {
-      this.cubeIndex[index] = -10000;
+      this.cubeIndex[index] = -100000;
     }
+
+    this.cubeIndex[index] = -100000;
   }
 
   setPreCubeIndex(index: number, score: number) {
@@ -348,7 +363,7 @@ class GameMgr {
   }
 
   resetPreCubeIndex(index: number) {
-    this.preCubeIndex[index] = -10000;
+    this.preCubeIndex[index] = -100000;
   }
 
   /** 检测是否可以消除 */
@@ -425,6 +440,7 @@ class GameMgr {
   checkRowCol(cubeIndex: number[]): number[][] {
     let colIndex: number[] = [];
     let rowIndex: number[] = [];
+    
     for (let i = 0; i < Config.Grid.x; i++) {
       let sumRow = 0;
       let sumCol = 0;
