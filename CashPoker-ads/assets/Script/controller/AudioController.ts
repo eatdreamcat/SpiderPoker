@@ -28,21 +28,24 @@ class AudioController {
   init(callback: Function) {
     console.warn(" start load AudioClip ");
     let self = this;
-    cc.loader.loadResDir("preLoadSounds", cc.AudioClip, function(
-      err,
-      clips: cc.AudioClip[],
-      urls
-    ) {
-      if (err) {
-        console.error(err);
-      } else {
-        for (let clip of clips) {
-          self.clips.add(clip.name, clip);
-        }
-        self.initEvent();
-        callback && callback();
-      }
-    });
+    // cc.loader.loadResDir("preLoadSounds", cc.AudioClip, function(
+    //   err,
+    //   clips: cc.AudioClip[],
+    //   urls
+    // ) {
+
+    //   if (err) {
+    //     console.error(err);
+    //   } else {
+    //     for (let clip of clips) {
+    //       self.clips.add(clip.name, clip);
+    //     }
+    //     self.initEvent();
+    //     callback && callback();
+    //   }
+    // });
+    self.initEvent();
+    callback && callback();
   }
 
   /** 所有播放音效的事件注册 */
@@ -211,12 +214,15 @@ class AudioController {
 
     if (!this.clips.get(clipName)) {
       let now = Date.now();
-      cc.loader.loadRes("sounds/" + clipName, cc.AudioClip, (err, clip) => {
+      cc.loader.loadRes("sounds/" + clipName, cc.AudioClip, (err, clip: cc.AudioClip) => {
         if (err) {
           console.error(err);
         } else {
           console.error(' ------------ load sounds --------------')
-          console.error(clip)
+          if (typeof clip["_audio"] == 'string') {
+            
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"]
+          }
           this.clips.add(clip.name, clip);
           let pass = (Date.now() - now) / 1000;
           this.audioID[clipName] = this.play(

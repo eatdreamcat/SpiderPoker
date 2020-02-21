@@ -255,8 +255,9 @@
 
             var data = window.resMap[item.url];
             data = base64toArray(data);
-
+            
             if (data) {
+
                 context["decodeAudioData"](data.buffer, function(buffer){
                     //success
                     item.buffer = buffer;
@@ -324,22 +325,22 @@
         }
 
         // 添加加载函数
-        // cc.loader.addDownloadHandlers({
-        //     png: arrayBufferHandler,
-        //     jpg: arrayBufferHandler,
-        //     jpeg: arrayBufferHandler,
-        // });
+        cc.loader.addDownloadHandlers({
+            png: arrayBufferHandler,
+            jpg: arrayBufferHandler,
+            jpeg: arrayBufferHandler,
+        });
 
         cc.loader.addDownloadHandlers({
             json: jsonBufferHandler,
         });
 
-        // cc.loader.addDownloadHandlers({
-        //     mp3: audioBufferHandler,
-        //     ogg: audioBufferHandler,
-        //     wav: audioBufferHandler,
-        //     m4a: audioBufferHandler
-        // })
+        cc.loader.addDownloadHandlers({
+            mp3: audioBufferHandler,
+            ogg: audioBufferHandler,
+            wav: audioBufferHandler,
+            m4a: audioBufferHandler
+        })
 
         var splash = document.getElementById('splash');
         splash.style.display = 'block';

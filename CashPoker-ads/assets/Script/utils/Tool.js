@@ -6,9 +6,9 @@ if (CC_DEBUG) {
   // console.warn = function(...args) {};
   // console.error = function(...args) {};
 } else {
-  console.log = function(...args) {};
-  console.warn = function(...args) {};
-  console.error = function(...args) {};
+  // console.log = function(...args) {};
+  // console.warn = function(...args) {};
+  // console.error = function(...args) {};
 }
 
 cc.DebugMode = cc.debug.DebugMode;

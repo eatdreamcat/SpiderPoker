@@ -39,9 +39,9 @@ resMapMatchKey = '{#resMap}'
 
 addScriptPathList = [settingScrPath, mainScrPath, engineScrPath, toolSrcPath, projectScrPath]
 
-fileByteList = [] 
+fileByteList = ['.png', '.jpg','.mp3','.ttf'] 
 
-fileExceptList = ['.png', '.jpg','.mp3','.ttf'] 
+fileExceptList = [] 
 
 base64PreList = {
   '.png' : 'data:image/png;base64,',
@@ -63,6 +63,8 @@ def read_in_chunks(filePath, chunk_size=1024*1024):
     preName = base64PreList[extName]
     if preName != None:
       base64Str = preName + base64Str
+      print('------ remove :' + filePath)
+      os.remove(filePath)
     return base64Str
   elif extName == '':
     return None
