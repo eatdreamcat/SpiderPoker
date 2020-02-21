@@ -33,6 +33,15 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   DragPanel: cc.Node = null;
 
+  @property(cc.Node)
+  ADNode: cc.Node = null;
+
+  @property(cc.Node)
+  DownloadButton: cc.Node = null;
+
+  @property(cc.Node)
+  ReplayButton: cc.Node = null;
+
   @property(cc.Label)
   Score: cc.Label = null;
 
@@ -88,7 +97,9 @@ export default class GameScene extends cc.Component {
   private canUpdateScore: boolean = false;
   private rainbowEffectArray: string[] = [];
   private rainbowScoreArray: string[] = [];
+  
   onLoad() {
+    this.ADNode.active = false;
     this.RainbowEffect.node.opacity = 0;
     this.RainbowScore.string = "";
     this.RainbowScoreBg.string = "";
@@ -214,6 +225,7 @@ export default class GameScene extends cc.Component {
   }
 
   initGamePanel() {
+    this.ADNode.active = false;
     console.log("   gEventMgr.emit(GlobalEvent.PREPARE_CUBE_BG)  ");
     gEventMgr.emit(GlobalEvent.PREPARE_CUBE_BG);
     // for (let i = 0; i <= 63; i++) {
@@ -230,6 +242,15 @@ export default class GameScene extends cc.Component {
 
   initEvent() {
     gEventMgr.targetOff(this);
+
+    this.DownloadButton.on(cc.Node.EventType.TOUCH_END, ()=>{
+      FbPlayableAd.onCTAClick();
+    }, this);
+
+    this.ReplayButton.on(cc.Node.EventType.TOUCH_END, ()=>{
+      Game.restart();
+    }, this)
+
     gEventMgr.on(GlobalEvent.Cube_ADJUST_DONE, this.adjustDragPanel, this);
     gEventMgr.on(GlobalEvent.CUBE_BOX_DRAGING, this.onBoxDrag, this);
     gEventMgr.on(
@@ -302,6 +323,7 @@ export default class GameScene extends cc.Component {
     if (aniState.name == "rainbow" || aniState.name == "hourse") {
       this.RainbowScoreBg.string = "";
       this.RainbowScore.string = this.RainbowScoreBg.string;
+      this.ADNode.active = true;
       if (this.rainbowEffectArray.length > 0) {
         let ani = this.rainbowEffectArray.shift();
         let score = this.rainbowScoreArray.shift();
@@ -655,7 +677,7 @@ export default class GameScene extends cc.Component {
   }
 
   /** 方块放置完成，需要检测需不需要生成新的方块，判断游戏是否结束 */
-  onCubePlaceDone() {
+  onCubePlaceDone(isStart) {
     this.FloatScore.node.runAction(
       cc.sequence(
         cc.scaleTo(0.1, 1.5),
@@ -665,8 +687,13 @@ export default class GameScene extends cc.Component {
     );
     Game.check();
     if (this.DragPanel.childrenCount <= 0) {
-      /** 方块用完，需要重新生成方块 */
-      this.genNewDragShape(Game.getShapes());
+      
+      if (isStart) {
+/** 方块用完，需要重新生成方块 */
+this.genNewDragShape(Game.getShapes());
+      } else {
+        
+      }
     } else {
       this.checkIsGameOver();
     }
@@ -712,7 +739,7 @@ export default class GameScene extends cc.Component {
   gameStart() {
     this.ShowText.play("letsgo");
     gEventMgr.emit(GlobalEvent.PLAY_LETSGO);
-    this.onCubePlaceDone();
+    this.onCubePlaceDone(true);
   }
 
   /** 可以开始更新分数显示 */
@@ -732,7 +759,9 @@ export default class GameScene extends cc.Component {
     //       ? this.NextSprite
     //       : this.Close;
     // }
-    Game.update(dt);
+    if (!this.ADNode.active) {
+      Game.update(dt);
+    }
     this.updateTime();
     if (
       this.floatScorePos &&

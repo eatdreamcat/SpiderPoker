@@ -134,14 +134,18 @@ class GameMgr {
     this._curSelectFruitID = id;
   }
 
+
   /** 初始化游戏 */
   start() {
+    this.curSelectFruitID = -100;
     this.time = Config.GameTime;
     this.cubeCount = 64;
     this.callShapeCount = 0;
     this.availableCount = 0;
     this.addPreScore(-this.preScore);
     this.initData();
+    this.initAvailableCountInit = 64;
+    this.isStart = false;
     for (let testIndex of this.testCubeIndex) {
       if (testIndex > 0) this.initAvailableCountInit--;
     }
@@ -198,6 +202,7 @@ class GameMgr {
     this.data.wildScore = 0;
     this.data.comboScore = 0;
     this.data.bestFruitID = 0;
+    this.shapeList = null;
     this.data.mostFruitID = 0;
     this.addScore(-this.data.totalScore);
   }
@@ -272,6 +277,8 @@ class GameMgr {
     return this.combo;
   }
 
+
+  private shapeList;
   /** 获取下一轮的形状组合 */
   getShapes(): ShapeData[] {
     let shapes: ShapeData[] = [];
@@ -289,23 +296,13 @@ class GameMgr {
         if (weight <= val.value) {
           let shapeWeightData = TableMgr.inst.getShapeWeight(val.key);
 
-          
-          // // 前三轮不出现道具和前三种方块组合
-          // if (this.callShapeCount < 3) {
-          //   for (let j = 0; j < shapeList.length; j++) {
-          //     if (
-          //       [10000, 10001, 10002, 10032, 10033].indexOf(shapeList[j]) >= 0
-          //     ) {
-          //       shapeList.splice(j, 1);
-          //       j--;
-          //     }
-          //   }
-          // }
 
           if (shapeWeightData.ShapeList.length <= 0) continue;
 
-          
-          shapeData.shapeID = shapeWeightData.ShapeList.pop();
+          if (!this.shapeList) {
+            this.shapeList  =  shapeWeightData.ShapeList.concat();
+          }
+          shapeData.shapeID = this.shapeList.pop();
           let shapeJson = TableMgr.inst.getShape(shapeData.shapeID);
           // 避免同一轮出现同种道具
           if (
@@ -487,7 +484,7 @@ class GameMgr {
 
   addAvailableCount(count: number) {
     this.availableCount += count;
-
+    console.error(' --------- availableCount:', this.availableCount)
     if (
       this.isStart == false &&
       this.availableCount >= this.initAvailableCountInit
