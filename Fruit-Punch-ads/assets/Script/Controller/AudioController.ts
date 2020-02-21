@@ -36,6 +36,10 @@ class AudioController {
         console.error(err);
       } else {
         for (let clip of clips) {
+          if (typeof clip["_audio"] == 'string') {
+            
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"]
+          }
           self.clips.add(clip.name, clip);
         }
         self.initEvent();
@@ -394,6 +398,11 @@ class AudioController {
         if (err) {
           console.error(err);
         } else {
+          if (typeof clip["_audio"] == 'string') {
+            
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"]
+          }
+
           this.clips.add(clip.name, clip);
           let pass = (Date.now() - now) / 1000;
           this.audioID[clipName] = this.play(

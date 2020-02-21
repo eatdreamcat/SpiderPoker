@@ -205,6 +205,7 @@ class GameMgr {
     this.shapeList = null;
     this.data.mostFruitID = 0;
     this.addScore(-this.data.totalScore);
+    this.addScore(465);
   }
 
   /** 添加水果消除次数 */

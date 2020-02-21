@@ -6,7 +6,7 @@ export const Config = {
   WinSize: cc.size(1080, 1920),
   Grid: cc.v2(8, 8),
   /** 单局游戏时间s */
-  GameTime: 180
+  GameTime: 90
 };
 
 CC_DEBUG && (window["Config"] = Config);

@@ -7,21 +7,14 @@
     "scheme": "https",
     "skipRecord": false
   },
-  "appBundle": false,
-  "baidugame": {
-    "REMOTE_SERVER_ROOT": "",
-    "appid": "testappid",
-    "orientation": "portrait",
-    "subContext": ""
-  },
   "encryptJs": true,
   "excludeScenes": [],
   "fb-instant-games": {},
   "includeSDKBox": false,
-  "inlineSpriteFrames": true,
+  "inlineSpriteFrames": false,
   "inlineSpriteFrames_native": true,
-  "md5Cache": true,
-  "mergeStartScene": true,
+  "md5Cache": false,
+  "mergeStartScene": false,
   "optimizeHotUpdate": false,
   "orientation": {
     "landscapeLeft": true,

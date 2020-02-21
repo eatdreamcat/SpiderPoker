@@ -75,6 +75,7 @@ export default class CubeBg extends cc.Component {
   private isPlaySpecial: boolean = false;
 
   onLoad() {
+    this.cube.node.active = false;
     this.initEvent();
   }
 
@@ -389,6 +390,7 @@ export default class CubeBg extends cc.Component {
     this.fruitData = TableMgr.inst.getFruits(fruitID);
     if (this.isPlaying) return;
     if (setOld) this.OldFruitID = fruitID;
+    
     this.cube.spriteFrame = this[this.fruitData.Icon];
     // cc.loader.loadRes(
     //   "Textures/Fruits/" + this.fruitData.Icon,

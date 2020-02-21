@@ -85,6 +85,9 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Animation)
   Lodinging: cc.Animation = null;
+
+  @property(cc.Node)
+  Hand: cc.Node=  null;
   // @property(cc.PageView)
   // GuidePage: cc.PageView = null;
 
@@ -121,7 +124,7 @@ export default class GameScene extends cc.Component {
       return Game.getScore();
     });
 
-    CC_DEBUG && this.celerStart();
+    this.celerStart();
 
     cc.game.setFrameRate(Config.FPS);
 
@@ -226,6 +229,7 @@ export default class GameScene extends cc.Component {
 
   initGamePanel() {
     this.ADNode.active = false;
+    this.Hand.active = false;
     console.log("   gEventMgr.emit(GlobalEvent.PREPARE_CUBE_BG)  ");
     gEventMgr.emit(GlobalEvent.PREPARE_CUBE_BG);
     // for (let i = 0; i <= 63; i++) {
@@ -260,13 +264,16 @@ export default class GameScene extends cc.Component {
     );
     gEventMgr.on(GlobalEvent.UPDATE_SCORE, this.updateScore, this);
     gEventMgr.once(GlobalEvent.ON_KILL, this.onKill, this);
-
+    gEventMgr.on(GlobalEvent.PLAY_LAY_FAIL, this.playHandAction, this);
     gEventMgr.on(GlobalEvent.COL_EFFECT, this.colEffect, this);
     gEventMgr.on(GlobalEvent.ROW_EFFECT, this.rowEffect, this);
     gEventMgr.on(GlobalEvent.SHOW_TEXT, this.showText, this);
     gEventMgr.on(GlobalEvent.GAME_START, this.gameStart, this);
     gEventMgr.on(GlobalEvent.SHOW_OVER_LAYER, this.gameOver, this);
     gEventMgr.on(GlobalEvent.GAME_RESTART, this.initGamePanel, this);
+    gEventMgr.on(GlobalEvent.PLAY_TOUCH, ()=>{
+      this.Hand.active = false;
+    }, this)
     gEventMgr.on(
       GlobalEvent.PLAY_RAINBOW_EFFECT,
       (name: string) => {
@@ -336,31 +343,32 @@ export default class GameScene extends cc.Component {
 
   gameOver() {
     this.FloatScore.string = "";
-    cc.loader.loadRes("prefabs/OverLayer", cc.Prefab, (err, prefab) => {
-      if (err) {
-        console.error(" load over layer failed:", err);
-        celerx.submitScore(Game.getResultData().totalScore);
-      } else {
-        this.Tip.node.active = CC_DEBUG;
-        this.Tip.node.runAction(
-          cc.repeatForever(cc.sequence(cc.fadeTo(0.1, 0), cc.fadeTo(0.2, 255)))
-        );
-        if (CC_DEBUG) {
-          this.node.once(
-            cc.Node.EventType.TOUCH_END,
-            () => {
-              if (!Game.isStart) {
-                this.node.addChild(cc.instantiate(prefab));
-                this.Tip.node.active = false;
-              }
-            },
-            this
-          );
-        } else {
-          this.node.addChild(cc.instantiate(prefab));
-        }
-      }
-    });
+    // cc.loader.loadRes("prefabs/OverLayer", cc.Prefab, (err, prefab) => {
+    //   if (err) {
+    //     console.error(" load over layer failed:", err);
+    //     celerx.submitScore(Game.getResultData().totalScore);
+    //   } else {
+    //     this.Tip.node.active = CC_DEBUG;
+    //     this.Tip.node.runAction(
+    //       cc.repeatForever(cc.sequence(cc.fadeTo(0.1, 0), cc.fadeTo(0.2, 255)))
+    //     );
+    //     if (CC_DEBUG) {
+    //       this.node.once(
+    //         cc.Node.EventType.TOUCH_END,
+    //         () => {
+    //           if (!Game.isStart) {
+    //             this.node.addChild(cc.instantiate(prefab));
+    //             this.Tip.node.active = false;
+    //           }
+    //         },
+    //         this
+    //       );
+    //     } else {
+    //       this.node.addChild(cc.instantiate(prefab));
+    //     }
+    //   }
+    // });
+    this.ADNode.active = true;
   }
 
   showText(name: string) {
@@ -389,6 +397,7 @@ export default class GameScene extends cc.Component {
     //this.Score.string = Game.getScore().toString();
   }
 
+  private draging: boolean = false;
   /**
    *
    * @param boxPos 方块组合中心点在放置区的坐标
@@ -412,7 +421,7 @@ export default class GameScene extends cc.Component {
         boxSize.height / 2 - cellSize.height / 2
       )
     );
-
+     this.draging = true;
     this.floatScorePos = cc.v2(boxPos.x, boxPos.y + 80);
 
     Game.canPlace = this.checkCanPlace(
@@ -428,6 +437,44 @@ export default class GameScene extends cc.Component {
     } else {
       this.FloatScore.string = "";
       gEventMgr.emit(GlobalEvent.CUBE_BOX_DRAG_CANCEL);
+    }
+  }
+
+  playHandAction() {
+    this.Hand.stopAllActions();
+    // this.Hand.active = !this.draging;
+    // if (this.draging) return;
+    if (this.DragPanel.childrenCount > 0) {
+      this.Hand.opacity = 0;
+      this.Hand.active = true;
+      switch(this.DragPanel.childrenCount) {
+        case 1:
+          this.Hand.runAction(cc.repeatForever(cc.sequence(
+            cc.moveTo(0, 337, -778),
+            cc.fadeTo(0.3, 255), 
+            cc.moveTo(0.3, -436, 120),
+            cc.fadeTo(0.4, 0)
+            )))
+          break;
+        case 2:
+          this.Hand.runAction(cc.repeatForever(cc.sequence(
+            cc.moveTo(0, 25, -778),
+            cc.fadeTo(0.3, 255), 
+            cc.moveTo(0.3, -102, 400),
+            cc.fadeTo(0.4, 0)
+            )))
+          break;
+        case 3:
+          this.Hand.runAction(cc.repeatForever(cc.sequence(
+            cc.moveTo(0, -285, -778),
+            cc.fadeTo(0.3, 255), 
+            cc.moveTo(0.3, 116, -371),
+            cc.fadeTo(0.4, 0)
+            )))
+          break;
+      }
+    } else {
+      this.Hand.active = false;
     }
   }
 
@@ -678,6 +725,7 @@ export default class GameScene extends cc.Component {
 
   /** 方块放置完成，需要检测需不需要生成新的方块，判断游戏是否结束 */
   onCubePlaceDone(isStart) {
+   
     this.FloatScore.node.runAction(
       cc.sequence(
         cc.scaleTo(0.1, 1.5),
@@ -697,6 +745,8 @@ this.genNewDragShape(Game.getShapes());
     } else {
       this.checkIsGameOver();
     }
+
+    this.playHandAction()
   }
 
   /** 检测是否还有位置可以放置 */
