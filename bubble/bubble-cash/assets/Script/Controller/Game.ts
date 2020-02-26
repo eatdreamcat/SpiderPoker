@@ -15,6 +15,13 @@ class GameCtrl {
      */
     private bubbleMatrix: BubbleMatrix = new BubbleMatrix();
 
+    /** 总得分 */
+    private score: number = 0;
+
+    public getScore() {
+        return this.score;
+    }
+
     /** 获取矩阵数据 */
     public getMatrix() {
         return this.bubbleMatrix;

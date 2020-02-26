@@ -94,6 +94,13 @@ CMath.CheckNumberBit = function(a, b) {
   return (a | b) < a + b;
 };
 
+CMath.getK = function(a, b) {
+  let dx = a.x - b.x;
+  let dy = a.y - b.y;
+  if (dx == 0) return null;
+  return dy / dx;
+}
+
 if (CC_DEBUG) {
   cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, event => {
     switch (event.keyCode) {

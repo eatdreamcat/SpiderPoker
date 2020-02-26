@@ -18,12 +18,27 @@ export default class Bubble extends cc.Component {
 
     /** 泡泡对应的矩阵index */
     private index: number = -1;
+    
     get sprite() {
         return this.getComponent(cc.Sprite);
     }
 
     get IndexLabel() {
         return this.node.getChildByName('Index').getComponent(cc.Label);
+    }
+
+    get radis() {
+        return this.node.width / 2;
+    }
+
+    /** 是否是在飞行状态 */
+    get isShooterState() {
+        return this.node.getParent().name == "Shooter";
+    }
+
+    /** 是否在准备发射的状态 */
+    get isReady2Shoot() {
+        return this.node.getParent().name == "Shooter" && this.node.x == 0 && this.node.y == 0;
     }
 
     reuse() {
@@ -61,7 +76,9 @@ export default class Bubble extends cc.Component {
             gEventMgr.emit(GlobalEvent.BUBBLE_SCALE_TEST, neibers);
         }, this);
 
-        gEventMgr.on(GlobalEvent.BUBBLE_SCALE_TEST, this.scaleTest, this)
+        gEventMgr.on(GlobalEvent.BUBBLE_SCALE_TEST, this.scaleTest, this);
+
+        this.node["_onSetParent"] = this.onSetParent.bind(this);
     }
 
     updateActive() {
@@ -78,6 +95,19 @@ export default class Bubble extends cc.Component {
         action.setTag(BubbleAction.Bubble);
         this.node.stopActionByTag(BubbleAction.Bubble);
         this.node.runAction(action);
+    }
+
+    onSetParent(parent: cc.Node) {
+        
+    }
+
+    update(dt: number) {
+
+    }
+
+    /** 检测飞行时是否碰到边界 */
+    checkBorder() {
+        if (!this.isShooterState) return;
     }
 
 }

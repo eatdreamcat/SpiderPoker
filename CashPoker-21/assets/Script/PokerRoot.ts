@@ -115,6 +115,7 @@ export default class PokerRoot extends cc.Component {
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
     curSelectPoker.node.group = "top";
     curSelectPoker.node.stopActionByTag(ACTION_TAG.SELECT_POKER);
+    curSelectPoker.node.stopActionByTag(ACTION_TAG.SHAKE);
     curSelectPoker.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),

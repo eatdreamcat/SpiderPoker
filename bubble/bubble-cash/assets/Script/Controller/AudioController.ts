@@ -28,7 +28,7 @@ class AudioController {
   init(callback: Function) {
     console.warn(" start load AudioClip ");
     let self = this;
-    cc.loader.loadResDir("preLoadSounds", cc.AudioClip, function(
+    cc.loader.loadResDir("preloadSounds", cc.AudioClip, function(
       err,
       clips: cc.AudioClip[],
       urls

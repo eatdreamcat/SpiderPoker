@@ -34,6 +34,7 @@ export enum LOAD_STEP {
   AUDIO = 2 << 3,
   CELER = 2 << 4,
   GUIDE = 2 << 5,
+  CELER_READY  = AUDIO | PREFABS | READY,
   /** 完成 */
   DONE = LOAD_STEP.READY |
     LOAD_STEP.PREFABS |
@@ -219,7 +220,7 @@ export default class GameScene extends cc.Component {
     this.Bust03.getChildByName("Cover").active = false;
 
     this.WildCount.string = Game.getWildCount().toString();
-    celerx.ready();
+    
     CMath.randomSeed = Math.random();
     let self = this;
     celerx.onStart(
@@ -928,6 +929,7 @@ export default class GameScene extends cc.Component {
   /**
    * 下一步
    */
+  private isCeler: boolean = false;
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
     console.log("loadStep Step:" + LOAD_STEP[loadStep]);
@@ -935,7 +937,9 @@ export default class GameScene extends cc.Component {
       console.log("  startGame ---------------------- ");
       this.isStart = true;
       this.startGame();
-    } else {
+    } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCeler){
+      celerx.ready();
+      this.isCeler = true;
     }
   }
 

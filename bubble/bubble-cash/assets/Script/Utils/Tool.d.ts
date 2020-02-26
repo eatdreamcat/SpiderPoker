@@ -43,6 +43,11 @@ interface CMath {
    * @param spaceNode 目标坐标空间节点
    */
   ConvertToNodeSpaceAR(node: cc.Node, spaceNode: cc.Node): cc.Vec2;
+
+  /**
+   * 获取斜率
+   */
+  getK(a: cc.Vec2, b: cc.Vec2): number;
 }
 
 // interface celerx {

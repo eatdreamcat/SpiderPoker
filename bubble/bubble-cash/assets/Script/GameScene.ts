@@ -4,6 +4,15 @@ import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSi
 import { MatrixSize, UseSize } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
+import { gStep } from "./Controller/StepController";
+import { gAudio } from "./Controller/AudioController";
+const celerx = require("./Utils/celerx");
+
+enum Step {
+    Prefab = "Prefab",
+    Audio = "Audio",
+    
+}
 
 const {ccclass, property} = cc._decorator;
 
@@ -22,15 +31,57 @@ export default class GameScene extends cc.Component {
     @property(cc.Node)
     BubbleLayer: cc.Node = null;
 
+    @property(cc.Node)
+    Shooter: cc.Node = null;
+
+    @property(cc.Node)
+    BulletArray: cc.Node = null;
+
+    @property(cc.Node)
+    ShooterLayer: cc.Node = null;
+
     onLoad () {
         
+        let self = this;
+        celerx.onStart(
+            function() {
+                 self.celerOnStart();
+            }.bind(this)
+        );
+
+        celerx.provideScore(() => {
+             return parseInt(Game.getScore().toString());
+        });
+        
+        gStep.register(this.celerReady.bind(this), [Step.Audio, Step.Prefab]);
+
         Game.prepare();
 
         gFactory.init(()=>{
-            this.show();
+            gStep.nextStep(Step.Prefab);
         }, this.BubblePrefab);
+        
+        gAudio.init(()=>{
+            gStep.nextStep(Step.Audio);
+        });
+
 
         this.initEvent();
+    }
+
+    celerReady() {
+        celerx.ready();
+        if (CC_DEBUG) {
+            this.celerOnStart();
+        }
+    }
+
+
+    /**
+     * 正式进入游戏
+     */
+    celerOnStart() {
+        this.show();
     }
 
     initEvent() {
@@ -41,7 +92,7 @@ export default class GameScene extends cc.Component {
             cc.director.on("space-press", this.nextBubble, this);
         }
     }
-
+    
     show() {
         
         let iStart = 0, iEnd = 13;
