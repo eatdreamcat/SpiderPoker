@@ -1,15 +1,15 @@
 {
   "ver": "2.2.0",
-  "uuid": "06823292-999d-4623-b195-829366a5e6ee",
+  "uuid": "d45603fa-e78a-46b9-b8bc-4452cc56ce5b",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
   "premultiplyAlpha": false,
   "subMetas": {
-    "bg_back_winter": {
+    "bg_back_autumn": {
       "ver": "1.0.3",
-      "uuid": "9c6e7db2-30fa-4dcb-88e3-ce94ab7b78cc",
-      "rawTextureUuid": "06823292-999d-4623-b195-829366a5e6ee",
+      "uuid": "b1467ff3-107f-4c9b-b413-562e84f40cd8",
+      "rawTextureUuid": "d45603fa-e78a-46b9-b8bc-4452cc56ce5b",
       "trimType": "auto",
       "trimThreshold": 1,
       "rotated": false,

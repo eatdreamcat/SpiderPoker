@@ -4,183 +4,183 @@
     <dict>
         <key>frames</key>
         <dict>
-            <key>bg_popblue.png</key>
+            <key>bg_pointblue.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{1,1},{96,96}}</string>
+                <string>{{1,199},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popbluelight.png</key>
+            <key>bg_pointgreen.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{99,1},{96,96}}</string>
+                <string>{{1,228},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popgreen.png</key>
+            <key>bg_pointorange.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{197,1},{96,96}}</string>
+                <string>{{30,199},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popgreenlight.png</key>
+            <key>bg_pointpurple.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{295,1},{96,96}}</string>
+                <string>{{30,228},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_poporange.png</key>
+            <key>bg_pointred.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{393,1},{96,96}}</string>
+                <string>{{59,199},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_poporangelight.png</key>
+            <key>bg_pointyellow.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{491,1},{96,96}}</string>
+                <string>{{59,228},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_poppurple.png</key>
+            <key>bg_signblue.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{589,1},{96,96}}</string>
+                <string>{{1,1},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_poppurplelight.png</key>
+            <key>bg_signgreen.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{687,1},{96,96}}</string>
+                <string>{{1,67},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popred.png</key>
+            <key>bg_signorange.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{785,1},{96,96}}</string>
+                <string>{{1,133},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popredlight.png</key>
+            <key>bg_signpurple.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{883,1},{96,96}}</string>
+                <string>{{67,1},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popyellow.png</key>
+            <key>bg_signred.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{981,1},{96,96}}</string>
+                <string>{{67,67},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_popyellowlight.png</key>
+            <key>bg_signyellow.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
                 <key>spriteOffset</key>
                 <string>{0,0}</string>
                 <key>spriteSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>spriteSourceSize</key>
-                <string>{96,96}</string>
+                <string>{64,64}</string>
                 <key>textureRect</key>
-                <string>{{1079,1},{96,96}}</string>
+                <string>{{67,133},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -194,13 +194,13 @@
             <key>premultiplyAlpha</key>
             <false/>
             <key>realTextureFileName</key>
-            <string>bubbles.png</string>
+            <string>point.png</string>
             <key>size</key>
-            <string>{1176,98}</string>
+            <string>{132,256}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:e654b5f6f6a0645361f9cea238024a0f:818e4baacf492ce8766cb71d26927673:5369421b7db6c1582170f91eec95f4fd$</string>
+            <string>$TexturePacker:SmartUpdate:80107cc94a9c0c674c629036cd7d6409:919f56521fdd997e85c2d6627c61e169:cce8772aead9d3c3d84d37f82c72d0ef$</string>
             <key>textureFileName</key>
-            <string>bubbles.png</string>
+            <string>point.png</string>
         </dict>
     </dict>
 </plist>

@@ -1,4 +1,4 @@
-import { BubbleType, BubbleColors } from "../Const";
+import { BubbleType, BubbleColors, BubbleSize, BubbleHeightOffset, BubbleYOffset, BubbleXOffset } from "../Const";
 import Bubble from "../Bubble";
 import { Game } from "../Controller/Game";
 
@@ -65,7 +65,7 @@ import { Game } from "../Controller/Game";
         }
 
         for (let i = 0; i < addCount - 1; i ++) {
-            this.matrixData[i].color = this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];;
+            this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];
             this.matrixData[i].bubble = null;
         }
 
@@ -92,11 +92,21 @@ import { Game } from "../Controller/Game";
         return  MatrixSize * MatrixSize - this.getUseIndexStart() - 1;
     }
 
+    /** 获取ij对应的坐标 */
+    getPosOfij(i: number, j: number): cc.Vec2 {
+        
+        let pos = cc.v2(0, 0);
+        pos.x = (j - MatrixSize / 2) * BubbleSize.width + ((i + Game.getMoveTimes()) % 2) * BubbleSize.width / 2  + BubbleXOffset;
+        pos.y = (MatrixSize / 2 - i + Game.getMoveTimes()) * (BubbleSize.height + BubbleHeightOffset) + BubbleYOffset;
+
+        return pos;
+    }
+
     /**
      * 获取所在邻域
      * 以中心点所在的六边形
      */
-    getNeiborMatrix(index: number, range: number): number[] {
+    getNeiborMatrix(index: number, range: number, isBlank: boolean = false): number[] {
 
         
         let neibers: number[] = [];
@@ -116,34 +126,57 @@ import { Game } from "../Controller/Game";
                 let neiberIndex3 = index + i * MatrixSize - j;
                 let neiberIndex4 = index - i * MatrixSize - j;
 
-                if(neibers.indexOf(neiberIndex1) < 0 && neiberIndex1 >= 0 && neiberIndex1 < this.matrixData.length) {
+                if(index!= neiberIndex1 && neibers.indexOf(neiberIndex1) < 0 && neiberIndex1 >= 0 && (neiberIndex1 < this.matrixData.length || isBlank) 
+                ) {
                     if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
-                        neibers.push(neiberIndex1);
+
+                        if (this.data[neiberIndex1] && this.data[neiberIndex1].bubble && !isBlank) {
+                            neibers.push(neiberIndex1);
+                        } else if (isBlank && (!this.data[neiberIndex1] || !this.data[neiberIndex1].bubble)) {
+                            neibers.push(neiberIndex1);
+                        }
+                        
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && neiberIndex2 < this.matrixData.length) {
+                if(index!= neiberIndex2 && neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && (neiberIndex2 < this.matrixData.length || isBlank)
+                ) {
                     if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
-                        neibers.push(neiberIndex2);
+                        if (this.data[neiberIndex2] && this.data[neiberIndex2].bubble && !isBlank) {
+                            neibers.push(neiberIndex2);
+                        } else if (isBlank && (!this.data[neiberIndex2] || !this.data[neiberIndex2].bubble)) {
+                            neibers.push(neiberIndex2);
+                        }
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex3) < 0 && neiberIndex3 >= 0 && neiberIndex3 < this.matrixData.length) {
+                if(index!= neiberIndex3 && neibers.indexOf(neiberIndex3) < 0 && neiberIndex3 >= 0 && (neiberIndex3 < this.matrixData.length || isBlank)
+                ) {
                     if (isSame || (newi + moveTimes) % 2 || j < rangej) {
-                        neibers.push(neiberIndex3);
+                        if (this.data[neiberIndex3] && this.data[neiberIndex3].bubble && !isBlank) {
+                            neibers.push(neiberIndex3);
+                        } else if (isBlank && (!this.data[neiberIndex3] || !this.data[neiberIndex3].bubble)) {
+                            neibers.push(neiberIndex3);
+                        }
                     } 
                     
                 }
 
-                if(neibers.indexOf(neiberIndex4) < 0 && neiberIndex4 >= 0 && neiberIndex4 < this.matrixData.length) {
+                if(index!= neiberIndex4 && neibers.indexOf(neiberIndex4) < 0 && neiberIndex4 >= 0 && (neiberIndex4 < this.matrixData.length || isBlank)
+                ) {
                     if (isSame || (newi + moveTimes) % 2 || j < rangej) {
-                        neibers.push(neiberIndex4);
+                        if (this.data[neiberIndex4] && this.data[neiberIndex4].bubble && !isBlank) {
+                            neibers.push(neiberIndex4);
+                        } else if (isBlank && (!this.data[neiberIndex4] || !this.data[neiberIndex4].bubble)) {
+                            neibers.push(neiberIndex4);
+                        }
                     } 
                 }
             }
         }
+        
         neibers.sort((a,b)=>{return a-b})
         return neibers;
     }

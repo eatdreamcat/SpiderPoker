@@ -1,6 +1,8 @@
 import { gEventMgr } from "./Controller/EventManager";
 import { Game } from "./Controller/Game";
 import { GlobalEvent } from "./Controller/EventName";
+import { BubbleType } from "./Const";
+import BubbleMove from "./BubbleMove";
 
 
 /**
@@ -18,33 +20,27 @@ export default class Bubble extends cc.Component {
 
     /** 泡泡对应的矩阵index */
     private index: number = -1;
+
+    /** 泡泡的颜色 */
+    private color: BubbleType = BubbleType.Blank;
     
     get sprite() {
         return this.getComponent(cc.Sprite);
+    }
+
+    get move() {
+        return this.getComponent(BubbleMove)
     }
 
     get IndexLabel() {
         return this.node.getChildByName('Index').getComponent(cc.Label);
     }
 
-    get radis() {
-        return this.node.width / 2;
-    }
-
-    /** 是否是在飞行状态 */
-    get isShooterState() {
-        return this.node.getParent().name == "Shooter";
-    }
-
-    /** 是否在准备发射的状态 */
-    get isReady2Shoot() {
-        return this.node.getParent().name == "Shooter" && this.node.x == 0 && this.node.y == 0;
-    }
-
     reuse() {
         this.node.active = false;
         this.sprite.spriteFrame = arguments[0][0];
         this.setIndex(arguments[0][1]);
+        this.color = arguments[0][2];
         this.initEvent();
     }
 
@@ -56,14 +52,30 @@ export default class Bubble extends cc.Component {
     setIndex(index: number) {
         if (index == this.index) return;
         this.index = index;
+        let bubbleMatrix = Game.getMatrix();
+
+        if (!bubbleMatrix.data[index] || !bubbleMatrix.data[index].bubble) {
+            //console.log('新增泡泡：', index);
+            bubbleMatrix.data[index] = {
+                color: this.color,
+                bubble: this
+            }
+
+            
+        } else if (bubbleMatrix.data[index].bubble != this) {
+            console.warn('数据不同步！', index);
+
+        }
+
+
         this.IndexLabel.string = index.toString();
     }
 
-    setActive(active: boolean) {
+    setActive(active: boolean, isAction: boolean = true) {
       
         if (this.node.active == active) return;
         this.node.active = active;
-        if (this.node.active) {
+        if (this.node.active && isAction) {
             
             this.bubbleScale();
         }
@@ -71,10 +83,11 @@ export default class Bubble extends cc.Component {
 
     initEvent() {
 
-        this.node.on(cc.Node.EventType.TOUCH_END, ()=>{
-            let neibers = Game.getMatrix().getNeiborMatrix(this.index, 3);
-            gEventMgr.emit(GlobalEvent.BUBBLE_SCALE_TEST, neibers);
-        }, this);
+        // this.node.on(cc.Node.EventType.TOUCH_END, ()=>{
+        //     let neibers = Game.getMatrix().getNeiborMatrix(this.index, 1);
+        //     console.log(neibers)
+        //     gEventMgr.emit(GlobalEvent.BUBBLE_SCALE_TEST, neibers);
+        // }, this);
 
         gEventMgr.on(GlobalEvent.BUBBLE_SCALE_TEST, this.scaleTest, this);
 
@@ -98,16 +111,25 @@ export default class Bubble extends cc.Component {
     }
 
     onSetParent(parent: cc.Node) {
-        
+        this.move.enabled = parent.name == "Shooter";
+    }
+
+    /** 被泡泡碰到 */
+    onCollision() {
+
     }
 
     update(dt: number) {
 
+        let collision = Game.getCollisionIndexes();
+        
+        if (collision.indexOf(this.index) >= 0) {
+            this.IndexLabel.node.color = cc.Color.BLACK;
+        } else {
+            this.IndexLabel.node.color = cc.Color.WHITE;
+        }
     }
 
-    /** 检测飞行时是否碰到边界 */
-    checkBorder() {
-        if (!this.isShooterState) return;
-    }
+    
 
 }

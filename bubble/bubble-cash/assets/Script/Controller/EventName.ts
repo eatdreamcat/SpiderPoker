@@ -7,4 +7,6 @@ export enum GlobalEvent {
   SMALL_BGM,
   NORMAL_BGM,
   
+  /** 发射 */
+  SHOOT,
 }
