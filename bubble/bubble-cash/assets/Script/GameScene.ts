@@ -74,7 +74,7 @@ export default class GameScene extends cc.Component {
 
     celerReady() {
         celerx.ready();
-        if (CC_DEBUG) {
+        if (CC_DEBUG || true) {
             this.celerOnStart();
         }
     }
@@ -175,6 +175,9 @@ export default class GameScene extends cc.Component {
 
         let bubble = this.BulletArray.children[0];
         bubble.setParent(this.Shooter);
+        bubble.scale = 0.5;
+        bubble.setPosition(CMath.ConvertToNodeSpaceAR(bubble, this.Shooter));
+
         bubble.runAction(cc.spawn(
             cc.scaleTo(0.2, 1),
             cc.fadeTo(0.2, 255),
@@ -207,8 +210,8 @@ export default class GameScene extends cc.Component {
             bubble.getComponent(Bubble).setActive(true);
             bubble.scale = 0;
             bubble.opacity = 0;
+            bubble.y = 0;
             if (i == 0) {
-                bubble.y = 0;
                 bubble.x = -200;
                 this.Shooter.addChild(bubble);
                 bubble.runAction(cc.spawn(
@@ -217,13 +220,23 @@ export default class GameScene extends cc.Component {
                     cc.moveTo(0.3, 0, 0)
                 ));
             } else {
+                bubble.x = -200 * i;
                 this.BulletArray.addChild(bubble);
+
+                bubble.runAction(cc.spawn(
+                    cc.scaleTo(0.2, 0.5),
+                    cc.fadeTo(0.2, 255),
+                    cc.moveTo(0.4, 40 - this.BulletArray.childrenCount * BubbleSize.width, 0)
+                ));
+                
             }
         }
     }
 
     onBubbleQueRemoveChild() {
-        
+        for (let child of this.BulletArray.children) {
+            child.runAction(cc.moveBy(0.2, BubbleSize.width, 0))
+        }
     }
 
 

@@ -1,5 +1,6 @@
 import { gEventMgr } from "./Controller/EventManager";
 import { GlobalEvent } from "./Controller/EventName";
+import Bubble from "./Bubble";
 
 const {ccclass, property} = cc._decorator;
 
@@ -83,16 +84,23 @@ export default class ShooterLayer extends cc.Component {
 
     onTouchStart(e: cc.Event.EventTouch) {
         
+        if (this.Shooter.childrenCount <= 0) return;
         this.updateStarPosition(e.getLocation());
         this.ShooterStar.active = true;
+        this.ShooterStar.getComponent(cc.Sprite).spriteFrame = 
+        this.PointAtlas.getSpriteFrame(SignColor[this.Shooter.children[0].getComponent(Bubble).Color]);
+
     }
 
     onTouchMove(e: cc.Event.EventTouch) {
 
+        if (this.Shooter.childrenCount <= 0) return;
         this.updateStarPosition(e.getLocation());
     }
 
     onTouchEnd(e: cc.Event.EventTouch) {
+
+        if (this.Shooter.childrenCount <= 0) return;
 
         let dP = this.updateStarPosition(e.getLocation());
         this.ShooterStar.active = false;

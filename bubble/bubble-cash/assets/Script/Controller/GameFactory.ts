@@ -145,8 +145,8 @@ class GameFactory {
     return this.BubblePool.get("Bubble").get(args);
   }
 
-  putBubble(poker: cc.Node) {
-    this.BubblePool.get("Bubble").put(poker);
+  putBubble(bubble: cc.Node) {
+    this.BubblePool.get("Bubble").put(bubble);
   }
 
   

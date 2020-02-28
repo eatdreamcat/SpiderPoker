@@ -2,14 +2,16 @@ import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
 import { GlobalEvent } from "./Controller/EventName";
 import { Game } from "./Controller/Game";
+import { BubbleSize } from "./Const";
+import { gFactory } from "./Controller/GameFactory";
 
 
 const {ccclass, property} = cc._decorator;
 
 const BorderX = 455;
 
-const ShootSpeed = 6000;
-const ShootAcceleration = 1000;
+const ShootSpeed = 4800;
+const ShootAcceleration = 800;
 @ccclass
 export default class BubbleMove extends cc.Component {
 
@@ -18,6 +20,8 @@ export default class BubbleMove extends cc.Component {
     private acceleration: cc.Vec2 = cc.v2(0, 0);
 
     private hasCollision: boolean = false;
+    private shooted: boolean = false;
+    private isDrop: boolean = false;
 
     get bubble() {
         return this.getComponent(Bubble)
@@ -30,7 +34,7 @@ export default class BubbleMove extends cc.Component {
 
     /** 是否是在飞行状态 */
     get isShooterState() {
-        return this.node.getParent().name == "Shooter" && this.node.getNumberOfRunningActions() <= 0 && !this.hasCollision;
+        return this.node.getParent().name == "Shooter" && this.node.getNumberOfRunningActions() <= 0 && !this.hasCollision && this.shooted;
     }
 
     /** 是否在准备发射的状态 */
@@ -42,6 +46,7 @@ export default class BubbleMove extends cc.Component {
     /** 检测飞行时是否碰到边界 */
     checkBorder() {
         if (!this.isShooterState) return;
+        if (this.isDrop) return;
 
         if (this.node.x <= -BorderX || this.node.x >= BorderX) {
 
@@ -56,6 +61,9 @@ export default class BubbleMove extends cc.Component {
     checkCollisionBubble() {
 
         if (!this.isShooterState) return;
+        if (this.isDrop) return;
+
+        
         let bubbleIndexes = Game.getCollisionIndexes();
         let bubbleMatrix = Game.getMatrix();
 
@@ -66,7 +74,7 @@ export default class BubbleMove extends cc.Component {
             }
 
             let bubblePos = CMath.ConvertToNodeSpaceAR(this.node, bubble.node.parent)
-            if (CMath.Distance(bubblePos, bubble.node.position) <= 2 * this.radis) {
+            if (CMath.Distance(bubblePos, bubble.node.position) <= 2 * this.radis * 0.8) {
 
                 /**
                  * 计算最近的落点位置
@@ -85,13 +93,20 @@ export default class BubbleMove extends cc.Component {
                         targetIndex = neiberIndex;
                     }
                 }
-                // 碰撞
-                this.onCollision(targetIndex);
 
                 bubble.onCollision();
+
+                // 碰撞
+                this.onCollision(targetIndex);
+            
+                
+
+                
             }
         }
     }
+
+
 
     /** 飞行碰到泡泡 */
     onCollision(targetIndex: number) {
@@ -113,13 +128,18 @@ export default class BubbleMove extends cc.Component {
         this.node.y = pos.y;
         this.node.setParent(Game.BubbleLayer);
 
+
+        this.node.stopAllActions();
         this.node.runAction(cc.sequence(
             cc.moveTo(0.1, targetPos),
             cc.callFunc(()=>{
 
                 
                 this.bubble.setIndex(targetIndex);
+                Game.checkClear(this.bubble.getIndex(), this.bubble);
+
                 Game.updateCollisionIndexes();
+                
 
             }, this)
         ));
@@ -134,6 +154,11 @@ export default class BubbleMove extends cc.Component {
     reuse() {
         this.initEvent();
         this.hasCollision = false;
+        this.isDrop = false;
+        this.speed = cc.v2(0, 0);
+        this.acceleration = cc.v2(0, 0);
+        this.shooted = false;
+        this.node.group = "default";
     }
 
     unuse() {
@@ -152,6 +177,7 @@ export default class BubbleMove extends cc.Component {
         }
 
         console.log("发射！");
+        this.shooted = true;
         deltaP.normalizeSelf();
 
         this.speed.x = deltaP.x * ShootSpeed;
@@ -161,23 +187,57 @@ export default class BubbleMove extends cc.Component {
         this.acceleration.y = deltaP.y * ShootAcceleration;
     }
 
+    drop() {
+
+        console.log(' 掉落:', this.enabled, this.bubble.getIndex());
+        this.isDrop = true;
+        this.enabled = true;
+
+        this.speed.y = 800 + CMath.getRandom(0, 1000);
+        this.acceleration.y = -this.speed.y * 3.5;
+        this.speed.x = this.node.x > 0 ? -100 : 100;
+        this.speed.x *= (CMath.getRandom(0, 0.8) + 1);
+
+        this.node.group = "drop";
+    }
+
 
     update(dt: number) {
 
-        let count = 10;
-        for (let i = 0; i < count; i++) {
-            this.checkBorder();
+         
+       
 
-            this.checkCollisionBubble();
+        if (this.isShooterState || this.isDrop) {
 
-            if (!this.isShooterState) return;
+            let count = 10;
+            for (let i = 0; i < count; i++) {
 
-            this.node.x += this.speed.x * dt / count;
-            this.node.y += this.speed.y * dt / count;
+                
+                 this.checkBorder();
 
-            this.speed.x += this.acceleration.x * dt / count;
-            this.speed.y += this.acceleration.y * dt / count;
+                 this.checkCollisionBubble();
+
+            
+                 
+                 this.node.x += this.speed.x * dt / count;
+                 this.node.y += this.speed.y * dt / count;
+
+                 this.speed.x += this.acceleration.x * dt / count;
+                 this.speed.y += this.acceleration.y * dt / count;
+
+
+                 if (this.isDrop && this.node.y <= -500) {
+                     this.enabled = false;
+                     gFactory.putBubble(this.node);
+                     break;
+                 }
+
+            
+            }
+
         }
+
+        
     }
    
 }

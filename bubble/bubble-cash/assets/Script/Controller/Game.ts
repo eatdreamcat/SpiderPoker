@@ -1,6 +1,7 @@
 import { BubbleMatrix } from "../Data/BubbleMatrix";
-import { BubbleType } from "../Const";
+import { BubbleType, ClearCountLimit } from "../Const";
 import { gFactory } from "./GameFactory";
+import Bubble from "../Bubble";
 
 
 export interface Target {
@@ -31,6 +32,12 @@ class GameCtrl {
 
     /** 每一轮的消灭目标次数 */
     private targets: Target[] = [];
+
+    /** 每一次暂存需要消除的泡泡index */
+    private clearIndex: number[] = [];
+
+    /** 每一次暂存需要掉落的泡泡index */
+    private dropIndex: number[] = [];
 
     /** 获取当前这一轮的目标 */
     public getCurTarget(): Target {
@@ -102,6 +109,121 @@ class GameCtrl {
     /** 获取泡泡 */
     public getBubble(frame: cc.SpriteFrame, index: number, type: BubbleType) {
         return gFactory.getBubble(frame, index, type);
+    }
+
+    private checkRecurily(index: number, checkBubble: Bubble) {
+        if (this.clearIndex.indexOf(index) >= 0) return;
+
+        this.clearIndex.push(index);
+
+
+        let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
+        for (let otherIndex of neibers) {
+            let bubble = this.bubbleMatrix.data[otherIndex].bubble;
+            if (bubble && checkBubble.Color == bubble.Color) {
+                
+                this.checkRecurily(otherIndex, checkBubble);
+            }
+        }
+
+    }
+
+    /** 检测消除泡泡 */
+    public checkClear(index: number, checkBubble: Bubble) {
+
+
+        this.clearIndex.length = 0;
+        
+        this.checkRecurily(index, checkBubble);
+        console.log(' --------------- 检测消除 start---------------')
+        console.log(this.clearIndex);
+        console.log(' --------------- 检测消除 end---------------')
+
+        if (this.clearIndex.length < ClearCountLimit) {
+            this.clearIndex.length = 0;
+            return;
+        }
+
+        for(let i = 0; i < this.clearIndex.length; i++) {
+            let clear = this.clearIndex[i];
+            let bubble = this.bubbleMatrix.data[clear].bubble;
+            if (!bubble) continue;
+            bubble.onClear(i * 0.1);
+            this.bubbleMatrix.data[clear].bubble = null;
+            this.bubbleMatrix.data[clear].color = BubbleType.Blank;
+        }
+
+        this.clearIndex.length = 0;
+
+        this.checkBubbleDrop();
+    }
+
+
+    /** 检测一下是否有泡泡掉落 */
+    public checkBubbleDrop() {
+
+        this.updateCollisionIndexes();
+        this.dropIndex.length = 0;
+        
+
+        /** 如果边缘的泡泡连接了里面的，就不会掉落 */
+        
+        for (let index of this.collisionIndexes) {
+            let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
+            let hasConnect = false;
+            for (let nei of neibers) {
+                if (this.collisionIndexes.indexOf(nei) < 0) {
+                    hasConnect = true;
+                    break;
+                }
+            }
+            if (!hasConnect) this.dropIndex.push(index);
+        }
+
+
+        for (let i = 0; i < this.dropIndex.length; i ++) {
+            let index = this.dropIndex[i];
+            let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
+            let hasConnect = false;
+
+            for (let nei of neibers) {
+                if (this.dropIndex.indexOf(nei) < 0) {
+                    hasConnect = true;
+                    break;
+                }
+            }
+
+            if (hasConnect) {
+                this.dropIndex.splice(i, 1);
+                i--;
+                for (let nei of neibers) {
+                    let delIndex = this.dropIndex.indexOf(nei);
+                    if (delIndex >= 0) {
+                        this.dropIndex.splice(delIndex, 1);
+                        if (delIndex <= i) i--;
+                    }
+                }
+            }
+
+        }
+
+
+        console.log(' 检测掉落---------------');
+        console.log(this.dropIndex);
+
+        for (let index of this.dropIndex) {
+
+            if (!this.bubbleMatrix.data[index]) continue;
+            let bubble = this.bubbleMatrix.data[index].bubble;
+            if (bubble) {
+                bubble.move.drop();
+                this.bubbleMatrix.data[index].bubble = null;
+                this.bubbleMatrix.data[index].color = BubbleType.Blank;
+            }
+        }
+
+        this.dropIndex.length = 0;
+
     }
     
 }

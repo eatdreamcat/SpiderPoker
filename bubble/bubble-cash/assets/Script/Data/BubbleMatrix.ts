@@ -57,6 +57,10 @@ import { Game } from "../Controller/Game";
 
         let addCount = row * MatrixSize;
         for(let i = this.matrixData.length - 1; i >= addCount; i--) {
+            if (!this.matrixData[i - addCount]) {
+                this.matrixData[i - addCount] = {color: BubbleType.Blank, bubble: null}
+            }
+
             this.matrixData[i].color = this.matrixData[i - addCount].color;
             this.matrixData[i].bubble = this.matrixData[i - addCount].bubble;
             if (this.matrixData[i].bubble) {

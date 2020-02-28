@@ -3,6 +3,7 @@ import { Game } from "./Controller/Game";
 import { GlobalEvent } from "./Controller/EventName";
 import { BubbleType } from "./Const";
 import BubbleMove from "./BubbleMove";
+import { gFactory } from "./Controller/GameFactory";
 
 
 /**
@@ -36,6 +37,10 @@ export default class Bubble extends cc.Component {
         return this.node.getChildByName('Index').getComponent(cc.Label);
     }
 
+    get Color() {
+        return this.color;
+    }
+
     reuse() {
         this.node.active = false;
         this.sprite.spriteFrame = arguments[0][0];
@@ -46,6 +51,8 @@ export default class Bubble extends cc.Component {
 
     unuse() {
         gEventMgr.targetOff(this);
+        this.index = -1;
+        this.IndexLabel.string = '';
     }
 
 
@@ -68,7 +75,11 @@ export default class Bubble extends cc.Component {
         }
 
 
-        this.IndexLabel.string = index.toString();
+        //this.IndexLabel.string = index.toString();
+    }
+
+    getIndex(): number {
+        return this.index;
     }
 
     setActive(active: boolean, isAction: boolean = true) {
@@ -111,12 +122,28 @@ export default class Bubble extends cc.Component {
     }
 
     onSetParent(parent: cc.Node) {
+        if (!parent) return;
         this.move.enabled = parent.name == "Shooter";
     }
 
     /** 被泡泡碰到 */
     onCollision() {
 
+
+
+    }
+
+    /** 消除 */
+    onClear(delayTime: number) {
+        
+        this.node.runAction(cc.sequence(
+            cc.delayTime(delayTime),
+            cc.scaleTo(0.1, 1.1),
+            cc.scaleTo(0.1, 0.9),
+            cc.callFunc(()=>{
+                gFactory.putBubble(this.node);
+            }, this)
+        ));
     }
 
     update(dt: number) {

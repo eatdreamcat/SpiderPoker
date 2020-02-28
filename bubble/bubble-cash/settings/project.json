@@ -6,6 +6,11 @@
     [
       false,
       false
+    ],
+    [
+      false,
+      false,
+      false
     ]
   ],
   "design-resolution-height": 1920,
@@ -25,15 +30,15 @@
   "fit-width": true,
   "group-list": [
     "default",
-    "top"
+    "top",
+    "drop"
   ],
-  "last-module-event-record-time": 0,
+  "last-module-event-record-time": 1582882948528,
   "simulator-orientation": false,
   "simulator-resolution": {
     "height": 640,
     "width": 960
   },
   "use-customize-simulator": false,
-  "use-project-simulator-setting": false,
-  "start-scene": "current"
+  "use-project-simulator-setting": false
 }
