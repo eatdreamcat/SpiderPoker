@@ -25,8 +25,16 @@ export default class Bubble extends cc.Component {
     /** 泡泡的颜色 */
     private color: BubbleType = BubbleType.Blank;
     
+    private animationCallback = {};
+
+    private spriteFrameLight: cc.SpriteFrame = null;
+
+    get Animation() {
+        return this.getComponent(cc.Animation);
+    }
+
     get sprite() {
-        return this.getComponent(cc.Sprite);
+        return this.node.getChildByName('Bubble').getComponent(cc.Sprite);
     }
 
     get move() {
@@ -43,7 +51,10 @@ export default class Bubble extends cc.Component {
 
     reuse() {
         this.node.active = false;
+        this.node.scale = 0;
         this.sprite.spriteFrame = arguments[0][0];
+        this.spriteFrameLight = arguments[0][3];
+        this.sprite.node.opacity = 255;
         this.setIndex(arguments[0][1]);
         this.color = arguments[0][2];
         this.initEvent();
@@ -82,13 +93,14 @@ export default class Bubble extends cc.Component {
         return this.index;
     }
 
-    setActive(active: boolean, isAction: boolean = true) {
+    setActive(active: boolean, isAction: boolean, delayTime: number) {
       
         if (this.node.active == active) return;
         this.node.active = active;
+        if (!this.node.active) this.node.scale = 0;
         if (this.node.active && isAction) {
             
-            this.bubbleScale();
+            this.bubbleScale(delayTime);
         }
     }
 
@@ -101,12 +113,14 @@ export default class Bubble extends cc.Component {
         // }, this);
 
         gEventMgr.on(GlobalEvent.BUBBLE_SCALE_TEST, this.scaleTest, this);
+        this.Animation.on(cc.Animation.EventType.FINISHED, this.onAnimationComplete, this);
+
 
         this.node["_onSetParent"] = this.onSetParent.bind(this);
     }
 
-    updateActive() {
-        this.setActive(this.node.y < this.node.parent.height);
+    updateActive(delay: number = 0) {
+        this.setActive(this.node.y < this.node.parent.height, true, delay);
     }
 
     scaleTest(indexs: number[]) {
@@ -114,8 +128,8 @@ export default class Bubble extends cc.Component {
         this.bubbleScale();
     }
 
-    bubbleScale() {
-        let action = cc.sequence(cc.scaleTo(0.1, 0.9), cc.scaleTo(0.1, 1.1), cc.scaleTo(0.1, 1));
+    bubbleScale(delayTime: number = 0) {
+        let action = cc.sequence(cc.scaleTo(0, 0), cc.delayTime(delayTime), cc.scaleTo(0.2, 0.9), cc.scaleTo(0.1, 1.1), cc.scaleTo(0.1, 1));
         action.setTag(BubbleAction.Bubble);
         this.node.stopActionByTag(BubbleAction.Bubble);
         this.node.runAction(action);
@@ -136,15 +150,33 @@ export default class Bubble extends cc.Component {
     /** 消除 */
     onClear(delayTime: number) {
         
+       
         this.node.runAction(cc.sequence(
-            cc.delayTime(delayTime),
-            cc.scaleTo(0.1, 1.1),
-            cc.scaleTo(0.1, 0.9),
+            cc.delayTime(delayTime * 0.7),
+          
             cc.callFunc(()=>{
-                gFactory.putBubble(this.node);
+                this.sprite.spriteFrame = this.spriteFrameLight;
+                this.playAnimation("bubble_disappear", ()=>{
+                     gFactory.putBubble(this.node);
+                 });
             }, this)
         ));
+        
     }
+
+    playAnimation(name: string, complete?: Function) {
+        this.animationCallback[name] = complete;
+        this.Animation.playAdditive(name);
+    }
+
+    onAnimationComplete(event?: string, aniState?: cc.AnimationState) {
+        if (!aniState) return;
+        if (this.animationCallback[aniState.name]) {
+            this.animationCallback[aniState.name]();
+            this.animationCallback[aniState.name] = null;
+        }
+    }
+
 
     update(dt: number) {
 
@@ -152,6 +184,9 @@ export default class Bubble extends cc.Component {
         
         if (collision.indexOf(this.index) >= 0) {
             this.IndexLabel.node.color = cc.Color.BLACK;
+            // if (Math.abs(this.node.scaleX - 1) > 0.05 || Math.abs(this.node.scaleY - 1) > 0.05) {
+            //     console.error(this.index, this.node.scaleX, this.node.scaleY);
+            // } 
         } else {
             this.IndexLabel.node.color = cc.Color.WHITE;
         }

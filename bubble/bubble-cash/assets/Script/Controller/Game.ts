@@ -107,8 +107,8 @@ class GameCtrl {
     }
 
     /** 获取泡泡 */
-    public getBubble(frame: cc.SpriteFrame, index: number, type: BubbleType) {
-        return gFactory.getBubble(frame, index, type);
+    public getBubble(frame: cc.SpriteFrame, index: number, type: BubbleType, light: cc.SpriteFrame) {
+        return gFactory.getBubble(frame, index, type, light);
     }
 
     private checkRecurily(index: number, checkBubble: Bubble) {
@@ -120,7 +120,7 @@ class GameCtrl {
         let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
         for (let otherIndex of neibers) {
             let bubble = this.bubbleMatrix.data[otherIndex].bubble;
-            if (bubble && checkBubble.Color == bubble.Color) {
+            if (bubble && bubble.node.active && checkBubble.Color == bubble.Color) {
                 
                 this.checkRecurily(otherIndex, checkBubble);
             }

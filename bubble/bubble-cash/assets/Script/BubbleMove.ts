@@ -8,10 +8,11 @@ import { gFactory } from "./Controller/GameFactory";
 
 const {ccclass, property} = cc._decorator;
 
-const BorderX = 455;
+export const BorderX = 455;
 
 const ShootSpeed = 4800;
 const ShootAcceleration = 800;
+const DropBorder = 98;
 @ccclass
 export default class BubbleMove extends cc.Component {
 
@@ -23,13 +24,19 @@ export default class BubbleMove extends cc.Component {
     private shooted: boolean = false;
     private isDrop: boolean = false;
 
+    private animationCallback = {};
+
+    get Animation() {
+        return this.getComponent(cc.Animation);
+    }
+
     get bubble() {
         return this.getComponent(Bubble)
     }
 
 
     get radis() {
-        return this.node.width / 2;
+        return BubbleSize.width / 2;
     }
 
     /** 是否是在飞行状态 */
@@ -97,7 +104,7 @@ export default class BubbleMove extends cc.Component {
                 bubble.onCollision();
 
                 // 碰撞
-                this.onCollision(targetIndex);
+                this.onCollision(targetIndex, index);
             
                 
 
@@ -109,7 +116,12 @@ export default class BubbleMove extends cc.Component {
 
 
     /** 飞行碰到泡泡 */
-    onCollision(targetIndex: number) {
+    onCollision(targetIndex: number, collsion: number) {
+
+        let factor = Math.abs(this.speed.x / this.speed.y);
+        
+        let scaleX = factor == 0 || isNaN(factor) ? 1.2 : 1 / factor;
+        let scaleY = 1 / scaleX;
 
         this.speed.x = 0;
         this.speed.y = 0;
@@ -130,6 +142,9 @@ export default class BubbleMove extends cc.Component {
 
 
         this.node.stopAllActions();
+
+        this.scaleBubble(scaleX, scaleY);
+
         this.node.runAction(cc.sequence(
             cc.moveTo(0.1, targetPos),
             cc.callFunc(()=>{
@@ -146,9 +161,20 @@ export default class BubbleMove extends cc.Component {
 
     }
 
+    scaleBubble(x: number, y: number) {
+        x = CMath.Clamp(x, 1.3, 0.7);
+        y = CMath.Clamp(y, 1.3, 0.7);
+       
+        this.node.runAction(cc.sequence(
+            cc.scaleTo(0.1, x, y),
+            cc.scaleTo(0.1, 1, 1)
+        ));
+    }
+
     initEvent() {
         gEventMgr.targetOff(this);
         gEventMgr.on(GlobalEvent.SHOOT, this.shoot, this);
+        this.Animation.on(cc.Animation.EventType.FINISHED, this.onAnimationComplete, this);
     }
 
     reuse() {
@@ -194,9 +220,9 @@ export default class BubbleMove extends cc.Component {
         this.enabled = true;
 
         this.speed.y = 800 + CMath.getRandom(0, 1000);
-        this.acceleration.y = -this.speed.y * 3.5;
-        this.speed.x = this.node.x > 0 ? -100 : 100;
-        this.speed.x *= (CMath.getRandom(0, 0.8) + 1);
+        this.acceleration.y = -this.speed.y * 4.0;
+        this.speed.x = this.node.x > 0 ? -200 : 200;
+        this.speed.x *= (CMath.getRandom(0, 1.5) + 1);
 
         this.node.group = "drop";
     }
@@ -226,9 +252,12 @@ export default class BubbleMove extends cc.Component {
                  this.speed.y += this.acceleration.y * dt / count;
 
 
-                 if (this.isDrop && this.node.y <= -500) {
+                 if (this.isDrop && this.node.y <= DropBorder) {
                      this.enabled = false;
-                     gFactory.putBubble(this.node);
+                     this.scaleBubble(1.2, 0.8);
+                     this.playAnimation('bubble_drop', ()=>{
+                        gFactory.putBubble(this.node);
+                     });
                      break;
                  }
 
@@ -239,5 +268,17 @@ export default class BubbleMove extends cc.Component {
 
         
     }
+
+    playAnimation(name: string, complete?: Function) {
+        this.animationCallback[name] = complete;
+        this.Animation.playAdditive(name);
+    }
    
+    onAnimationComplete(event?: string, aniState?: cc.AnimationState) {
+        if (!aniState) return;
+        if (this.animationCallback[aniState.name]) {
+            this.animationCallback[aniState.name]();
+            this.animationCallback[aniState.name] = null;
+        }
+    }
 }

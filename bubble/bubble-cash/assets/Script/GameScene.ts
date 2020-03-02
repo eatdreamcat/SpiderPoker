@@ -1,6 +1,6 @@
 import { gFactory } from "./Controller/GameFactory";
 import { Game } from "./Controller/Game";
-import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors } from "./Const";
+import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor } from "./Const";
 import { MatrixSize, UseSize } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
@@ -24,6 +24,9 @@ export default class GameScene extends cc.Component {
     /** 泡泡 */
     @property(cc.Prefab)
     BubblePrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    PointPrefabe: cc.Prefab = null;
 
     @property(cc.SpriteAtlas)
     BubbleAtlas: cc.SpriteAtlas = null;
@@ -62,7 +65,7 @@ export default class GameScene extends cc.Component {
 
         gFactory.init(()=>{
             gStep.nextStep(Step.Prefab);
-        }, this.BubblePrefab);
+        }, this.BubblePrefab, this.PointPrefabe);
         
         gAudio.init(()=>{
             gStep.nextStep(Step.Audio);
@@ -125,7 +128,7 @@ export default class GameScene extends cc.Component {
         let startIndex = (MatrixSize - UseSize) * MatrixSize + 1;
         for (let i = startIndex; i <= startIndex + UseSize; i++) {
             if (bubbleMatrix.data[i].bubble) {
-                bubbleMatrix.data[i].bubble.updateActive();
+                bubbleMatrix.data[i].bubble.updateActive(i / 400);
             }
         }
     }
@@ -142,7 +145,8 @@ export default class GameScene extends cc.Component {
                 let index = bubbleMatrix.ij2index(i, j);
 
                 let frame = this.BubbleAtlas.getSpriteFrame(BubbleColor[bubbleMatrix.data[index].color]);
-                let bubble = Game.getBubble(frame, index, bubbleMatrix.data[index].color);
+                let lightFrame = this.BubbleAtlas.getSpriteFrame(BubbleLightColor[bubbleMatrix.data[index].color]);
+                let bubble = Game.getBubble(frame, index, bubbleMatrix.data[index].color, lightFrame);
 
                 let pos = bubbleMatrix.getPosOfij(i, j);
                 bubble.x = pos.x;
@@ -150,7 +154,7 @@ export default class GameScene extends cc.Component {
 
                 this.BubbleLayer.addChild(bubble);
                 bubbleMatrix.data[index].bubble = bubble.getComponent(Bubble);
-                bubble.getComponent(Bubble).updateActive();
+                bubble.getComponent(Bubble).updateActive(index / 200);
             }
         }
 
@@ -206,8 +210,9 @@ export default class GameScene extends cc.Component {
 
         for (let i = 0; i < bubbleArray.length; i++) {
             let frame = this.BubbleAtlas.getSpriteFrame(BubbleColor[bubbleArray[i]]);
-            let bubble = Game.getBubble(frame, -1, bubbleArray[i]);
-            bubble.getComponent(Bubble).setActive(true);
+            let frameLight = this.BubbleAtlas.getSpriteFrame(BubbleLightColor[bubbleArray[i]]);
+            let bubble = Game.getBubble(frame, -1, bubbleArray[i], frameLight);
+            bubble.getComponent(Bubble).setActive(true, true, i / 50);
             bubble.scale = 0;
             bubble.opacity = 0;
             bubble.y = 0;

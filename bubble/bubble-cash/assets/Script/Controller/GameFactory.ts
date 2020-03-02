@@ -91,8 +91,8 @@ class ObjPool {
 enum Step {
   INIT = 0,
   Bubble = 1 << 2,
-  
-  DONE = Bubble 
+  Point = 1 << 3,
+  DONE = Bubble | Point
 }
 
 class GameFactory {
@@ -107,10 +107,11 @@ class GameFactory {
   init(
     callback: Function,
     bubble?: cc.Prefab,
-    
+    point?: cc.Prefab
   ) {
     this.doneCallback = callback;
     this.initBubble(200, bubble);
+    this.initPoint(20, point)
    
   }
 
@@ -149,6 +150,31 @@ class GameFactory {
     this.BubblePool.get("Bubble").put(bubble);
   }
 
+  private PointPool: HashMap<string, ObjPool> = new HashMap();
+  initPoint(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.PointPool.add("Point", new ObjPool(prefab, initCount));
+      self.nextStep(Step.Point);
+    } else {
+      cc.loader.loadRes("prefabs/Point", cc.Prefab, (err, prefabRes) => {
+        if (err) {
+          console.error(err);
+        } else {
+          self.PointPool.add("Point", new ObjPool(prefabRes, initCount));
+          self.nextStep(Step.Point);
+        }
+      });
+    }
+  }
+
+  getPoint(...args): cc.Node {
+    return this.PointPool.get("Point").get(args);
+  }
+
+  putPoint(Point: cc.Node) {
+    this.PointPool.get("Point").put(Point);
+  }
   
 }
 

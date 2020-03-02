@@ -133,12 +133,16 @@ import { Game } from "../Controller/Game";
                 if(index!= neiberIndex1 && neibers.indexOf(neiberIndex1) < 0 && neiberIndex1 >= 0 && (neiberIndex1 < this.matrixData.length || isBlank) 
                 ) {
                     if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
-
-                        if (this.data[neiberIndex1] && this.data[neiberIndex1].bubble && !isBlank) {
-                            neibers.push(neiberIndex1);
-                        } else if (isBlank && (!this.data[neiberIndex1] || !this.data[neiberIndex1].bubble)) {
-                            neibers.push(neiberIndex1);
+ 
+                        let indexJ = this.index2j(neiberIndex1);
+                        if (indexJ >= 2 && indexJ <= 11) {
+                            if (this.data[neiberIndex1] && this.data[neiberIndex1].bubble && !isBlank) {
+                                neibers.push(neiberIndex1);
+                            } else if (isBlank && (!this.data[neiberIndex1] || !this.data[neiberIndex1].bubble)) {
+                                neibers.push(neiberIndex1);
+                            }
                         }
+                        
                         
                     } 
                     
@@ -146,37 +150,51 @@ import { Game } from "../Controller/Game";
 
                 if(index!= neiberIndex2 && neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && (neiberIndex2 < this.matrixData.length || isBlank)
                 ) {
-                    if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
-                        if (this.data[neiberIndex2] && this.data[neiberIndex2].bubble && !isBlank) {
-                            neibers.push(neiberIndex2);
-                        } else if (isBlank && (!this.data[neiberIndex2] || !this.data[neiberIndex2].bubble)) {
-                            neibers.push(neiberIndex2);
-                        }
-                    } 
+                    let indexJ = this.index2j(neiberIndex2);
+                    if (indexJ >= 2 && indexJ <= 11) {
+                        if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
+                            if (this.data[neiberIndex2] && this.data[neiberIndex2].bubble && !isBlank) {
+                                neibers.push(neiberIndex2);
+                            } else if (isBlank && (!this.data[neiberIndex2] || !this.data[neiberIndex2].bubble)) {
+                                neibers.push(neiberIndex2);
+                            }
+                        } 
+                    }
+                    
                     
                 }
 
                 if(index!= neiberIndex3 && neibers.indexOf(neiberIndex3) < 0 && neiberIndex3 >= 0 && (neiberIndex3 < this.matrixData.length || isBlank)
                 ) {
-                    if (isSame || (newi + moveTimes) % 2 || j < rangej) {
-                        if (this.data[neiberIndex3] && this.data[neiberIndex3].bubble && !isBlank) {
-                            neibers.push(neiberIndex3);
-                        } else if (isBlank && (!this.data[neiberIndex3] || !this.data[neiberIndex3].bubble)) {
-                            neibers.push(neiberIndex3);
-                        }
-                    } 
+
+                    let indexJ = this.index2j(neiberIndex3);
+                    if (indexJ >= 2 && indexJ <= 11) {
+                        if (isSame || (newi + moveTimes) % 2 || j < rangej) {
+                            if (this.data[neiberIndex3] && this.data[neiberIndex3].bubble && !isBlank) {
+                                neibers.push(neiberIndex3);
+                            } else if (isBlank && (!this.data[neiberIndex3] || !this.data[neiberIndex3].bubble)) {
+                                neibers.push(neiberIndex3);
+                            }
+                        } 
+                    }
+                    
                     
                 }
 
                 if(index!= neiberIndex4 && neibers.indexOf(neiberIndex4) < 0 && neiberIndex4 >= 0 && (neiberIndex4 < this.matrixData.length || isBlank)
                 ) {
-                    if (isSame || (newi + moveTimes) % 2 || j < rangej) {
-                        if (this.data[neiberIndex4] && this.data[neiberIndex4].bubble && !isBlank) {
-                            neibers.push(neiberIndex4);
-                        } else if (isBlank && (!this.data[neiberIndex4] || !this.data[neiberIndex4].bubble)) {
-                            neibers.push(neiberIndex4);
-                        }
-                    } 
+
+                    let indexJ = this.index2j(neiberIndex4);
+                    if (indexJ >= 2 && indexJ <= 11) {
+                        if (isSame || (newi + moveTimes) % 2 || j < rangej) {
+                            if (this.data[neiberIndex4] && this.data[neiberIndex4].bubble && !isBlank) {
+                                neibers.push(neiberIndex4);
+                            } else if (isBlank && (!this.data[neiberIndex4] || !this.data[neiberIndex4].bubble)) {
+                                neibers.push(neiberIndex4);
+                            }
+                        } 
+                    }
+                    
                 }
             }
         }
