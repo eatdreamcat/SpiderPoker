@@ -9,9 +9,10 @@ import { gFactory } from "./Controller/GameFactory";
 /**
  * 泡泡action标签
  */
-enum BubbleAction {
+export const enum BubbleAction {
     /** Q弹 */
     Bubble,
+    Collision
 }
 
 const {ccclass, property} = cc._decorator;

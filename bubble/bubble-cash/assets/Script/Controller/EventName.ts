@@ -9,4 +9,6 @@ export enum GlobalEvent {
   
   /** 发射 */
   SHOOT,
+  /** 碰撞力的效果 */
+  BUBBLE_FORCE
 }

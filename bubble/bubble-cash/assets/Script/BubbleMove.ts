@@ -1,4 +1,4 @@
-import Bubble from "./Bubble";
+import Bubble, { BubbleAction } from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
 import { GlobalEvent } from "./Controller/EventName";
 import { Game } from "./Controller/Game";
@@ -8,11 +8,27 @@ import { gFactory } from "./Controller/GameFactory";
 
 const {ccclass, property} = cc._decorator;
 
+/** 左右的边界 */
 export const BorderX = 455;
 
+/** 发射的速度 */
 const ShootSpeed = 4800;
+
+/** 发射的加速度 */
 const ShootAcceleration = 800;
+
+/** 掉落的地板 */
 const DropBorder = 98;
+
+/** 碰撞衰减系数 */
+export const CollsionFactor = 0.6;
+
+/** 初始位移距离 */
+export const CollsionOffset = 20;
+
+/** 力的最小比例 */
+export const CollsionMinFactor = 0.01;
+
 @ccclass
 export default class BubbleMove extends cc.Component {
 
@@ -64,6 +80,19 @@ export default class BubbleMove extends cc.Component {
 
     }
 
+    /** 受力位移 */
+    forceMove(offset: cc.Vec2) {
+        let action = this.node.getActionByTag(BubbleAction.Collision);
+        if (action && !action.isDone()) return;
+
+        let actionMove = cc.sequence(
+            cc.moveBy(0.1, offset).easing(cc.easeQuadraticActionIn()), 
+            cc.moveBy(0.1, offset.mul(-1)).easing(cc.easeQuadraticActionOut())
+        );
+        actionMove.setTag(BubbleAction.Collision);
+        this.node.runAction(actionMove);
+    }
+
     /** 检测飞行时是否碰到泡泡 */
     checkCollisionBubble() {
 
@@ -103,17 +132,20 @@ export default class BubbleMove extends cc.Component {
 
                 bubble.onCollision();
 
+
+                // 碰撞的Q弹
+                gEventMgr.emit(GlobalEvent.BUBBLE_FORCE, targetIndex);
+
+
                 // 碰撞
                 this.onCollision(targetIndex, index);
             
                 
-
+                break;
                 
             }
         }
     }
-
-
 
     /** 飞行碰到泡泡 */
     onCollision(targetIndex: number, collsion: number) {
@@ -174,7 +206,24 @@ export default class BubbleMove extends cc.Component {
     initEvent() {
         gEventMgr.targetOff(this);
         gEventMgr.on(GlobalEvent.SHOOT, this.shoot, this);
+        gEventMgr.on(GlobalEvent.BUBBLE_FORCE, this.force, this);
         this.Animation.on(cc.Animation.EventType.FINISHED, this.onAnimationComplete, this);
+    }
+
+    force(fromeIndex: number) {
+        let index = this.bubble.getIndex();
+        if (index == fromeIndex) return;
+
+        let matrix = Game.getMatrix();
+        let fromPos = matrix.getPosOfIndex(fromeIndex);
+        let selfPos = matrix.getPosOfIndex(index);
+        let Distance = CMath.Distance(fromPos, selfPos);
+       
+        let count = Math.ceil(Distance / (this.radis * 2));
+        let force = Math.pow(CollsionFactor, Math.max(0, count - 1));
+       
+        
+        this.forceMove(selfPos.sub(fromPos).normalize().mul(force * CollsionOffset));
     }
 
     reuse() {

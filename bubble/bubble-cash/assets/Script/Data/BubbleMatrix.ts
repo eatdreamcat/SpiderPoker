@@ -96,6 +96,12 @@ import { Game } from "../Controller/Game";
         return  MatrixSize * MatrixSize - this.getUseIndexStart() - 1;
     }
 
+    getPosOfIndex(index: number): cc.Vec2 {
+        let i = this.index2i(index);
+        let j = this.index2j(index);
+        return this.getPosOfij(i, j);
+    }
+
     /** 获取ij对应的坐标 */
     getPosOfij(i: number, j: number): cc.Vec2 {
         

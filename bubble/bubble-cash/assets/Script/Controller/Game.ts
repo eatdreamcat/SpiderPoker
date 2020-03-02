@@ -2,6 +2,7 @@ import { BubbleMatrix } from "../Data/BubbleMatrix";
 import { BubbleType, ClearCountLimit } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
+import { CollsionOffset, CollsionFactor, CollsionMinFactor } from "../BubbleMove";
 
 
 export interface Target {
@@ -38,6 +39,9 @@ class GameCtrl {
 
     /** 每一次暂存需要掉落的泡泡index */
     private dropIndex: number[] = [];
+
+    /** 每一次受力暂存的index */
+    private forceIndex: number[] = [];
 
     /** 获取当前这一轮的目标 */
     public getCurTarget(): Target {
@@ -225,6 +229,8 @@ class GameCtrl {
         this.dropIndex.length = 0;
 
     }
+
+    
     
 }
 
