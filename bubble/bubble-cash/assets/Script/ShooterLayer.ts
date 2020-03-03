@@ -3,6 +3,7 @@ import { GlobalEvent } from "./Controller/EventName";
 import Bubble from "./Bubble";
 import { BorderX } from "./BubbleMove";
 import { gFactory } from "./Controller/GameFactory";
+import { Game } from "./Controller/Game";
 
 const {ccclass, property} = cc._decorator;
 
@@ -57,6 +58,9 @@ export default class ShooterLayer extends cc.Component {
     Point: cc.Node = null;
 
     private pointCount: number = POINT_COUNT;
+
+    private isStart: boolean = false;
+    
     onLoad () {
         this.ShooterStar.active = false;
         this.Point.active = false;
@@ -143,6 +147,14 @@ export default class ShooterLayer extends cc.Component {
     onTouchStart(e: cc.Event.EventTouch) {
         
         if (this.Shooter.childrenCount <= 0) return;
+
+        if (!Game.isStart && !this.isStart) {
+            Game.isStart = true;
+            this.isStart = true;
+        }
+
+        if (!Game.isStart) return;
+
         this.updateStarPosition(e.getLocation());
         this.ShooterStar.active = true;
         this.Point.active = true;
@@ -154,12 +166,18 @@ export default class ShooterLayer extends cc.Component {
     onTouchMove(e: cc.Event.EventTouch) {
 
         if (this.Shooter.childrenCount <= 0) return;
+
+        if (!Game.isStart) return;
+
+
         this.updateStarPosition(e.getLocation());
     }
 
     onTouchEnd(e: cc.Event.EventTouch) {
 
         if (this.Shooter.childrenCount <= 0) return;
+
+        if (!Game.isStart) return;
 
         let dP = this.updateStarPosition(e.getLocation());
         this.ShooterStar.active = false;

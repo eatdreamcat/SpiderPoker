@@ -1,6 +1,6 @@
 import { gFactory } from "./Controller/GameFactory";
 import { Game } from "./Controller/Game";
-import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor } from "./Const";
+import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange } from "./Const";
 import { MatrixSize, UseSize } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
@@ -26,10 +26,15 @@ export default class GameScene extends cc.Component {
     BubblePrefab: cc.Prefab = null;
 
     @property(cc.Prefab)
-    PointPrefabe: cc.Prefab = null;
+    PointPrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    TaskPrefab: cc.Prefab = null;
 
     @property(cc.SpriteAtlas)
     BubbleAtlas: cc.SpriteAtlas = null;
+
+   
 
     /** 节点 */
     @property(cc.Node)
@@ -39,14 +44,35 @@ export default class GameScene extends cc.Component {
     Shooter: cc.Node = null;
 
     @property(cc.Node)
+    TopNode: cc.Node = null;
+
+    @property(cc.Node)
     BulletArray: cc.Node = null;
+
+    @property(cc.Node)
+    TaskArray: cc.Node = null;
 
     @property(cc.Node)
     ShooterLayer: cc.Node = null;
 
+    @property(cc.Label)
+    TimeLabel: cc.Label = null;
+
+    @property(cc.Label)
+    ScoreLabel: cc.Label = null;
+
+
+    /** 显示的分数 */
+    private showScore: number = 0;
+    /** 真实的分数 */
+    private score: number = 0;
+    /** 同步分数的步长 */
+    private addScoreStep: number = 0;
+
     onLoad () {
         
         Game.BubbleLayer = this.BubbleLayer;
+        Game.TopNode = this.TopNode;
 
         let self = this;
         celerx.onStart(
@@ -65,7 +91,7 @@ export default class GameScene extends cc.Component {
 
         gFactory.init(()=>{
             gStep.nextStep(Step.Prefab);
-        }, this.BubblePrefab, this.PointPrefabe);
+        }, this.BubblePrefab, this.PointPrefab, this.TaskPrefab);
         
         gAudio.init(()=>{
             gStep.nextStep(Step.Audio);
@@ -82,11 +108,14 @@ export default class GameScene extends cc.Component {
         }
     }
 
-
+    
+   
     /**
      * 正式进入游戏
      */
     celerOnStart() {
+
+        Game.start();
         this.show();
     }
 
@@ -98,14 +127,39 @@ export default class GameScene extends cc.Component {
         /*** 泡泡发射完毕 */
         this.Shooter.on(cc.Node.EventType.CHILD_REMOVED, this.onShooterRemoveChild, this);
 
+
+        gEventMgr.on(GlobalEvent.ADD_BUBBLE, this.addNextBubble, this);
+        gEventMgr.on(GlobalEvent.UPDATE_TASK, this.updateTask, this);
+        gEventMgr.on(GlobalEvent.NEXT_BUBBLE, this.getShooterBubble, this);
+
         if (CC_DEBUG) {
-            cc.director.on("space-press", this.nextBubble, this);
+            cc.director.on("space-press", ()=>{
+                this.addNextBubble(3);
+            }, this);
+        }
+    }
+
+
+    updateTask() {
+        let task = Game.getCurTarget();
+        for( let i = 0; i < task.now; i ++) {
+            let taskNode = this.TaskArray.children[i];
+            let complete = taskNode.getChildByName('Complete');
+            if (taskNode.scale == 0 || complete.scale == 1) continue;
+            complete.runAction(cc.sequence(cc.scaleTo(0.1, 1.2), cc.scaleTo(0.1, 1)));
+        }
+    }
+
+    /** 增加count行泡泡 */
+    addNextBubble(count: number = 1) {
+        while(count--) {
+            this.nextBubble();
         }
     }
     
     show() {
         
-        let iStart = 0, iEnd = 13;
+        let iStart = 0, iEnd = 12;
         let jStart = 2, jEnd = 11;
 
         this.addBubble(iStart, iEnd, jStart, jEnd);
@@ -165,7 +219,7 @@ export default class GameScene extends cc.Component {
 
 
     onShooterRemoveChild() {
-        this.getShooterBubble();
+        //this.getShooterBubble();
     }
 
     /** 生成待发射的泡泡 */
@@ -173,6 +227,12 @@ export default class GameScene extends cc.Component {
 
 
         if (this.BulletArray.childrenCount <= 0) {
+           
+            let curTask = Game.getCurTarget();
+            if (curTask.now < curTask.target) {
+                this.addNextBubble(1);
+            }
+
             this.getNewTask(count);
             return;
         }
@@ -236,6 +296,119 @@ export default class GameScene extends cc.Component {
                 
             }
         }
+        
+        
+        let random  = CMath.getRandom();
+        let targetCount = 0;
+        /** 生成任务要求 */
+        if (Game.getGameTime() >= 120) {
+            if (random <= 0.6) {
+                targetCount = CMath.Clamp(count - Math.ceil(CMath.getRandom(2, 10)), ClearTargetRange.Max, ClearTargetRange.Min);
+            } else if (random <= 0.3) {
+                targetCount = CMath.Clamp(count - Math.ceil(CMath.getRandom(1, 2)), ClearTargetRange.Max, ClearTargetRange.Min);
+            } else {
+                targetCount = CMath.Clamp(count, ClearTargetRange.Max, ClearTargetRange.Min);
+            }
+        } else {
+            if (random <= 0.6) {
+                targetCount = CMath.Clamp(count - Math.ceil(CMath.getRandom(1, 2)), ClearTargetRange.Max, ClearTargetRange.Min);
+            } else if (random <= 0.2) {
+                targetCount = CMath.Clamp(count - Math.ceil(CMath.getRandom(2, 10)), ClearTargetRange.Max, ClearTargetRange.Min);
+            } else {
+                targetCount = CMath.Clamp(count, ClearTargetRange.Max, ClearTargetRange.Min);
+            }
+        }
+
+        targetCount = Math.min(count, targetCount);
+
+        let lastTask = Game.getCurTarget();
+
+        if (this.TaskArray.childrenCount > 0) {
+            
+            for (let i = 0; i < this.TaskArray.childrenCount; i ++) {
+
+                let taskNode = this.TaskArray.children[i];
+                let complete = taskNode.getChildByName('Complete');
+                let fail = taskNode.getChildByName('Fail');
+            
+                if (lastTask.now >= lastTask.target) {
+                    // 完成目标
+                    taskNode.runAction(cc.sequence(
+                        cc.delayTime(i / 10),
+                        cc.scaleTo(0.1, 0),
+                        cc.callFunc(()=>{
+                            complete.scale = 0;
+                            fail.scale = 0;
+                            if (i <= targetCount) {
+                                taskNode.runAction(cc.sequence(
+                                    cc.delayTime(0),
+                                    cc.scaleTo(0.1, 1.2),
+                                    cc.delayTime(0.05),
+                                    cc.scaleTo(0.1, 1)
+                                ));
+                            }
+                        })
+                    ));
+                } else {
+                    // 未完成目标
+                    complete.stopAllActions();
+                    complete.scale = 0;
+                    fail.runAction(cc.sequence(
+                        cc.delayTime(i / 10),
+                        cc.scaleTo(0.1, 1),
+                        cc.delayTime(0.2),
+                        cc.callFunc(()=>{
+                            taskNode.runAction(cc.sequence(
+                                cc.delayTime(i / 10),
+                                cc.scaleTo(0.1, 0),
+                                cc.callFunc(()=>{
+                                    fail.scale = 0;
+                                    if (i <= targetCount) {
+                                        taskNode.runAction(cc.sequence(
+                                            cc.delayTime(0),
+                                            cc.scaleTo(0.1, 1.2),
+                                            cc.delayTime(0.05),
+                                            cc.scaleTo(0.1, 1)
+                                        ));
+                                    }
+                                })
+                            ));
+                        })
+                    ));
+                    
+                }
+            }
+
+        } else {
+
+            while(this.TaskArray.childrenCount < 6) {
+                let taskNode = gFactory.getTask();
+                taskNode.y = 0;
+                taskNode.x = this.TaskArray.childrenCount * taskNode.width * 1.6 + 30;
+                taskNode.scale = 0;
+                if (this.TaskArray.childrenCount < targetCount) {
+                    taskNode.runAction(cc.sequence(
+                        cc.delayTime(this.TaskArray.childrenCount / 10), 
+                        cc.scaleTo(0.1, 1.2),
+                        cc.delayTime(0.05),
+                        cc.scaleTo(0.1, 1)
+                    ));
+                } 
+
+                this.TaskArray.addChild(taskNode);
+
+                taskNode.getChildByName('Complete').scale = 0;
+                taskNode.getChildByName('Fail').scale = 0;
+            }
+
+        }
+
+        Game.pushTarget({
+            now: 0,
+            target: targetCount
+        });
+        
+
     }
 
     onBubbleQueRemoveChild() {
@@ -244,6 +417,26 @@ export default class GameScene extends cc.Component {
         }
     }
 
+    addScore(score: number, pos: cc.Vec2 = cc.v2(0, 0)) {
+        this.score += score;
+        
+    }
 
-    update (dt: number) {}
+
+
+
+    update (dt: number) {
+
+        if (Game.isStart) {
+            Game.addGameTime(-dt);
+
+            this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+
+            if (this.showScore < this.score) {
+                this.showScore += this.addScoreStep;
+                this.showScore = Math.min(this.score, this.showScore);
+                this.ScoreLabel.string = this.showScore.toString();
+            }
+        }
+    }
 }

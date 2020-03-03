@@ -18,13 +18,13 @@ const ShootSpeed = 4800;
 const ShootAcceleration = 800;
 
 /** 掉落的地板 */
-const DropBorder = 98;
+const DropBorder = -688;
 
 /** 碰撞衰减系数 */
-export const CollsionFactor = 0.6;
+export const CollsionFactor = 0.3;
 
 /** 初始位移距离 */
-export const CollsionOffset = 20;
+export const CollsionOffset = 40;
 
 /** 力的最小比例 */
 export const CollsionMinFactor = 0.01;
@@ -62,7 +62,7 @@ export default class BubbleMove extends cc.Component {
 
     /** 是否在准备发射的状态 */
     get isReady2Shoot() {
-        return this.node.getParent().name == "Shooter" && Math.abs(this.node.x) <= 0.0001 && Math.abs(this.node.y) <= 0.0001;
+        return this.node.getParent().name == "Shooter" && Math.abs(this.node.x) <= 0.01 && Math.abs(this.node.y) <= 0.01;
     }
 
 
@@ -177,16 +177,19 @@ export default class BubbleMove extends cc.Component {
 
         this.scaleBubble(scaleX, scaleY);
 
+        this.bubble.setIndex(targetIndex);
+
         this.node.runAction(cc.sequence(
             cc.moveTo(0.1, targetPos),
             cc.callFunc(()=>{
 
                 
-                this.bubble.setIndex(targetIndex);
+                
                 Game.checkClear(this.bubble.getIndex(), this.bubble);
 
                 Game.updateCollisionIndexes();
                 
+                gEventMgr.emit(GlobalEvent.NEXT_BUBBLE);
 
             }, this)
         ));
@@ -194,8 +197,8 @@ export default class BubbleMove extends cc.Component {
     }
 
     scaleBubble(x: number, y: number) {
-        x = CMath.Clamp(x, 1.3, 0.7);
-        y = CMath.Clamp(y, 1.3, 0.7);
+        x = CMath.Clamp(x, 1.2, 0.8);
+        y = CMath.Clamp(y, 1.2, 0.8);
        
         this.node.runAction(cc.sequence(
             cc.scaleTo(0.1, x, y),
@@ -301,9 +304,10 @@ export default class BubbleMove extends cc.Component {
                  this.speed.y += this.acceleration.y * dt / count;
 
 
-                 if (this.isDrop && this.node.y <= DropBorder) {
+                 let pos = CMath.ConvertToNodeSpaceAR(this.node, this.node.getParent().getParent());
+                 if (this.isDrop && pos.y <= DropBorder) {
                      this.enabled = false;
-                     this.scaleBubble(1.2, 0.8);
+                     this.scaleBubble(1.1, 0.9);
                      this.playAnimation('bubble_drop', ()=>{
                         gFactory.putBubble(this.node);
                      });

@@ -1,8 +1,10 @@
 import { BubbleMatrix } from "../Data/BubbleMatrix";
-import { BubbleType, ClearCountLimit } from "../Const";
+import { BubbleType, ClearCountLimit, GameTime } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
 import { CollsionOffset, CollsionFactor, CollsionMinFactor } from "../BubbleMove";
+import { gEventMgr } from "./EventManager";
+import { GlobalEvent } from "./EventName";
 
 
 export interface Target {
@@ -16,6 +18,8 @@ class GameCtrl {
     }
 
     public BubbleLayer: cc.Node = null;
+
+    public TopNode: cc.Node = null;
 
     /** 下移的次数 */
     private moveTimes: number = 0;
@@ -43,6 +47,21 @@ class GameCtrl {
     /** 每一次受力暂存的index */
     private forceIndex: number[] = [];
 
+    private gameTime: number = 0;
+
+    public isStart: boolean = false;
+
+    public start() {
+        this.moveTimes = 0;
+        this.score = 0;
+        this.collisionIndexes.length = 0;
+        this.targets.length = 0;
+        this.clearIndex.length = 0;
+        this.dropIndex.length = 0;
+        this.forceIndex.length = 0;
+        this.gameTime = GameTime;
+    }
+
     /** 获取当前这一轮的目标 */
     public getCurTarget(): Target {
         return this.targets.length == 0 ? {target: 0, now: 0} : this.targets[this.targets.length - 1];
@@ -55,6 +74,7 @@ class GameCtrl {
         }
 
         this.targets[this.targets.length - 1].now += now;
+        gEventMgr.emit(GlobalEvent.UPDATE_TASK);
     }
 
     /** 刷新最新一轮的目标信息 */
@@ -81,6 +101,27 @@ class GameCtrl {
             if (neiber.length < 6) this.collisionIndexes.push(i);
         }
 
+        for (let i = 0; i < data.length; i++) {
+            if (!data[i] || !data[i].bubble) {
+                continue;
+            }
+
+            if (this.collisionIndexes.indexOf(i) >= 0) continue;
+
+            let neiber = this.bubbleMatrix.getNeiborMatrix(i, 1);
+            let isCollsionIndex = true;
+            for (let nei of neiber) {
+                if (this.collisionIndexes.indexOf(nei) < 0) {
+                    isCollsionIndex = false;
+                    break;
+                }
+            }
+
+            if (isCollsionIndex) {
+                this.collisionIndexes.push(i);
+            }
+        }
+
         console.log(this.collisionIndexes)
     }
 
@@ -97,12 +138,21 @@ class GameCtrl {
         this.bubbleMatrix.initBubbleData();
     }
 
-    public start() {
-
+    addGameTime(time: number) {
+        this.gameTime += time;
+        if (this.gameTime <= 0) {
+            this.gameTime = 0;
+            this.isStart = false;
+            gEventMgr.emit(GlobalEvent.GAME_OVER);
+        }
     }
 
-    public addMoveTimes() {
-        this.moveTimes ++;
+    getGameTime() {
+        return this.gameTime;
+    }
+
+    public addMoveTimes(count: number = 1) {
+        this.moveTimes += count;
     }
 
     /** 下移的次数 */
@@ -160,6 +210,24 @@ class GameCtrl {
         this.clearIndex.length = 0;
 
         this.checkBubbleDrop();
+
+        this.checkAddBubble();
+
+        this.addTarget(1);
+    }
+
+    /** 检测是都需要下移泡泡 */
+    private checkAddBubble() {
+        let count = 0;
+        for (let i = 58; i <= 67; i++) {
+            if (this.bubbleMatrix.data[i] && this.bubbleMatrix.data[i].bubble && this.bubbleMatrix.data[i].bubble.node.active) {
+                count ++;
+            }
+        }
+
+        if (count <= 5) {
+            gEventMgr.emit(GlobalEvent.ADD_BUBBLE, 3);
+        }
     }
 
 

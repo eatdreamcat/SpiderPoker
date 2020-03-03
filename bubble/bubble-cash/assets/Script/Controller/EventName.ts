@@ -10,5 +10,10 @@ export enum GlobalEvent {
   /** 发射 */
   SHOOT,
   /** 碰撞力的效果 */
-  BUBBLE_FORCE
+  BUBBLE_FORCE,
+  /** 增加泡泡 */
+  ADD_BUBBLE,
+  GAME_OVER,
+  UPDATE_TASK,
+  NEXT_BUBBLE
 }
