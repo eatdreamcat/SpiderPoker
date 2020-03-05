@@ -1,4 +1,4 @@
-import { BubbleType, BubbleColors, BubbleSize, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, DoubleBubbleInitRange, BoomBubbleInitRange, MagicBubbleInitRange } from "../Const";
+import { BubbleType, BubbleColors, BubbleSize, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, DoubleBubbleInitRange, BoomBubbleInitRange, MagicBubbleInitRange, DoubleBubbleRange, BoomBubbleRange, MagicBubbleRange } from "../Const";
 import Bubble from "../Bubble";
 import { Game } from "../Controller/Game";
 
@@ -124,6 +124,85 @@ import { Game } from "../Controller/Game";
 
 
             
+
+            
+
+             /** 双倍分数泡泡的个数 */
+        let doubleCount = Math.ceil(CMath.getRandom(DoubleBubbleRange.Min, DoubleBubbleRange.Max));
+        /** 炸弹泡泡的个数 */
+        let boomCount = Math.ceil(CMath.getRandom(BoomBubbleRange.Min, BoomBubbleRange.Max));
+        /** 魔法球泡的个数 */
+        let magicCount = Math.ceil(CMath.getRandom(MagicBubbleRange.Min, MagicBubbleRange.Max));
+
+        
+        console.log(' double:', doubleCount, ', boom:', boomCount, ', magic:', magicCount);
+        let allIndex = [];
+        for (let i = 0; i <= addCount - 1; i++) {
+            if (this.index2j(i) >= 2 && this.index2j(i) <= 11)
+                allIndex.push(i);
+        }
+
+
+        /** 随机双倍泡泡 */
+        let doubleColors = BubbleColors.concat();
+        let doubleData = {};
+       
+        while(doubleCount > 0 && doubleColors.length > 0 && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            let colorIndex =  Math.floor(CMath.getRandom(0, doubleColors.length));
+            let color = doubleColors[colorIndex];
+            doubleColors.splice(colorIndex, 1);
+            doubleData[Index] = color;
+            doubleCount--;
+        }
+        console.log(' ---------- 双倍球 --------------')
+        console.log(doubleData);
+
+        /** 随机炸弹泡泡 */
+        let boomColors = BubbleColors.concat();
+        let boomData = {};
+       
+        while(boomCount > 0 && boomColors.length > 0 && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            let colorIndex =  Math.floor(CMath.getRandom(0, boomColors.length));
+            let color = boomColors[colorIndex];
+            boomColors.splice(colorIndex, 1);
+            boomData[Index] = color;
+
+            boomCount--;
+        }
+        console.log(' ---------- 炸弹球 --------------')
+        console.log(boomData);
+
+        /** 随机魔法泡泡 */
+        // let magicColors = BubbleColors.concat();
+        let magicData = {};
+       
+        while(magicCount > 0 /*&& magicColors.length > 0*/ && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            // let colorIndex =  Math.floor(CMath.getRandom(0, magicColors.length));
+            // let color = magicColors[colorIndex];
+            // magicColors.splice(colorIndex, 1);
+            magicData[Index] = BubbleType.Blank;
+
+            magicCount--;
+        }
+        console.log(' ---------- 魔法球 --------------')
+        console.log(magicData);
+
+
             /** 新增数据 */
             for (let i = 0; i < addCount - 1; i ++) {
 
@@ -131,6 +210,24 @@ import { Game } from "../Controller/Game";
                 this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];
                 this.matrixData[i].bubble = null;
                 this.matrixData[i].type = SpecialType.Normal;
+
+                
+               
+
+                if (doubleData[i] != null) {
+                    this.matrixData[i].type = SpecialType.Double;
+                    this.matrixData[i].color = doubleData[i];
+                }
+
+                if (magicData[i] != null) {
+                    this.matrixData[i].type = SpecialType.Magic;
+                    this.matrixData[i].color = magicData[i];
+                }
+
+                if (boomData[i] != null) {
+                    this.matrixData[i].type = SpecialType.Boom;
+                    this.matrixData[i].color = boomData[i];
+                }
             }
 
            
@@ -304,8 +401,9 @@ import { Game } from "../Controller/Game";
         console.log('start:', startIndex, ', end:', endIndex, ', firstRow:', this.firstRow)
         console.log(' double:', doubleCount, ', boom:', boomCount, ', magic:', magicCount);
         let allIndex = [];
-        for (let i = startIndex; i <= endIndex; i++) {
-            allIndex.push(i);
+        for (let i = Game.startIndex; i <= endIndex; i++) {
+            if (this.index2j(i) >= 2 && this.index2j(i) <= 11)
+                allIndex.push(i);
         }
 
 

@@ -160,7 +160,7 @@ export default class Bubble extends cc.Component {
         }
 
         this.index = index;
-        this.IndexLabel.string = index.toString();
+        // this.IndexLabel.string = index.toString();
     }
 
     getIndex(): number {

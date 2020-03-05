@@ -196,20 +196,20 @@ export default class GameScene extends cc.Component {
         this.BubbleLayer.height += (BubbleSize.height + BubbleHeightOffset);
         this.BubbleLayer.runAction(cc.moveBy(0.2, 0, -(BubbleSize.height + BubbleHeightOffset)));
 
-        this.addBubble(bubbleMatrix.index2i(Game.startIndex), bubbleMatrix.index2i(Game.startIndex), 2, 11);
+        this.addBubble(bubbleMatrix.index2i(Game.startIndex), bubbleMatrix.index2i(Game.startIndex), 2, 11, 1);
     }
 
     /**
      * 增加泡泡
      */
-    addBubble(istart: number, iend: number, jstart: number, jend: number) {
+    addBubble(istart: number, iend: number, jstart: number, jend: number, factor: number = 0) {
 
         let bubbleMatrix = Game.getMatrix();
         for (let i = istart; i <= iend; i++) {
             for (let j = jstart; j <= jend; j++) {
 
                 let index = bubbleMatrix.ij2index(i, j);
-                console.log(' index:', index, 'color:', bubbleMatrix.data[index].color)
+                
                 let bubble = Game.getBubble(bubbleMatrix.data[index].type, index, bubbleMatrix.data[index].color, this.BubbleAtlas);
 
                 let pos = bubbleMatrix.getPosOfij(i, j);
@@ -218,7 +218,7 @@ export default class GameScene extends cc.Component {
 
                 this.BubbleLayer.addChild(bubble);
                 bubbleMatrix.data[index].bubble = bubble.getComponent(Bubble);
-                bubble.getComponent(Bubble).updateActive(index / 200);
+                bubble.getComponent(Bubble).updateActive(index / 700 + (index - Game.startIndex) / 50 * factor);
             }
         }
 

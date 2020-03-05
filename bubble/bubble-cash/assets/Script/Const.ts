@@ -110,16 +110,20 @@ export const DoubleBubbleInitRange = {
 
 /** 新生成的双倍泡泡的概率 */
 export const DoubleBubbleRange = {
-    Row: 6,
     Min: 1,
     Max: 2
 }
 
-/** 新生成的双倍泡泡的概率 */
+/** 新生成的炸弹泡泡的概率 */
 export const BoomBubbleRange = {
-    Row: 6,
     Min: 1,
     Max: 2
+}
+
+/** 新生成的炸弹泡泡的概率 */
+export const MagicBubbleRange = {
+    Min: 0,
+    Max: 1
 }
 
 /** 炸弹泡泡初始生成的个数范围 */
@@ -136,5 +140,38 @@ export const MagicBubbleInitRange = {
 
 /** 消除条件满足的最低个数 */
 export const ClearCountLimit = 3;
+
+/** 发射器随机生成魔法泡泡的轮数 */
+export const ShooterDoubleRange = {
+    Min: 6,
+    Max: 10
+}
+
+export const ShooterDoubleBubbleRange = {
+    Min: 0,
+    Max: 1
+}
+
+/** 发射器随机生成炸弹泡泡的轮数 */
+export const ShooterBoomRange = {
+    Min: 6,
+    Max: 10
+}
+
+export const ShooterBoomBubbleRange = {
+    Min: 0,
+    Max: 1
+}
+
+/** 发射器随机生成魔法泡泡的轮数 */
+export const ShooterMagicRange = {
+    Min: 4,
+    Max: 6
+}
+
+export const ShooterMagicBubbleRange = {
+    Min: 0,
+    Max: 1
+}
 
 
