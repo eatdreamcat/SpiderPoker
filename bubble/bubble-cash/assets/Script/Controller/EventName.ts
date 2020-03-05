@@ -16,5 +16,6 @@ export enum GlobalEvent {
   ADD_SCORE,
   GAME_OVER,
   UPDATE_TASK,
-  NEXT_BUBBLE
+  NEXT_BUBBLE,
+  PLAY_EFFECT
 }

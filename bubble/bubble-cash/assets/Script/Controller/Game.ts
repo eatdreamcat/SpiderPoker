@@ -258,6 +258,30 @@ class GameCtrl {
         this.bubbleClear[color] ++;
     }
 
+
+    /**
+     * 检测炸弹的消除
+     */
+    checkBoomBubble(indexs: number[]) {
+        /** 检测炸弹 */
+        for( let index of indexs) {
+            if (this.bubbleMatrix.data[index].type == SpecialType.Boom) {
+                let neibers =  this.bubbleMatrix.getNeiborMatrix(index, 1, false);
+                let nextCheck = [];
+                for (let nei of neibers) {
+                    if (this.clearIndex.indexOf(nei) < 0) {
+                        this.clearIndex.push(nei);
+                        if (this.bubbleMatrix.data[nei].type == SpecialType.Boom)
+                            nextCheck.push(nei);
+                    }
+                }
+
+                this.checkBoomBubble(nextCheck);
+            }
+        }
+    }
+
+
     /** 检测消除泡泡 */
     public checkClear(index: number, checkBubble: Bubble) {
 
@@ -274,6 +298,8 @@ class GameCtrl {
             this.streak = 0;
             return;
         }
+
+        this.checkBoomBubble(this.clearIndex);
 
         this.streak ++;
         this.maxStreak = Math.max(this.streak, this.maxStreak);

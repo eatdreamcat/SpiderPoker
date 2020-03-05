@@ -131,6 +131,9 @@ export default class BubbleMove extends cc.Component {
                 }
 
 
+                //let targetNeibers = bubbleMatrix.getNeiborMatrix(targetIndex, 1, false);
+
+
                 
 
                 bubble.onCollision();
@@ -258,6 +261,7 @@ export default class BubbleMove extends cc.Component {
         }
 
         console.log("发射！");
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "shoot")
         this.enabled = true;
         this.shooted = true;
         deltaP.normalizeSelf();
@@ -283,6 +287,8 @@ export default class BubbleMove extends cc.Component {
         this.node.group = "drop";
 
         Game.addBubbleDrop(this.bubble.Color);
+
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "drop")
     }
 
 

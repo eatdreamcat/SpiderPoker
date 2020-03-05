@@ -159,7 +159,8 @@ export default class GameScene extends cc.Component {
 
     updateTask() {
         let task = Game.getCurTarget();
-        for( let i = 0; i < task.now; i ++) {
+        console.log(task);
+        for( let i = 0; i < Math.min(task.now, this.TaskArray.childrenCount); i ++) {
             let taskNode = this.TaskArray.children[i];
             let complete = taskNode.getChildByName('Complete');
             if (taskNode.scale == 0 || complete.scale == 1) continue;

@@ -411,7 +411,7 @@ import { Game } from "../Controller/Game";
         let doubleColors = BubbleColors.concat();
         let doubleData = {};
        
-        while(doubleCount > 0 && doubleColors.length > 0 && allIndex.length >= 0) {
+        while(doubleCount > 0 && allIndex.length >= 0) {
 
             let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
             let Index = allIndex[randomI];
@@ -422,6 +422,7 @@ import { Game } from "../Controller/Game";
             doubleColors.splice(colorIndex, 1);
             doubleData[Index] = color;
             doubleCount--;
+            if (doubleColors.length <= 0) doubleColors = BubbleColors.concat();
         }
         console.log(' ---------- 双倍球 --------------')
         console.log(doubleData);
@@ -430,7 +431,7 @@ import { Game } from "../Controller/Game";
         let boomColors = BubbleColors.concat();
         let boomData = {};
        
-        while(boomCount > 0 && boomColors.length > 0 && allIndex.length >= 0) {
+        while(boomCount > 0 && allIndex.length >= 0) {
 
             let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
             let Index = allIndex[randomI];
@@ -442,6 +443,8 @@ import { Game } from "../Controller/Game";
             boomData[Index] = color;
 
             boomCount--;
+
+            if (boomColors.length <= 0) boomColors = BubbleColors.concat();
         }
         console.log(' ---------- 炸弹球 --------------')
         console.log(boomData);

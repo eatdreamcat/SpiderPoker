@@ -217,7 +217,7 @@ export default class Bubble extends cc.Component {
     /** 被泡泡碰到 */
     onCollision() {
 
-
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "colision")
 
     }
 
@@ -225,6 +225,8 @@ export default class Bubble extends cc.Component {
     onClear(delayTime: number) {
         
        Game.addBubbleClear(this.Color);
+
+       gEventMgr.emit(GlobalEvent.PLAY_EFFECT, this.type == SpecialType.Boom ? "boom" : "clear")
         this.node.runAction(cc.sequence(
             cc.delayTime(delayTime * 0.7),
           
@@ -246,7 +248,8 @@ export default class Bubble extends cc.Component {
 
 
                 this.updateSprite(true);
-                this.playAnimation("bubble_disappear", ()=>{
+                let animation = this.type == SpecialType.Boom ? "bubble_boom":"bubble_disappear"
+                this.playAnimation(animation, ()=>{
 
                      gFactory.putBubble(this.node);
 

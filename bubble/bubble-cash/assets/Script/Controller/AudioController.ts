@@ -75,6 +75,10 @@ class AudioController {
       this
     );
 
+    gEventMgr.on(GlobalEvent.PLAY_EFFECT, (name: string)=>{
+      this.audioID[name] = this.play(name);
+    },this)
+
     
   }
 
