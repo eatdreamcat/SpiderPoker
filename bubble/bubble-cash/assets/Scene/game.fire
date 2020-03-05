@@ -1628,6 +1628,9 @@
     "TaskPrefab": {
       "__uuid__": "1fd2d95b-75fd-4431-8c3f-a5969c34202d"
     },
+    "AddScorePrefab": {
+      "__uuid__": "2381d779-f6fb-4f85-851d-4461ab2b443c"
+    },
     "BubbleAtlas": {
       "__uuid__": "121e5ae2-ad2b-40fe-9033-d51911c280ff"
     },

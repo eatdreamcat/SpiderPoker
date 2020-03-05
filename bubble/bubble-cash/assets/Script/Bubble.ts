@@ -1,10 +1,16 @@
 import { gEventMgr } from "./Controller/EventManager";
 import { Game } from "./Controller/Game";
 import { GlobalEvent } from "./Controller/EventName";
-import { BubbleType } from "./Const";
+import { BubbleType, BubbleLightColor, BubbleSize, BubbleColor, BoomBubbleColor, HorseBubble, MagicBubble, BoomBubbleLightColor, HorseBubbleLight, MagicBubbleLight } from "./Const";
 import BubbleMove from "./BubbleMove";
 import { gFactory } from "./Controller/GameFactory";
+import { SpecialType } from "./Data/BubbleMatrix";
 
+/** 泡泡掉落的分数 */
+export const BubbleDropScore = 10;
+
+/** 每行加分的步长 */
+export const BubbleScoreStep = 10;
 
 /**
  * 泡泡action标签
@@ -25,10 +31,12 @@ export default class Bubble extends cc.Component {
 
     /** 泡泡的颜色 */
     private color: BubbleType = BubbleType.Blank;
+
+    private type: SpecialType = SpecialType.Normal;
     
     private animationCallback = {};
 
-    private spriteFrameLight: cc.SpriteFrame = null;
+    private spriteAtlas: cc.SpriteAtlas = null;
 
     get Animation() {
         return this.getComponent(cc.Animation);
@@ -50,14 +58,35 @@ export default class Bubble extends cc.Component {
         return this.color;
     }
 
+    get Type() {
+        return this.type;
+    }
+
+    get Double() {
+        return this.node.getChildByName('Bubble').getChildByName('Double');
+    }
+
+    get isDouble() {
+        return this.type == SpecialType.Double;
+    }
+
+   
+
     reuse() {
         this.node.active = false;
         this.node.scale = 0;
-        this.sprite.spriteFrame = arguments[0][0];
-        this.spriteFrameLight = arguments[0][3];
-        this.sprite.node.opacity = 255;
+
+        this.type = arguments[0][0];
         this.setIndex(arguments[0][1]);
         this.color = arguments[0][2];
+        this.spriteAtlas = arguments[0][3];
+
+        this.sprite.node.opacity = 255;
+        
+        this.Double.active = this.type == SpecialType.Double;
+
+        this.updateSprite();
+
         this.initEvent();
     }
 
@@ -67,27 +96,71 @@ export default class Bubble extends cc.Component {
         this.IndexLabel.string = '';
     }
 
+    setColor(color: BubbleType) {
+        if (this.color == color) return;
+        this.color = color;
+        this.type = SpecialType.Normal;
+        Game.getMatrix().data[this.index].type = this.type;
+        Game.getMatrix().data[this.index].color = this.color;
+    }
+
+    updateSprite(light: boolean = false) {
+        switch(this.type) {
+            case SpecialType.Normal:
+            case SpecialType.Double:
+                if (light) {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(BubbleLightColor[this.Color])
+                } else {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(BubbleColor[this.Color])
+                }
+                break;
+            case SpecialType.Boom:
+                if (light) {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(BoomBubbleLightColor[this.Color])
+                } else {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(BoomBubbleColor[this.Color])
+                }
+                break;
+            case SpecialType.Horce:
+                if (light) {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(HorseBubbleLight);
+                } else {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(HorseBubble);
+                }
+                break;
+            case SpecialType.Magic:
+                if (light) {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(MagicBubbleLight);
+                } else {
+                    this.sprite.spriteFrame = this.spriteAtlas.getSpriteFrame(MagicBubble);
+                }
+                break;
+        }
+    }
+
 
     setIndex(index: number) {
         if (index == this.index) return;
-        this.index = index;
+        
         let bubbleMatrix = Game.getMatrix();
 
         if (!bubbleMatrix.data[index] || !bubbleMatrix.data[index].bubble) {
             //console.log('新增泡泡：', index);
             bubbleMatrix.data[index] = {
                 color: this.color,
-                bubble: this
+                bubble: this,
+                type: this.type
             }
 
             
         } else if (bubbleMatrix.data[index].bubble != this) {
-            console.warn('数据不同步！', index);
+            console.error(this.index, '数据不同步！', index, ', oldIndex:', bubbleMatrix.data[index].bubble.getIndex());
+            console.log(bubbleMatrix.data[index])
 
         }
 
-
-        //this.IndexLabel.string = index.toString();
+        this.index = index;
+        this.IndexLabel.string = index.toString();
     }
 
     getIndex(): number {
@@ -107,11 +180,11 @@ export default class Bubble extends cc.Component {
 
     initEvent() {
 
-        // this.node.on(cc.Node.EventType.TOUCH_END, ()=>{
-        //     let neibers = Game.getMatrix().getNeiborMatrix(this.index, 1);
-        //     console.log(neibers)
-        //     gEventMgr.emit(GlobalEvent.BUBBLE_SCALE_TEST, neibers);
-        // }, this);
+        this.node.on(cc.Node.EventType.TOUCH_END, ()=>{
+            let neibers = Game.getMatrix().getNeiborMatrix(this.index, 1);
+            console.log(neibers)
+            gEventMgr.emit(GlobalEvent.BUBBLE_SCALE_TEST, neibers);
+        }, this);
 
         gEventMgr.on(GlobalEvent.BUBBLE_SCALE_TEST, this.scaleTest, this);
         this.Animation.on(cc.Animation.EventType.FINISHED, this.onAnimationComplete, this);
@@ -151,14 +224,33 @@ export default class Bubble extends cc.Component {
     /** 消除 */
     onClear(delayTime: number) {
         
-       
+       Game.addBubbleClear(this.Color);
         this.node.runAction(cc.sequence(
             cc.delayTime(delayTime * 0.7),
           
             cc.callFunc(()=>{
-                this.sprite.spriteFrame = this.spriteFrameLight;
+
+                let lastI = Game.getLastI();
+                let i = Game.getMatrix().index2i(this.index);
+                     
+                let score = (lastI - i + 1) * BubbleScoreStep;
+
+                if (this.isDouble) {
+                    score *= 2;
+                }
+
+                console.log('score:', score, ', i:',i, ', lastI:', lastI );
+                let scale = (lastI - i) * 0.1 + 1;
+                Game.addScore(this.color, score, scale, 
+                    CMath.ConvertToNodeSpaceAR(this.node, Game.TopNode).add(cc.v2(BubbleSize.width*0.5, BubbleSize.height*0.5)));
+
+
+                this.updateSprite(true);
                 this.playAnimation("bubble_disappear", ()=>{
+
                      gFactory.putBubble(this.node);
+
+                     
                  });
             }, this)
         ));

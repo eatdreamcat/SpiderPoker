@@ -16,10 +16,11 @@
         "iOS",
         "HTML5"
       ],
-      "package_download_url": "https://download.cocos.com/CocosServices/plugins/service-analytics/1.2.3_2.1.1.zip",
-      "package_version_desc": "<br />\n<strong>update：</strong> 2019/11/18<br />\n<strong>update note：</strong></p>\n<ol>\n<li>Update Cocos Analytics SDK</li>\n<li>Modify the problem of integration of WeChat and Baidu mini game</li>\n</ol>",
+      "package_download_url": "https://download.cocos.com/CocosServices/plugins/service-analytics/1.2.5_2.1.1.zip",
+      "package_version_desc": "<br />\n<strong>update：</strong> 2020/03/05<br />\n<strong>update note：</strong><br />\n1.Fix the integration problem of Xiaomi Quick Game.<br />\n2.Add the QTT and Alipay Mini Game and Cocos Play.<br />\n3.Add parameter auto-save， plugin auto-load.</p>",
       "service_component_name": "service-analytics",
       "package_versions": [
+        "1.2.5_2.1.1",
         "1.2.3_2.1.1",
         "1.2.0_2.1.0",
         "1.1.7_2.0.3",
@@ -85,10 +86,11 @@
         "iOS",
         "HTML5"
       ],
-      "package_download_url": "https://download.cocos.com/CocosServices/plugins/service-agora/1.0.2_2.2.3.20_2.5.2.zip",
-      "package_version_desc": "",
+      "package_download_url": "https://download.cocos.com/CocosServices/plugins/service-agora/1.1.0_2.2.3.20_2.5.2.zip",
+      "package_version_desc": "<br />\n<strong>update：</strong> 2020/03/05<br />\n<strong>update note：</strong><br />\n1.Adapted to Cocos Creator 2.3.x</p>",
       "service_component_name": "service-agora",
       "package_versions": [
+        "1.1.0_2.2.3.20_2.5.2",
         "1.0.2_2.2.3.20_2.5.2",
         "1.0.1_2.2.3.20_2.5.2"
       ],

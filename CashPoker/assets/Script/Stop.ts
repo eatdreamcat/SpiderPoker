@@ -61,7 +61,11 @@ export default class Stop extends cc.Component {
       return;
     }
 
+    
     Game.calTimeBonus();
+
+    Game.addGameTime(-Game.getGameTime());
+    
     gEventMgr.emit(GlobalEvent.OPEN_RESULT);
   }
 

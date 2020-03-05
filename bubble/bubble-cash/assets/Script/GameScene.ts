@@ -1,7 +1,7 @@
 import { gFactory } from "./Controller/GameFactory";
 import { Game } from "./Controller/Game";
 import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange } from "./Const";
-import { MatrixSize, UseSize } from "./Data/BubbleMatrix";
+import { MatrixSize, UseSize, SpecialType } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
 import { gStep } from "./Controller/StepController";
@@ -30,6 +30,9 @@ export default class GameScene extends cc.Component {
 
     @property(cc.Prefab)
     TaskPrefab: cc.Prefab = null;
+
+    @property(cc.Prefab)
+    AddScorePrefab: cc.Prefab = null;
 
     @property(cc.SpriteAtlas)
     BubbleAtlas: cc.SpriteAtlas = null;
@@ -91,7 +94,7 @@ export default class GameScene extends cc.Component {
 
         gFactory.init(()=>{
             gStep.nextStep(Step.Prefab);
-        }, this.BubblePrefab, this.PointPrefab, this.TaskPrefab);
+        }, this.BubblePrefab, this.PointPrefab, this.TaskPrefab, this.AddScorePrefab);
         
         gAudio.init(()=>{
             gStep.nextStep(Step.Audio);
@@ -115,6 +118,19 @@ export default class GameScene extends cc.Component {
      */
     celerOnStart() {
 
+         
+         let takeImage = false;
+         const canvas = document.getElementsByTagName("canvas")[0];
+         cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
+             if (takeImage) {
+                 takeImage = false;
+                 celerx.didTakeSnapshot(canvas.toDataURL());
+             }
+         });
+         celerx.provideCurrentFrameData(function () {
+             takeImage = true;
+         });
+
         Game.start();
         this.show();
     }
@@ -131,10 +147,11 @@ export default class GameScene extends cc.Component {
         gEventMgr.on(GlobalEvent.ADD_BUBBLE, this.addNextBubble, this);
         gEventMgr.on(GlobalEvent.UPDATE_TASK, this.updateTask, this);
         gEventMgr.on(GlobalEvent.NEXT_BUBBLE, this.getShooterBubble, this);
+        gEventMgr.on(GlobalEvent.ADD_SCORE, this.addScore, this);
 
         if (CC_DEBUG) {
             cc.director.on("space-press", ()=>{
-                this.addNextBubble(3);
+                this.addNextBubble(1);
             }, this);
         }
     }
@@ -159,9 +176,10 @@ export default class GameScene extends cc.Component {
     
     show() {
         
-        let iStart = 0, iEnd = 12;
+        let iStart = 4, iEnd = 13;
         let jStart = 2, jEnd = 11;
 
+       
         this.addBubble(iStart, iEnd, jStart, jEnd);
 
         this.getNewTask(DefaultTaskCount);
@@ -177,14 +195,8 @@ export default class GameScene extends cc.Component {
         
         this.BubbleLayer.height += (BubbleSize.height + BubbleHeightOffset);
         this.BubbleLayer.runAction(cc.moveBy(0.2, 0, -(BubbleSize.height + BubbleHeightOffset)));
-        this.addBubble(0, 0, 2, 11);
-        
-        let startIndex = (MatrixSize - UseSize) * MatrixSize + 1;
-        for (let i = startIndex; i <= startIndex + UseSize; i++) {
-            if (bubbleMatrix.data[i].bubble) {
-                bubbleMatrix.data[i].bubble.updateActive(i / 400);
-            }
-        }
+
+        this.addBubble(bubbleMatrix.index2i(Game.startIndex), bubbleMatrix.index2i(Game.startIndex), 2, 11);
     }
 
     /**
@@ -197,10 +209,8 @@ export default class GameScene extends cc.Component {
             for (let j = jstart; j <= jend; j++) {
 
                 let index = bubbleMatrix.ij2index(i, j);
-
-                let frame = this.BubbleAtlas.getSpriteFrame(BubbleColor[bubbleMatrix.data[index].color]);
-                let lightFrame = this.BubbleAtlas.getSpriteFrame(BubbleLightColor[bubbleMatrix.data[index].color]);
-                let bubble = Game.getBubble(frame, index, bubbleMatrix.data[index].color, lightFrame);
+                console.log(' index:', index, 'color:', bubbleMatrix.data[index].color)
+                let bubble = Game.getBubble(bubbleMatrix.data[index].type, index, bubbleMatrix.data[index].color, this.BubbleAtlas);
 
                 let pos = bubbleMatrix.getPosOfij(i, j);
                 bubble.x = pos.x;
@@ -269,9 +279,8 @@ export default class GameScene extends cc.Component {
         }
 
         for (let i = 0; i < bubbleArray.length; i++) {
-            let frame = this.BubbleAtlas.getSpriteFrame(BubbleColor[bubbleArray[i]]);
-            let frameLight = this.BubbleAtlas.getSpriteFrame(BubbleLightColor[bubbleArray[i]]);
-            let bubble = Game.getBubble(frame, -1, bubbleArray[i], frameLight);
+            
+            let bubble = Game.getBubble(SpecialType.Normal, -1, bubbleArray[i], this.BubbleAtlas);
             bubble.getComponent(Bubble).setActive(true, true, i / 50);
             bubble.scale = 0;
             bubble.opacity = 0;
@@ -319,7 +328,9 @@ export default class GameScene extends cc.Component {
             }
         }
 
-        targetCount = Math.min(count, targetCount);
+        targetCount = Math.min(count - 1, targetCount);
+
+        console.error('任务数：', targetCount)
 
         let lastTask = Game.getCurTarget();
 
@@ -339,7 +350,7 @@ export default class GameScene extends cc.Component {
                         cc.callFunc(()=>{
                             complete.scale = 0;
                             fail.scale = 0;
-                            if (i <= targetCount) {
+                            if (i <= targetCount - 1) {
                                 taskNode.runAction(cc.sequence(
                                     cc.delayTime(0),
                                     cc.scaleTo(0.1, 1.2),
@@ -363,7 +374,7 @@ export default class GameScene extends cc.Component {
                                 cc.scaleTo(0.1, 0),
                                 cc.callFunc(()=>{
                                     fail.scale = 0;
-                                    if (i <= targetCount) {
+                                    if (i <= targetCount - 1) {
                                         taskNode.runAction(cc.sequence(
                                             cc.delayTime(0),
                                             cc.scaleTo(0.1, 1.2),
@@ -417,9 +428,38 @@ export default class GameScene extends cc.Component {
         }
     }
 
-    addScore(score: number, pos: cc.Vec2 = cc.v2(0, 0)) {
-        this.score += score;
+    addScore(score: number, scale: number, pos: cc.Vec2 = cc.v2(0, 0)) {
         
+
+        scale *= 1.1;
+        let scoreLabel = gFactory.getScore();
+        scoreLabel.scale = 0;
+        scoreLabel.opacity = 255;
+        scoreLabel.getComponent(cc.Label).string = '/' + score.toString();
+        this.TopNode.addChild(scoreLabel);
+        scoreLabel.setPosition(pos);
+        let dis = CMath.Distance(pos, this.ScoreLabel.node.position);
+
+        let moveTime = dis / (1200 * 1.3);
+        scoreLabel.runAction(cc.sequence(
+            cc.delayTime(0.4),
+            cc.fadeTo(moveTime + 0.3, 0)
+        ));
+
+        scoreLabel.runAction(cc.sequence(
+            cc.scaleTo(0.1, 1.2 * scale),
+            cc.delayTime(0.2),
+            cc.scaleTo(0.1, 1 * scale),
+            cc.moveTo(moveTime, this.ScoreLabel.node.position).easing(cc.easeInOut(1)),
+            cc.scaleTo(0.3, 0),
+            cc.callFunc(() => {
+                this.score = Game.getScore();  
+
+                this.addScoreStep = (this.score - this.showScore) / 20;
+
+                gFactory.putScore(scoreLabel)
+            })
+        ));
     }
 
 
@@ -435,7 +475,7 @@ export default class GameScene extends cc.Component {
             if (this.showScore < this.score) {
                 this.showScore += this.addScoreStep;
                 this.showScore = Math.min(this.score, this.showScore);
-                this.ScoreLabel.string = this.showScore.toString();
+                this.ScoreLabel.string = Math.floor(this.showScore).toString();
             }
         }
     }

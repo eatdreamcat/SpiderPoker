@@ -924,6 +924,20 @@ export default class GameScene extends cc.Component {
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
     }
+
+    let takeImage = false;
+    const canvas = document.getElementsByTagName("canvas")[0];
+    cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
+      if (takeImage) {
+        takeImage = false;
+        celerx.didTakeSnapshot(canvas.toDataURL());
+      }
+    });
+    celerx.provideCurrentFrameData(function () {
+      takeImage = true;
+    });
+
+    
   }
 
   /**

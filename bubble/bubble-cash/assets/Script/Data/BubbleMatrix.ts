@@ -1,4 +1,4 @@
-import { BubbleType, BubbleColors, BubbleSize, BubbleHeightOffset, BubbleYOffset, BubbleXOffset } from "../Const";
+import { BubbleType, BubbleColors, BubbleSize, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, DoubleBubbleInitRange, BoomBubbleInitRange, MagicBubbleInitRange } from "../Const";
 import Bubble from "../Bubble";
 import { Game } from "../Controller/Game";
 
@@ -16,21 +16,46 @@ import { Game } from "../Controller/Game";
  /** 每一圈六边形同色概率步进 */
  const RandomPercentOffset = 0.7;
 
+ /** 每次新增数据的行数 */
+ const AddNewBubbleRowCount = 6;
+
+ /** 特殊泡泡的类型 */
+ export const enum SpecialType {
+     /** 正常球 */
+     Normal,
+     /** 双倍球 */
+     Double,
+     /** 炸弹球 */
+     Boom,
+     /** 魔法球 */
+     Magic,
+     /** 小马球 */
+     Horce
+ }
+
  /** 泡泡矩阵 */
  export interface Matrix {
      bubble: Bubble,
-     color: BubbleType
+     color: BubbleType,
+     type: SpecialType
  }
 
  export class BubbleMatrix {
 
     
     private matrixData: Matrix[] = [];
+    /**  累计增加了几行 */
+    private addRowTotalCount: number = 0;
+
+    /** 显示的第一行的行数 */
+    private firstRow: number = 0;
+
     constructor() {
         for (let i = 0;i < MatrixSize * MatrixSize;i ++ ) {
             this.matrixData[i] = {
                 color: BubbleType.Blank,
-                bubble: null
+                bubble: null,
+                type: SpecialType.Normal
             }
         }
     }
@@ -46,32 +71,79 @@ import { Game } from "../Controller/Game";
         for (let i = oldLength; i < this.matrixData.length; i++) {
             this.matrixData[i] = {
                 color: BubbleType.Blank,
-                bubble: null
+                bubble: null,
+                type: SpecialType.Normal
             }
         }
     }
 
+    getRestRowCount() {
+        return this.addRowTotalCount;
+    }
+
+    getFirstRow() {
+        return this.firstRow;
+    }
+
     /** 下移行 */
     moveRow(row: number) {
-        this.addRow(row);
 
-        let addCount = row * MatrixSize;
-        for(let i = this.matrixData.length - 1; i >= addCount; i--) {
-            if (!this.matrixData[i - addCount]) {
-                this.matrixData[i - addCount] = {color: BubbleType.Blank, bubble: null}
+        if (this.addRowTotalCount <= row) {
+            
+            this.addRow(AddNewBubbleRowCount);
+
+            this.firstRow += AddNewBubbleRowCount - 1;
+
+            Game.startIndex += MatrixSize * (AddNewBubbleRowCount - 1)
+
+            this.addRowTotalCount += AddNewBubbleRowCount;
+           
+    
+            
+            let addCount = AddNewBubbleRowCount * MatrixSize;
+
+            console.log(' 新增6行： ', addCount);
+
+           
+            /** 下移 */
+            for(let i = this.matrixData.length - 1; i >= addCount; i--) {
+                if (!this.matrixData[i - addCount]) {
+                    this.matrixData[i - addCount] = {color: BubbleType.Blank, bubble: null, type: SpecialType.Normal}
+                }
+
+                this.matrixData[i].color = this.matrixData[i - addCount].color;
+                this.matrixData[i].type = this.matrixData[i - addCount].type;
+                this.matrixData[i].bubble = this.matrixData[i - addCount].bubble;
+
+                this.matrixData[i - addCount] = {color: BubbleType.Blank, bubble: null, type: SpecialType.Normal}
+
+                if (this.matrixData[i].bubble) {
+                    this.matrixData[i].bubble.setIndex(i);
+                }
             }
 
-            this.matrixData[i].color = this.matrixData[i - addCount].color;
-            this.matrixData[i].bubble = this.matrixData[i - addCount].bubble;
-            if (this.matrixData[i].bubble) {
-                this.matrixData[i].bubble.setIndex(i);
+
+            
+            /** 新增数据 */
+            for (let i = 0; i < addCount - 1; i ++) {
+
+            
+                this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];
+                this.matrixData[i].bubble = null;
+                this.matrixData[i].type = SpecialType.Normal;
             }
+
+           
+        } else {
+            this.firstRow -= 1;
+            Game.startIndex -= MatrixSize;
         }
 
-        for (let i = 0; i < addCount - 1; i ++) {
-            this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)];
-            this.matrixData[i].bubble = null;
-        }
+        this.addRowTotalCount -= row;
+        console.log(' 剩余 ', this.addRowTotalCount, ' 行数据', ', 第一行：', this.firstRow, this.index2i(Game.startIndex));
+
+
+        
 
        
     }
@@ -106,8 +178,8 @@ import { Game } from "../Controller/Game";
     getPosOfij(i: number, j: number): cc.Vec2 {
         
         let pos = cc.v2(0, 0);
-        pos.x = (j - MatrixSize / 2) * BubbleSize.width + ((i + Game.getMoveTimes()) % 2) * BubbleSize.width / 2  + BubbleXOffset;
-        pos.y = (MatrixSize / 2 - i + Game.getMoveTimes()) * (BubbleSize.height + BubbleHeightOffset) + BubbleYOffset;
+        pos.x = (j - MatrixSize / 2) * BubbleSize.width + ((i + this.firstRow + Game.getMoveTimes()) % 2) * BubbleSize.width / 2  + BubbleXOffset;
+        pos.y = (MatrixSize / 2 - i + Game.getMoveTimes() + this.firstRow - this.index2i(58)) * (BubbleSize.height + BubbleHeightOffset) + BubbleYOffset;
 
         return pos;
     }
@@ -121,7 +193,7 @@ import { Game } from "../Controller/Game";
         
         let neibers: number[] = [];
         let index2i = this.index2i(index);
-        let moveTimes = Game.getMoveTimes();
+        let moveTimes = Game.getMoveTimes() + this.firstRow;
 
         for(let i = 0; i <= range; i++) {
             let newi = index2i + i;
@@ -217,6 +289,87 @@ import { Game } from "../Controller/Game";
 
         let startIndex = this.getUseIndexStart();
         let endIndex = this.getUseIndexEnd();
+
+        this.firstRow = this.index2i(Game.startIndex);
+
+        this.addRowTotalCount = 0;
+
+        /** 双倍分数泡泡的个数 */
+        let doubleCount = Math.ceil(CMath.getRandom(DoubleBubbleInitRange.Min, DoubleBubbleInitRange.Max));
+        /** 炸弹泡泡的个数 */
+        let boomCount = Math.ceil(CMath.getRandom(BoomBubbleInitRange.Min, BoomBubbleInitRange.Max));
+        /** 魔法球泡的个数 */
+        let magicCount = Math.ceil(CMath.getRandom(MagicBubbleInitRange.Min, MagicBubbleInitRange.Max));
+
+        console.log('start:', startIndex, ', end:', endIndex, ', firstRow:', this.firstRow)
+        console.log(' double:', doubleCount, ', boom:', boomCount, ', magic:', magicCount);
+        let allIndex = [];
+        for (let i = startIndex; i <= endIndex; i++) {
+            allIndex.push(i);
+        }
+
+
+        /** 随机双倍泡泡 */
+        let doubleColors = BubbleColors.concat();
+        let doubleData = {};
+       
+        while(doubleCount > 0 && doubleColors.length > 0 && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            let colorIndex =  Math.floor(CMath.getRandom(0, doubleColors.length));
+            let color = doubleColors[colorIndex];
+            doubleColors.splice(colorIndex, 1);
+            doubleData[Index] = color;
+            doubleCount--;
+        }
+        console.log(' ---------- 双倍球 --------------')
+        console.log(doubleData);
+
+        /** 随机炸弹泡泡 */
+        let boomColors = BubbleColors.concat();
+        let boomData = {};
+       
+        while(boomCount > 0 && boomColors.length > 0 && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            let colorIndex =  Math.floor(CMath.getRandom(0, boomColors.length));
+            let color = boomColors[colorIndex];
+            boomColors.splice(colorIndex, 1);
+            boomData[Index] = color;
+
+            boomCount--;
+        }
+        console.log(' ---------- 炸弹球 --------------')
+        console.log(boomData);
+
+        /** 随机魔法泡泡 */
+        // let magicColors = BubbleColors.concat();
+        let magicData = {};
+       
+        while(magicCount > 0 /*&& magicColors.length > 0*/ && allIndex.length >= 0) {
+
+            let randomI = Math.floor(CMath.getRandom(0, allIndex.length));
+            let Index = allIndex[randomI];
+            allIndex.splice(randomI, 1);
+
+            // let colorIndex =  Math.floor(CMath.getRandom(0, magicColors.length));
+            // let color = magicColors[colorIndex];
+            // magicColors.splice(colorIndex, 1);
+            magicData[Index] = BubbleType.Blank;
+
+            magicCount--;
+        }
+        console.log(' ---------- 魔法球 --------------')
+        console.log(magicData);
+
+
+        
         for (let i = startIndex; i <= endIndex; i ++) {
 
             let neibers = this.getNeiborMatrix(i, 1);
@@ -270,7 +423,25 @@ import { Game } from "../Controller/Game";
             if (this.matrixData[i].color == BubbleType.Blank) {
                 this.matrixData[i].color = BubbleColors[Math.floor(CMath.getRandom()*BubbleColors.length)];
             }
+
+            this.matrixData[i].type = SpecialType.Normal;
+
+            if (doubleData[i] != null) {
+                this.matrixData[i].type = SpecialType.Double;
+                this.matrixData[i].color = doubleData[i];
+            }
+
+            if (magicData[i] != null) {
+                this.matrixData[i].type = SpecialType.Magic;
+                this.matrixData[i].color = magicData[i];
+            }
+
+            if (boomData[i] != null) {
+                this.matrixData[i].type = SpecialType.Boom;
+                this.matrixData[i].color = boomData[i];
+            }
         }
+        console.log(this.matrixData.length)
     }
 
     /** 获取其他颜色 */

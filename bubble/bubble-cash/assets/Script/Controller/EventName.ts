@@ -13,6 +13,7 @@ export enum GlobalEvent {
   BUBBLE_FORCE,
   /** 增加泡泡 */
   ADD_BUBBLE,
+  ADD_SCORE,
   GAME_OVER,
   UPDATE_TASK,
   NEXT_BUBBLE

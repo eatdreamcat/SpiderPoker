@@ -1,5 +1,5 @@
-import { BubbleMatrix } from "../Data/BubbleMatrix";
-import { BubbleType, ClearCountLimit, GameTime } from "../Const";
+import { BubbleMatrix, SpecialType } from "../Data/BubbleMatrix";
+import { BubbleType, ClearCountLimit, GameTime, BubbleColors } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
 import { CollsionOffset, CollsionFactor, CollsionMinFactor } from "../BubbleMove";
@@ -32,6 +32,22 @@ class GameCtrl {
     /** 总得分 */
     private score: number = 0;
 
+    /** 连消的次数 */
+    private streak: number = 0;
+
+    /** 最大连消次数 */
+    private maxStreak: number = 0;
+
+    /** 每种颜色的泡泡得分 */
+    private bubbleScore = {};
+    
+    /** 每种颜色泡泡的消除个数 */
+    private bubbleClear = {}
+
+    /** 每种颜色泡泡的掉落个数 */
+    private bubbleDrop = {}
+
+
     /** 需要检测碰撞的泡泡 */
     private collisionIndexes: number[] = [];
 
@@ -51,6 +67,20 @@ class GameCtrl {
 
     public isStart: boolean = false;
 
+    private lastIndex: number = 58;
+
+    /** 最上面一排的开始index */
+    private _startIndex: number = 58;
+
+    public get startIndex() {
+        return this._startIndex;
+    }
+
+    public set startIndex(index: number) {
+        this._startIndex = index;
+        console.log(' startIndex:', this.startIndex);
+    }
+
     public start() {
         this.moveTimes = 0;
         this.score = 0;
@@ -60,7 +90,17 @@ class GameCtrl {
         this.dropIndex.length = 0;
         this.forceIndex.length = 0;
         this.gameTime = GameTime;
+        this.streak = 0;
+        this.maxStreak = 0;
+        
+        for (let color of BubbleColors) {
+            this.bubbleClear[color] = 0;
+            this.bubbleDrop[color] = 0;
+            this.bubbleScore[color] = 0;
+        }
     }
+
+
 
     /** 获取当前这一轮的目标 */
     public getCurTarget(): Target {
@@ -129,6 +169,13 @@ class GameCtrl {
         return this.score;
     }
 
+    addScore(color: BubbleType, score: number, scale: number, pos: cc.Vec2 = cc.v2(0, 0)) {
+        this.score += score;
+        this.score = Math.max(0, this.score);
+        this.addBubbleScore(color, score);
+        gEventMgr.emit(GlobalEvent.ADD_SCORE, score, scale, pos);
+    }
+
     /** 获取矩阵数据 */
     public getMatrix() {
         return this.bubbleMatrix;
@@ -136,6 +183,12 @@ class GameCtrl {
 
     public prepare() {
         this.bubbleMatrix.initBubbleData();
+    }
+
+    /** 获取最后一个index对应的i */
+    public getLastI() {
+        
+        return this.bubbleMatrix.index2i(this.lastIndex);
     }
 
     addGameTime(time: number) {
@@ -161,10 +214,15 @@ class GameCtrl {
     }
 
     /** 获取泡泡 */
-    public getBubble(frame: cc.SpriteFrame, index: number, type: BubbleType, light: cc.SpriteFrame) {
-        return gFactory.getBubble(frame, index, type, light);
+    public getBubble(type: SpecialType, index: number, color: BubbleType, atlas: cc.SpriteAtlas) {
+        return gFactory.getBubble(type, index, color, atlas);
     }
 
+    /**
+     * 
+     * @param index 检测的中心index
+     * @param checkBubble 源泡泡
+     */
     private checkRecurily(index: number, checkBubble: Bubble) {
         if (this.clearIndex.indexOf(index) >= 0) return;
 
@@ -172,14 +230,32 @@ class GameCtrl {
 
 
         let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
+
         for (let otherIndex of neibers) {
             let bubble = this.bubbleMatrix.data[otherIndex].bubble;
             if (bubble && bubble.node.active && checkBubble.Color == bubble.Color) {
                 
                 this.checkRecurily(otherIndex, checkBubble);
+
+                
             }
         }
 
+    }
+
+    /** 增加某颜色泡泡的得分 */
+    addBubbleScore(color: BubbleType, score: number) {
+        this.bubbleScore[color] += score;
+    }
+
+    /** 增加某颜色泡泡的掉落个数 */
+    addBubbleDrop(color: BubbleType) {
+        this.bubbleDrop[color] ++;
+    }
+
+    /** 增加某颜色泡泡的消除个数 */
+    addBubbleClear(color: BubbleType) {
+        this.bubbleClear[color] ++;
     }
 
     /** 检测消除泡泡 */
@@ -189,14 +265,31 @@ class GameCtrl {
         this.clearIndex.length = 0;
         
         this.checkRecurily(index, checkBubble);
-        console.log(' --------------- 检测消除 start---------------')
+        console.log(' --------------- 检测消除 start---------------:', this.startIndex)
         console.log(this.clearIndex);
         console.log(' --------------- 检测消除 end---------------')
 
         if (this.clearIndex.length < ClearCountLimit) {
             this.clearIndex.length = 0;
+            this.streak = 0;
             return;
         }
+
+        this.streak ++;
+        this.maxStreak = Math.max(this.streak, this.maxStreak);
+
+        let length = this.bubbleMatrix.data.length;
+        let i = 0;
+        for (i = length - 1; i >= this.startIndex; i--) {
+            let data = this.bubbleMatrix.data[i];
+            if (data && data.color && data.bubble && data.bubble.node.active) {
+                
+                break;
+            }
+        }
+
+        this.lastIndex = i;
+
 
         for(let i = 0; i < this.clearIndex.length; i++) {
             let clear = this.clearIndex[i];
@@ -205,6 +298,7 @@ class GameCtrl {
             bubble.onClear(i * 0.1);
             this.bubbleMatrix.data[clear].bubble = null;
             this.bubbleMatrix.data[clear].color = BubbleType.Blank;
+            this.bubbleMatrix.data[clear].type = SpecialType.Normal;
         }
 
         this.clearIndex.length = 0;
@@ -219,7 +313,7 @@ class GameCtrl {
     /** 检测是都需要下移泡泡 */
     private checkAddBubble() {
         let count = 0;
-        for (let i = 58; i <= 67; i++) {
+        for (let i = this.startIndex; i <= this.startIndex + 9; i++) {
             if (this.bubbleMatrix.data[i] && this.bubbleMatrix.data[i].bubble && this.bubbleMatrix.data[i].bubble.node.active) {
                 count ++;
             }
@@ -291,6 +385,7 @@ class GameCtrl {
                 bubble.move.drop();
                 this.bubbleMatrix.data[index].bubble = null;
                 this.bubbleMatrix.data[index].color = BubbleType.Blank;
+                this.bubbleMatrix.data[index].type = SpecialType.Normal;
             }
         }
 

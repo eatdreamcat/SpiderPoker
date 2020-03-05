@@ -1,4 +1,4 @@
-import Bubble, { BubbleAction } from "./Bubble";
+import Bubble, { BubbleAction, BubbleDropScore } from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
 import { GlobalEvent } from "./Controller/EventName";
 import { Game } from "./Controller/Game";
@@ -62,7 +62,7 @@ export default class BubbleMove extends cc.Component {
 
     /** 是否在准备发射的状态 */
     get isReady2Shoot() {
-        return this.node.getParent().name == "Shooter" && Math.abs(this.node.x) <= 0.01 && Math.abs(this.node.y) <= 0.01;
+        return this.node.getParent().name == "Shooter" && this.node.getNumberOfRunningActions() <= 0;
     }
 
 
@@ -129,6 +129,9 @@ export default class BubbleMove extends cc.Component {
                         targetIndex = neiberIndex;
                     }
                 }
+
+
+                
 
                 bubble.onCollision();
 
@@ -255,6 +258,7 @@ export default class BubbleMove extends cc.Component {
         }
 
         console.log("发射！");
+        this.enabled = true;
         this.shooted = true;
         deltaP.normalizeSelf();
 
@@ -277,6 +281,8 @@ export default class BubbleMove extends cc.Component {
         this.speed.x *= (CMath.getRandom(0, 1.5) + 1);
 
         this.node.group = "drop";
+
+        Game.addBubbleDrop(this.bubble.Color);
     }
 
 
@@ -308,8 +314,14 @@ export default class BubbleMove extends cc.Component {
                  if (this.isDrop && pos.y <= DropBorder) {
                      this.enabled = false;
                      this.scaleBubble(1.1, 0.9);
+
+                     let score = this.bubble.isDouble ? BubbleDropScore * 2 : BubbleDropScore;
+                     Game.addScore(this.bubble.Color, score, 1, 
+                        CMath.ConvertToNodeSpaceAR(this.node, Game.TopNode).add(cc.v2(BubbleSize.width*0.5, BubbleSize.height*0.5)));
+
                      this.playAnimation('bubble_drop', ()=>{
                         gFactory.putBubble(this.node);
+
                      });
                      break;
                  }

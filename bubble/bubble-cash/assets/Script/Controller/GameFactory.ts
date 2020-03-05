@@ -93,7 +93,8 @@ enum Step {
   Bubble = 1 << 2,
   Point = 1 << 3,
   Task = 1 << 4,
-  DONE = Bubble | Point | Task
+  Score = 1 << 5,
+  DONE = Bubble | Point | Task | Score
 }
 
 class GameFactory {
@@ -109,12 +110,14 @@ class GameFactory {
     callback: Function,
     bubble?: cc.Prefab,
     point?: cc.Prefab,
-    task?: cc.Prefab
+    task?: cc.Prefab,
+    score?: cc.Prefab
   ) {
     this.doneCallback = callback;
     this.initBubble(200, bubble);
     this.initPoint(20, point);
     this.initTask(8, task);
+    this.initScore(15, score);
   }
 
   private nextStep(step: Step) {
@@ -202,6 +205,32 @@ class GameFactory {
 
   putTask(Task: cc.Node) {
     this.TaskPool.get("Task").put(Task);
+  }
+
+  private ScorePool: HashMap<string, ObjPool> = new HashMap();
+  initScore(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.ScorePool.add("Score", new ObjPool(prefab, initCount));
+      self.nextStep(Step.Score);
+    } else {
+      cc.loader.loadRes("prefabs/ScoreFloat", cc.Prefab, (err, prefabRes) => {
+        if (err) {
+          console.error(err);
+        } else {
+          self.ScorePool.add("Score", new ObjPool(prefabRes, initCount));
+          self.nextStep(Step.Score);
+        }
+      });
+    }
+  }
+
+  getScore(...args): cc.Node {
+    return this.ScorePool.get("Score").get(args);
+  }
+
+  putScore(Score: cc.Node) {
+    this.ScorePool.get("Score").put(Score);
   }
   
 }

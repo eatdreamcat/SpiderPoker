@@ -20,6 +20,35 @@ export const BubbleLightColor = {
     6:   "bg_popyellowlight"
 } 
 
+/** 炸弹球的light名字 */
+export const BoomBubbleLightColor = {
+    0:   "blank",
+    1:   "bomb_bluelight",
+    2:   "bomb_greenlight",
+    3:   "bomb_orangelight",
+    4:   "bomb_purplelight",
+    5:   "bomb_redlight",
+    6:   "bomb_yellowlight"
+}
+
+/** 炸弹球的名字 */
+export const BoomBubbleColor = {
+    0:   "blank",
+    1:   "bomb_blue",
+    2:   "bomb_green",
+    3:   "bomb_orange",
+    4:   "bomb_purple",
+    5:   "bomb_red",
+    6:   "bomb_yellow"
+}
+
+/** 小马球 */
+export const HorseBubble = 'horse';
+export const HorseBubbleLight = 'horselight';
+/** 魔法球 */
+export const MagicBubble = 'rainbow';
+export const MagicBubbleLight = 'rainbowlight'
+
 /** 泡泡颜色类型 */
 export enum BubbleType {
     Blank,
@@ -50,7 +79,7 @@ export const BubbleXOffset = 20;
 /**
  * 泡泡尺寸
  */
-export const BubbleSize = cc.size(96, 96);
+export const BubbleSize = cc.size(94, 94);
 
 /** 泡泡队列个数范围 */
 export const BubbleQueRange = {
@@ -73,9 +102,36 @@ export const TargetRandomLimit = 120;
 /** 初始任务的个数 */
 export const DefaultTaskCount = 9;
 
-/** 目标生成的概率规则 */
-export const TargetRandom = {
+/** 两倍泡泡初始生成的个数范围 */
+export const DoubleBubbleInitRange = {
+    Min: 3,
+    Max: 5
+} 
 
+/** 新生成的双倍泡泡的概率 */
+export const DoubleBubbleRange = {
+    Row: 6,
+    Min: 1,
+    Max: 2
+}
+
+/** 新生成的双倍泡泡的概率 */
+export const BoomBubbleRange = {
+    Row: 6,
+    Min: 1,
+    Max: 2
+}
+
+/** 炸弹泡泡初始生成的个数范围 */
+export const BoomBubbleInitRange = {
+    Min: 3,
+    Max: 5
+}
+
+/** 魔法泡泡初始生成的个数范围 */
+export const MagicBubbleInitRange = {
+    Min: 0,
+    Max: 3
 }
 
 /** 消除条件满足的最低个数 */

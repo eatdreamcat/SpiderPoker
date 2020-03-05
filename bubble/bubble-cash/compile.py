@@ -28,17 +28,19 @@ mainScrPath = RootDir + '/build/web-mobile/main.js'
 engineScrPath = RootDir + '/build/web-mobile/cocos2d-js-min.js'
 toolSrcPath = RootDir + '/build/web-mobile/src/assets/Script/Utils/Tool.js'
 projectScrPath = RootDir + '/build/web-mobile/src/project.js'
+vconsoleSrcPath = RootDir + '/build/web-mobile/vconsole.min.js'
 
 resPath = RootDir + '/build/web-mobile/res'
 
 settingMatchKey = '{#settings}'
 mainMatchKey = '{#main}'
 engineMatchKey = '{#cocosengine}'
+vconsoleMatchKay = '{#vconsole}'
 toolMatchKey = '{#tool}'
 projectMatchKey = '{#project}'
 resMapMatchKey = '{#resMap}'
 
-addScriptPathList = [settingScrPath, mainScrPath, engineScrPath, toolSrcPath, projectScrPath]
+addScriptPathList = [settingScrPath, mainScrPath, engineScrPath, vconsoleSrcPath, toolSrcPath, projectScrPath]
 
 fileByteList = ['.png', '.jpg','.mp3','.ttf'] 
 
@@ -75,10 +77,18 @@ def read_in_chunks(filePath, chunk_size=1024*1024):
     return None
   
   
-  file_object = open(filePath)
-  print('------ remove :' + filePath)
-  os.remove(filePath)
-  return file_object.read()
+  try:
+    file_object = open(filePath)
+  except IOError:
+    return ''
+  else:
+    print('------ remove :' + filePath)
+    os.remove(filePath)
+    strRes = file_object.read() 
+    if strRes == None:
+      return ''
+    return strRes
+  
 
 def writeToPath(path, data):
   with open(path,'w') as f: # 如果filename不存在会自动创建， 'w'表示写数据，写之前会清空文件中的原有数据！
@@ -112,6 +122,9 @@ def start():
 
   settingsStr = read_in_chunks(settingScrPath)
   htmlStr = htmlStr.replace(settingMatchKey, settingsStr, 1)
+
+  vconsoleStr = read_in_chunks(vconsoleSrcPath)
+  htmlStr = htmlStr.replace(vconsoleMatchKay, vconsoleStr, 1)
 
   toolStr = read_in_chunks(toolSrcPath)
   htmlStr = htmlStr.replace(toolMatchKey, toolStr, 1)

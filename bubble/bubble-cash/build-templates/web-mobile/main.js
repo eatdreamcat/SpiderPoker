@@ -1,5 +1,10 @@
 (function () {
 
+    // open web debugger console
+    if (typeof VConsole !== 'undefined') {
+        window.vConsole = new VConsole();
+    }
+
     function boot () {
 
         var settings = window._CCSettings;
