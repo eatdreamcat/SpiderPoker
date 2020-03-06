@@ -177,7 +177,7 @@ export default class GameScene extends cc.Component {
     
     show() {
         
-        let iStart = 4, iEnd = 13;
+        let iStart = 3, iEnd = 13;
         let jStart = 2, jEnd = 11;
 
        
@@ -197,7 +197,12 @@ export default class GameScene extends cc.Component {
         this.BubbleLayer.height += (BubbleSize.height + BubbleHeightOffset);
         this.BubbleLayer.runAction(cc.moveBy(0.2, 0, -(BubbleSize.height + BubbleHeightOffset)));
 
-        this.addBubble(bubbleMatrix.index2i(Game.startIndex), bubbleMatrix.index2i(Game.startIndex), 2, 11, 1);
+        this.addBubble(bubbleMatrix.index2i(Game.startIndex) - 1, bubbleMatrix.index2i(Game.startIndex) - 1, 2, 11, 1);
+
+        for (let i = Game.startIndex; i <= Game.startIndex + UseSize - 1; i ++) {
+            if (!bubbleMatrix.data[i] || !bubbleMatrix.data[i].bubble) return;
+            bubbleMatrix.data[i].bubble.updateActive(i / 700 + (i - Game.startIndex) / 50)
+        }
     }
 
     /**

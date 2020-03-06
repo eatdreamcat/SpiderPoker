@@ -1,4 +1,4 @@
-import { BubbleMatrix, SpecialType } from "../Data/BubbleMatrix";
+import { BubbleMatrix, SpecialType, MatrixSize, UseSize } from "../Data/BubbleMatrix";
 import { BubbleType, ClearCountLimit, GameTime, BubbleColors } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
@@ -59,6 +59,9 @@ class GameCtrl {
 
     /** 每一次暂存需要掉落的泡泡index */
     private dropIndex: number[] = [];
+
+    //** 固定的球，不会掉落 */
+    private fixedIndex: number[] = [];
 
     /** 每一次受力暂存的index */
     private forceIndex: number[] = [];
@@ -162,6 +165,11 @@ class GameCtrl {
             }
         }
 
+       
+        for (let i = this.startIndex - MatrixSize; i < this.startIndex - MatrixSize + UseSize; i ++) {
+
+        }
+
         console.log(this.collisionIndexes)
     }
 
@@ -225,6 +233,7 @@ class GameCtrl {
      */
     private checkRecurily(index: number, checkBubble: Bubble) {
         if (this.clearIndex.indexOf(index) >= 0) return;
+        if (index < this.startIndex) return;
 
         this.clearIndex.push(index);
 
@@ -232,6 +241,7 @@ class GameCtrl {
         let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
 
         for (let otherIndex of neibers) {
+            if (otherIndex < this.startIndex) continue;
             let bubble = this.bubbleMatrix.data[otherIndex].bubble;
             if (bubble && bubble.node.active && checkBubble.Color == bubble.Color) {
                 
@@ -269,7 +279,7 @@ class GameCtrl {
                 let neibers =  this.bubbleMatrix.getNeiborMatrix(index, 1, false);
                 let nextCheck = [];
                 for (let nei of neibers) {
-                    if (this.clearIndex.indexOf(nei) < 0) {
+                    if (this.clearIndex.indexOf(nei) < 0 && nei >= this.startIndex) {
                         this.clearIndex.push(nei);
                         if (this.bubbleMatrix.data[nei].type == SpecialType.Boom)
                             nextCheck.push(nei);
@@ -321,13 +331,14 @@ class GameCtrl {
             let clear = this.clearIndex[i];
             let bubble = this.bubbleMatrix.data[clear].bubble;
             if (!bubble) continue;
-            bubble.onClear(i * 0.1);
+            bubble.onClear(i * 0.1, index);
             this.bubbleMatrix.data[clear].bubble = null;
             this.bubbleMatrix.data[clear].color = BubbleType.Blank;
             this.bubbleMatrix.data[clear].type = SpecialType.Normal;
         }
 
         this.clearIndex.length = 0;
+        
 
         this.checkBubbleDrop();
 
@@ -351,54 +362,51 @@ class GameCtrl {
     }
 
 
+    /** 检测需要剔除的固定泡泡 */
+    private checkDrop(index: number) {
+        let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1, false);
+        for (let nei of neibers) {
+            if (this.fixedIndex.indexOf(nei) >= 0) {
+                this.fixedIndex = this.fixedIndex.concat(neibers);
+                this.fixedIndex.push(index)
+                break;
+            }
+        }
+    }
+
     /** 检测一下是否有泡泡掉落 */
     public checkBubbleDrop() {
 
-        this.updateCollisionIndexes();
+        
         this.dropIndex.length = 0;
-        
+        this.fixedIndex.length = 0;
 
-        /** 如果边缘的泡泡连接了里面的，就不会掉落 */
+        for(let i = this.startIndex; i < this.startIndex + UseSize; i++) {
+            if (this.bubbleMatrix.data[i] && this.bubbleMatrix.data[i].bubble)
+                 this.fixedIndex.push(i);
+        }
+
+        for (let i = this.startIndex; i < this.bubbleMatrix.data.length; i ++) {
+            if (i >= this.startIndex + UseSize && this.bubbleMatrix.data[i] && this.bubbleMatrix.data[i].bubble)
+                 this.dropIndex.push(i);
+        }
+
+        if (this.dropIndex.length <= 0) return;
+
         
-        for (let index of this.collisionIndexes) {
-            let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
-            let hasConnect = false;
-            for (let nei of neibers) {
-                if (this.collisionIndexes.indexOf(nei) < 0) {
-                    hasConnect = true;
-                    break;
-                }
+        for (let index of this.dropIndex) {
+            this.checkDrop(index);
+        }
+
+        for (let index of this.fixedIndex) {
+            let i = this.dropIndex.indexOf(index);
+            if (i >= 0) {
+                this.dropIndex.splice(i, 1)
             }
-            if (!hasConnect) this.dropIndex.push(index);
         }
 
 
-        for (let i = 0; i < this.dropIndex.length; i ++) {
-            let index = this.dropIndex[i];
-            let neibers = this.bubbleMatrix.getNeiborMatrix(index, 1);
-            let hasConnect = false;
-
-            for (let nei of neibers) {
-                if (this.dropIndex.indexOf(nei) < 0) {
-                    hasConnect = true;
-                    break;
-                }
-            }
-
-            if (hasConnect) {
-                this.dropIndex.splice(i, 1);
-                i--;
-                for (let nei of neibers) {
-                    let delIndex = this.dropIndex.indexOf(nei);
-                    if (delIndex >= 0) {
-                        this.dropIndex.splice(delIndex, 1);
-                        if (delIndex <= i) i--;
-                    }
-                }
-            }
-
-        }
-
+       
 
         console.log(' 检测掉落---------------');
         console.log(this.dropIndex);

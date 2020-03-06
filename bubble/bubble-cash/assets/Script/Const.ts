@@ -94,7 +94,7 @@ export const ClearTargetRange = {
 };
 
 /** 游戏时间s */
-export const GameTime = 180;
+export const GameTime = 18000;
 
 /** 目标生成概率的改变时间点 */
 export const TargetRandomLimit = 120;

@@ -160,7 +160,7 @@ export default class Bubble extends cc.Component {
         }
 
         this.index = index;
-        // this.IndexLabel.string = index.toString();
+        this.IndexLabel.string = index.toString();
     }
 
     getIndex(): number {
@@ -194,7 +194,8 @@ export default class Bubble extends cc.Component {
     }
 
     updateActive(delay: number = 0) {
-        this.setActive(this.node.y < this.node.parent.height, true, delay);
+        this.setActive(this.node.y < this.node.parent.height || true, true, delay);
+        
     }
 
     scaleTest(indexs: number[]) {
@@ -222,7 +223,7 @@ export default class Bubble extends cc.Component {
     }
 
     /** 消除 */
-    onClear(delayTime: number) {
+    onClear(delayTime: number, fromIndex: number) {
         
        Game.addBubbleClear(this.Color);
 
@@ -232,17 +233,20 @@ export default class Bubble extends cc.Component {
           
             cc.callFunc(()=>{
 
-                let lastI = Game.getLastI();
-                let i = Game.getMatrix().index2i(this.index);
-                     
-                let score = (lastI - i + 1) * BubbleScoreStep;
+                let selfI = Game.getMatrix().index2i(this.index);
+                let selfJ = Game.getMatrix().index2j(this.index);
+                let fromI = Game.getMatrix().index2i(fromIndex);
+                let fromJ = Game.getMatrix().index2j(fromIndex);
+
+                let factor = Math.max(Math.abs(selfI - fromI) + 1, Math.abs(selfJ - fromJ) + 1);
+                let score = Math.max(1, factor) * BubbleScoreStep;
 
                 if (this.isDouble) {
                     score *= 2;
                 }
 
-                console.log('score:', score, ', i:',i, ', lastI:', lastI );
-                let scale = (lastI - i) * 0.1 + 1;
+                
+                let scale = factor * 0.1 + 1;
                 Game.addScore(this.color, score, scale, 
                     CMath.ConvertToNodeSpaceAR(this.node, Game.TopNode).add(cc.v2(BubbleSize.width*0.5, BubbleSize.height*0.5)));
 
@@ -285,6 +289,12 @@ export default class Bubble extends cc.Component {
             // } 
         } else {
             this.IndexLabel.node.color = cc.Color.WHITE;
+        }
+
+        if (this.index < Game.startIndex && this.index > 0) {
+            this.sprite.node.color = cc.Color.BLACK;
+        } else {
+            this.sprite.node.color = cc.Color.WHITE;
         }
     }
 
