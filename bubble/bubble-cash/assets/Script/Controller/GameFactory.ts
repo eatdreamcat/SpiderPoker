@@ -117,7 +117,7 @@ class GameFactory {
     this.initBubble(200, bubble);
     this.initPoint(20, point);
     this.initTask(8, task);
-    this.initScore(15, score);
+    this.initScore(30, score);
   }
 
   private nextStep(step: Step) {

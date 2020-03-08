@@ -1,12 +1,14 @@
 import { gFactory } from "./Controller/GameFactory";
 import { Game } from "./Controller/Game";
-import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange } from "./Const";
+import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange, ShooterDoubleBubbleRange, ShooterDoubleRange, ShooterBoomBubbleRange, ShooterBoomRange, ShooterMagicRange, ShooterMagicBubbleRange, TaskStreakAward, Season, Treasure_Top, TreasureType } from "./Const";
 import { MatrixSize, UseSize, SpecialType } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
 import { gStep } from "./Controller/StepController";
 import { gAudio } from "./Controller/AudioController";
 import { GlobalEvent } from "./Controller/EventName";
+import Guide from "./Guide";
+import Treasure from "./Treasure";
 const celerx = require("./Utils/celerx");
 
 enum Step {
@@ -37,6 +39,42 @@ export default class GameScene extends cc.Component {
     @property(cc.SpriteAtlas)
     BubbleAtlas: cc.SpriteAtlas = null;
 
+    @property(cc.SpriteFrame)
+    SpringBack: cc.SpriteFrame = null;
+
+    @property(cc.SpriteFrame)
+    SummerBack: cc.SpriteFrame = null;
+
+    @property(cc.SpriteFrame)
+    AutumnBack: cc.SpriteFrame = null;
+
+    @property(cc.SpriteFrame)
+    WinterBack: cc.SpriteFrame = null;
+
+    @property(cc.SpriteAtlas)
+    TreasureAtlas: cc.SpriteAtlas = null;
+
+    @property(cc.SpriteAtlas)
+    TreasureIconAtlas: cc.SpriteAtlas = null;
+
+    @property(Guide)
+    Guide: Guide = null;
+
+    @property(cc.Sprite)
+    Background: cc.Sprite = null;
+
+    @property(cc.Animation)
+    Effect: cc.Animation = null;
+
+
+    @property(cc.Node)
+    TreasureRoot: cc.Node = null;
+
+    @property(cc.Node)
+    BigTreasure: cc.Node = null;
+
+    @property(cc.Node)
+    SmallTreasure: cc.Node = null;
    
 
     /** 节点 */
@@ -64,6 +102,9 @@ export default class GameScene extends cc.Component {
     @property(cc.Label)
     ScoreLabel: cc.Label = null;
 
+    @property(cc.Node)
+    Help: cc.Node = null;
+
 
     /** 显示的分数 */
     private showScore: number = 0;
@@ -73,6 +114,8 @@ export default class GameScene extends cc.Component {
     private addScoreStep: number = 0;
 
     onLoad () {
+        
+
         
         Game.BubbleLayer = this.BubbleLayer;
         Game.TopNode = this.TopNode;
@@ -132,7 +175,65 @@ export default class GameScene extends cc.Component {
          });
 
         Game.start();
+        this.updateSeason();
+        this.updateTreasure();
         this.show();
+    }
+
+    /** 初始化宝藏 */
+    updateTreasure() {
+        for (let child of this.TreasureRoot.children) {
+            child.getChildByName('icon').getComponent(cc.Sprite).spriteFrame 
+            = this.TreasureAtlas.getSpriteFrame(Treasure_Top[Game.Season][child.name]);
+        }
+
+        let big = [TreasureType.Level_1000, TreasureType.Level_800];
+        for (let child of this.BigTreasure.children) {
+            let i = Math.floor(CMath.getRandom(0, big.length));
+            let level = big[i];
+            cc.loader.loadRes('prefabs/' + Season[Game.Season] + "/" + level, cc.Prefab, (err, prefab)=>{
+                if (err) {
+                    console.error(' load treasure err:', err)
+                } else {
+                    let treasure = cc.instantiate(prefab);
+                    child.addChild(treasure);
+                }
+            });
+            big.splice(i, 1);
+        }
+
+        let small = [TreasureType.Level_200, TreasureType.Level_400, TreasureType.Level_600];
+        for (let child of this.SmallTreasure.children) {
+            let i = Math.floor(CMath.getRandom(0, small.length));
+            let level = small[i];
+            cc.loader.loadRes('prefabs/' + Season[Game.Season] + "/" + level, cc.Prefab, (err, prefab)=>{
+                if (err) {
+                    console.error(' load treasure err:', err)
+                } else {
+                    let treasure = cc.instantiate(prefab);
+                    child.addChild(treasure);
+                }
+            });
+            small.splice(i, 1);
+        }
+    }
+
+    updateSeason() {
+        switch(Game.Season) {
+            case Season.Spring:
+                this.Background.spriteFrame = this.SpringBack;
+                break;
+            case Season.Autumn:
+                this.Background.spriteFrame = this.AutumnBack;
+                break;
+            case Season.Summer:
+                this.Background.spriteFrame = this.SummerBack;
+                break;
+            case Season.Winter:
+                this.Background.spriteFrame = this.WinterBack;
+                break;
+        }
+        
     }
 
     initEvent() {
@@ -143,6 +244,20 @@ export default class GameScene extends cc.Component {
         /*** 泡泡发射完毕 */
         this.Shooter.on(cc.Node.EventType.CHILD_REMOVED, this.onShooterRemoveChild, this);
 
+        this.Help.on(cc.Node.EventType.TOUCH_END, ()=>{
+            this.Guide.show();
+        }, this)
+
+        gEventMgr.on(GlobalEvent.HORCE_CLEAR, ()=>{
+            this.Effect.play('super_clear')
+        }, this);
+
+        gEventMgr.on(GlobalEvent.GET_TREASURE, (name: string)=>{
+            let treasure = this.TreasureRoot.getChildByName(name);
+            if (treasure) {
+                treasure.getComponent(cc.Animation).play();
+            }
+        }, this);
 
         gEventMgr.on(GlobalEvent.ADD_BUBBLE, this.addNextBubble, this);
         gEventMgr.on(GlobalEvent.UPDATE_TASK, this.updateTask, this);
@@ -151,7 +266,7 @@ export default class GameScene extends cc.Component {
 
         if (CC_DEBUG) {
             cc.director.on("space-press", ()=>{
-                this.addNextBubble(1);
+                this.addNextBubble(3);
             }, this);
         }
     }
@@ -164,7 +279,7 @@ export default class GameScene extends cc.Component {
             let taskNode = this.TaskArray.children[i];
             let complete = taskNode.getChildByName('Complete');
             if (taskNode.scale == 0 || complete.scale == 1) continue;
-            complete.runAction(cc.sequence(cc.scaleTo(0.1, 1.2), cc.scaleTo(0.1, 1)));
+            complete.runAction(cc.sequence(cc.scaleTo(0.1, 0.9), cc.scaleTo(0.1, 0.6)));
         }
     }
 
@@ -261,7 +376,10 @@ export default class GameScene extends cc.Component {
         bubble.runAction(cc.spawn(
             cc.scaleTo(0.2, 1),
             cc.fadeTo(0.2, 255),
-            cc.moveTo(0.3, 0, 0)
+            cc.moveTo(0.3, 0, 0),
+            cc.callFunc(()=>{
+
+            })
         ));
 
     }
@@ -273,7 +391,67 @@ export default class GameScene extends cc.Component {
             
         }
 
-        console.log('泡泡队列：', count);
+        console.error('泡泡队列：', count);
+
+
+        /** 随机双倍泡泡 */
+        let allIndex = [];
+        for (let i = 0; i < count; i++) allIndex.push(i);
+
+        let doubleRound = Math.ceil(CMath.getRandom(ShooterDoubleRange.Min, ShooterDoubleRange.Max));
+        let doubleCount = 0;
+        let doubleColor = BubbleColors.concat();
+        let doubleData = {}
+        if (Game.getTaskLength() % doubleRound == 0) {
+            doubleCount = Math.ceil(CMath.getRandom(ShooterDoubleBubbleRange.Min, ShooterDoubleBubbleRange.Max));
+            while(doubleCount-- > 0 && allIndex.length > 0) {
+                let i = Math.floor(CMath.getRandom(0, allIndex.length));
+                let index = allIndex[i];
+                allIndex.splice(i, 1);
+                let colorIndex = Math.floor(CMath.getRandom(0, doubleColor.length));
+                let color = doubleColor[colorIndex];
+                doubleColor.splice(colorIndex, 1);
+                if (doubleColor.length <= 0) doubleColor = BubbleColors.concat();
+
+                doubleData[index] = color;
+            }
+        }
+
+        /** 随机炸弹泡泡 */
+        let boomRound = Math.ceil(CMath.getRandom(ShooterBoomRange.Min, ShooterBoomRange.Max));
+        let boomCount = 0;
+        let boomColor = BubbleColors.concat();
+        let boomData = {}
+        if (Game.getTaskLength() % boomRound == 0) {
+            boomCount = Math.ceil(CMath.getRandom(ShooterBoomBubbleRange.Min, ShooterBoomBubbleRange.Max));
+            while(boomCount-- > 0 && allIndex.length > 0) {
+                let i = Math.floor(CMath.getRandom(0, allIndex.length));
+                let index = allIndex[i];
+                allIndex.splice(i, 1);
+                let colorIndex = Math.floor(CMath.getRandom(0, boomColor.length));
+                let color = boomColor[colorIndex];
+                boomColor.splice(colorIndex, 1);
+                if (boomColor.length <= 0) boomColor = BubbleColors.concat();
+
+                boomData[index] = color;
+            }
+        }
+
+        /** 随机魔法泡泡 */
+        let magicRound = Math.ceil(CMath.getRandom(ShooterMagicRange.Min, ShooterBoomRange.Max));
+        let magicCount = 0;
+        
+        let magicData = {}
+        if (Game.getTaskLength() % magicRound == 0) {
+            magicCount = Math.ceil(CMath.getRandom(ShooterMagicBubbleRange.Min, ShooterBoomBubbleRange.Max));
+            while(magicCount-- > 0 && allIndex.length > 0) {
+                let i = Math.floor(CMath.getRandom(0, allIndex.length));
+                let index = allIndex[i];
+                allIndex.splice(i, 1);
+                magicData[index] = BubbleType.Blank;
+            }
+        }
+
 
         /**
          * 生成新的泡泡队列
@@ -284,9 +462,28 @@ export default class GameScene extends cc.Component {
             bubbleArray.push(BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)])
         }
 
+
         for (let i = 0; i < bubbleArray.length; i++) {
             
-            let bubble = Game.getBubble(SpecialType.Normal, -1, bubbleArray[i], this.BubbleAtlas);
+            let color = bubbleArray[i];
+            let type = SpecialType.Normal;
+
+            if (doubleData[i]) {
+                type = SpecialType.Double;
+                color = doubleData[i];
+            }
+
+            if (boomData[i]) {
+                type = SpecialType.Boom;
+                color = boomData[i];
+            }
+
+            if (magicData[i] != null) {
+                type = SpecialType.Magic;
+                color = magicData[i];
+            }
+
+            let bubble = Game.getBubble(type, -1, color, this.BubbleAtlas);
             bubble.getComponent(Bubble).setActive(true, true, i / 50);
             bubble.scale = 0;
             bubble.opacity = 0;
@@ -297,7 +494,15 @@ export default class GameScene extends cc.Component {
                 bubble.runAction(cc.spawn(
                     cc.scaleTo(0.2, 1),
                     cc.fadeTo(0.2, 255),
-                    cc.moveTo(0.3, 0, 0)
+                    cc.moveTo(0.3, 0, 0),
+                    cc.callFunc(()=>{
+                        if (Game.getTaskStreak() >= TaskStreakAward) {
+                            Game.addTaskStreak(-Game.getTaskStreak());
+                            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_horce");
+                            bubble.getComponent(Bubble).setColor(BubbleType.Horce, SpecialType.Horce);
+                            bubble.getComponent(Bubble).playAnimation("bubble_horce");
+                        }
+                    })
                 ));
             } else {
                 bubble.x = -200 * i;
@@ -340,6 +545,19 @@ export default class GameScene extends cc.Component {
 
         let lastTask = Game.getCurTarget();
 
+        if (lastTask.now >= lastTask.target && lastTask.target > 0) {
+            Game.addTaskStreak(1);
+                    // 完成目标
+            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_success");
+        } else {
+            Game.addTaskStreak(-Game.getTaskStreak());
+            // 未完成目标
+            if (lastTask.target > 0) {
+                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_fail");
+            }
+        }
+
+        
         if (this.TaskArray.childrenCount > 0) {
             
             for (let i = 0; i < this.TaskArray.childrenCount; i ++) {
@@ -354,6 +572,9 @@ export default class GameScene extends cc.Component {
                         cc.delayTime(i / 10),
                         cc.scaleTo(0.1, 0),
                         cc.callFunc(()=>{
+                            if (i == this.TaskArray.childrenCount - 1) {
+                                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "new_task");
+                            }
                             complete.scale = 0;
                             fail.scale = 0;
                             if (i <= targetCount - 1) {
@@ -367,7 +588,8 @@ export default class GameScene extends cc.Component {
                         })
                     ));
                 } else {
-                    // 未完成目标
+
+                    
                     complete.stopAllActions();
                     complete.scale = 0;
                     fail.runAction(cc.sequence(
@@ -375,6 +597,9 @@ export default class GameScene extends cc.Component {
                         cc.scaleTo(0.1, 1),
                         cc.delayTime(0.2),
                         cc.callFunc(()=>{
+                            if (i == this.TaskArray.childrenCount - 1) {
+                                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "new_task");
+                            }
                             taskNode.runAction(cc.sequence(
                                 cc.delayTime(i / 10),
                                 cc.scaleTo(0.1, 0),
@@ -398,10 +623,11 @@ export default class GameScene extends cc.Component {
 
         } else {
 
+            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "new_task");
             while(this.TaskArray.childrenCount < 6) {
                 let taskNode = gFactory.getTask();
                 taskNode.y = 0;
-                taskNode.x = this.TaskArray.childrenCount * taskNode.width * 1.6 + 30;
+                taskNode.x = this.TaskArray.childrenCount * taskNode.width * 1.3 + 30;
                 taskNode.scale = 0;
                 if (this.TaskArray.childrenCount < targetCount) {
                     taskNode.runAction(cc.sequence(
@@ -474,9 +700,11 @@ export default class GameScene extends cc.Component {
     update (dt: number) {
 
         if (Game.isStart) {
-            Game.addGameTime(-dt);
+            if (!this.Guide.node.active) {
+                Game.addGameTime(-dt);
 
-            this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+                this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+            }
 
             if (this.showScore < this.score) {
                 this.showScore += this.addScoreStep;

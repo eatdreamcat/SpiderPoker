@@ -38,6 +38,8 @@ export default class Bubble extends cc.Component {
 
     private spriteAtlas: cc.SpriteAtlas = null;
 
+    private doubleScore: boolean = false;
+
     get Animation() {
         return this.getComponent(cc.Animation);
     }
@@ -70,6 +72,14 @@ export default class Bubble extends cc.Component {
         return this.type == SpecialType.Double;
     }
 
+    set DoubleScore(double: boolean) {
+        this.doubleScore = double;
+    }
+
+    get DoubleScore() {
+        return this.doubleScore;
+    }
+
    
 
     reuse() {
@@ -77,14 +87,15 @@ export default class Bubble extends cc.Component {
         this.node.scale = 0;
 
         this.type = arguments[0][0];
-        this.setIndex(arguments[0][1]);
+        
         this.color = arguments[0][2];
         this.spriteAtlas = arguments[0][3];
 
         this.sprite.node.opacity = 255;
         
         this.Double.active = this.type == SpecialType.Double;
-
+        this.doubleScore = false;
+        this.setIndex(arguments[0][1]);
         this.updateSprite();
 
         this.initEvent();
@@ -96,15 +107,19 @@ export default class Bubble extends cc.Component {
         this.IndexLabel.string = '';
     }
 
-    setColor(color: BubbleType) {
-        if (this.color == color) return;
+    setColor(color: BubbleType, type: SpecialType) {
+        if (this.color == color) {
+            console.warn(' color:', BubbleType[this.color], BubbleType[color])
+            return;
+        }
         this.color = color;
-        this.type = SpecialType.Normal;
-        Game.getMatrix().data[this.index].type = this.type;
-        Game.getMatrix().data[this.index].color = this.color;
+        this.type = type;
+        // Game.getMatrix().data[this.index].type = this.type;
+        // Game.getMatrix().data[this.index].color = this.color;
     }
 
     updateSprite(light: boolean = false) {
+        
         switch(this.type) {
             case SpecialType.Normal:
             case SpecialType.Double:
@@ -160,7 +175,7 @@ export default class Bubble extends cc.Component {
         }
 
         this.index = index;
-        this.IndexLabel.string = index.toString();
+        //this.IndexLabel.string = index.toString();
     }
 
     getIndex(): number {
@@ -194,7 +209,15 @@ export default class Bubble extends cc.Component {
     }
 
     updateActive(delay: number = 0) {
-        this.setActive(this.node.y < this.node.parent.height || true, true, delay);
+        this.setActive(this.node.y < this.node.parent.height, true, delay);
+
+        // if (this.index < Game.startIndex && this.index > 0) {
+        //     this.sprite.node.color = cc.Color.BLACK;
+        //     this.sprite.node.opacity = 100;
+        // } else {
+        //     this.sprite.node.color = cc.Color.WHITE;
+        //     this.sprite.node.opacity = 255;
+        // }
         
     }
 
@@ -241,7 +264,7 @@ export default class Bubble extends cc.Component {
                 let factor = Math.max(Math.abs(selfI - fromI) + 1, Math.abs(selfJ - fromJ) + 1);
                 let score = Math.max(1, factor) * BubbleScoreStep;
 
-                if (this.isDouble) {
+                if (this.DoubleScore) {
                     score *= 2;
                 }
 
@@ -291,11 +314,7 @@ export default class Bubble extends cc.Component {
             this.IndexLabel.node.color = cc.Color.WHITE;
         }
 
-        if (this.index < Game.startIndex && this.index > 0) {
-            this.sprite.node.color = cc.Color.BLACK;
-        } else {
-            this.sprite.node.color = cc.Color.WHITE;
-        }
+        
     }
 
     

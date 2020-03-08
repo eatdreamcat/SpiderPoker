@@ -15,7 +15,7 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{1,199},{27,27}}</string>
+                <string>{{133,133},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -30,7 +30,22 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{1,228},{27,27}}</string>
+                <string>{{133,162},{27,27}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>bg_pointhorse.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{27,27}</string>
+                <key>spriteSourceSize</key>
+                <string>{27,27}</string>
+                <key>textureRect</key>
+                <string>{{133,191},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -45,7 +60,7 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{30,199},{27,27}}</string>
+                <string>{{162,133},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -60,7 +75,22 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{30,228},{27,27}}</string>
+                <string>{{162,162},{27,27}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>bg_pointrainbow.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{27,27}</string>
+                <key>spriteSourceSize</key>
+                <string>{27,27}</string>
+                <key>textureRect</key>
+                <string>{{162,191},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -75,7 +105,7 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{59,199},{27,27}}</string>
+                <string>{{191,133},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -90,7 +120,7 @@
                 <key>spriteSourceSize</key>
                 <string>{27,27}</string>
                 <key>textureRect</key>
-                <string>{{59,228},{27,27}}</string>
+                <string>{{191,162},{27,27}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -124,7 +154,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_signorange.png</key>
+            <key>bg_signhorse.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -139,7 +169,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_signpurple.png</key>
+            <key>bg_signorange.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -154,7 +184,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_signred.png</key>
+            <key>bg_signpurple.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -169,7 +199,7 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>bg_signyellow.png</key>
+            <key>bg_signrainbow.png</key>
             <dict>
                 <key>aliases</key>
                 <array/>
@@ -181,6 +211,36 @@
                 <string>{64,64}</string>
                 <key>textureRect</key>
                 <string>{{67,133},{64,64}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>bg_signred.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{64,64}</string>
+                <key>spriteSourceSize</key>
+                <string>{64,64}</string>
+                <key>textureRect</key>
+                <string>{{133,1},{64,64}}</string>
+                <key>textureRotated</key>
+                <false/>
+            </dict>
+            <key>bg_signyellow.png</key>
+            <dict>
+                <key>aliases</key>
+                <array/>
+                <key>spriteOffset</key>
+                <string>{0,0}</string>
+                <key>spriteSize</key>
+                <string>{64,64}</string>
+                <key>spriteSourceSize</key>
+                <string>{64,64}</string>
+                <key>textureRect</key>
+                <string>{{133,67},{64,64}}</string>
                 <key>textureRotated</key>
                 <false/>
             </dict>
@@ -196,9 +256,9 @@
             <key>realTextureFileName</key>
             <string>point.png</string>
             <key>size</key>
-            <string>{132,256}</string>
+            <string>{219,219}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:80107cc94a9c0c674c629036cd7d6409:919f56521fdd997e85c2d6627c61e169:cce8772aead9d3c3d84d37f82c72d0ef$</string>
+            <string>$TexturePacker:SmartUpdate:2bb68a7f99b0d00cf34a921580775c2e:841b9b3ba4f3d397c499438ca3a0dd9c:cce8772aead9d3c3d84d37f82c72d0ef$</string>
             <key>textureFileName</key>
             <string>point.png</string>
         </dict>

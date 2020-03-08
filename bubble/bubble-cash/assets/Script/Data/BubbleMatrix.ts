@@ -20,7 +20,7 @@ import { Game } from "../Controller/Game";
  const AddNewBubbleRowCount = 6;
 
  /** 特殊泡泡的类型 */
- export const enum SpecialType {
+ export  enum SpecialType {
      /** 正常球 */
      Normal,
      /** 双倍球 */
@@ -310,7 +310,7 @@ import { Game } from "../Controller/Game";
                     if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
  
                         let indexJ = this.index2j(neiberIndex1);
-                        if (indexJ >= 2 && indexJ <= 11) {
+                        if (indexJ >= 2 && indexJ <= 11 && neiberIndex1 >= Game.startIndex) {
                             if (this.data[neiberIndex1] && this.data[neiberIndex1].bubble && !isBlank) {
                                 neibers.push(neiberIndex1);
                             } else if (isBlank && (!this.data[neiberIndex1] || !this.data[neiberIndex1].bubble)) {
@@ -326,7 +326,7 @@ import { Game } from "../Controller/Game";
                 if(index!= neiberIndex2 && neibers.indexOf(neiberIndex2) < 0 && neiberIndex2 >= 0 && (neiberIndex2 < this.matrixData.length || isBlank)
                 ) {
                     let indexJ = this.index2j(neiberIndex2);
-                    if (indexJ >= 2 && indexJ <= 11) {
+                    if (indexJ >= 2 && indexJ <= 11 && neiberIndex2 >= Game.startIndex) {
                         if (isSame || (newi + moveTimes) % 2 == 0 || j < rangej) {
                             if (this.data[neiberIndex2] && this.data[neiberIndex2].bubble && !isBlank) {
                                 neibers.push(neiberIndex2);
@@ -343,7 +343,7 @@ import { Game } from "../Controller/Game";
                 ) {
 
                     let indexJ = this.index2j(neiberIndex3);
-                    if (indexJ >= 2 && indexJ <= 11) {
+                    if (indexJ >= 2 && indexJ <= 11 && neiberIndex3 >= Game.startIndex) {
                         if (isSame || (newi + moveTimes) % 2 || j < rangej) {
                             if (this.data[neiberIndex3] && this.data[neiberIndex3].bubble && !isBlank) {
                                 neibers.push(neiberIndex3);
@@ -360,7 +360,7 @@ import { Game } from "../Controller/Game";
                 ) {
 
                     let indexJ = this.index2j(neiberIndex4);
-                    if (indexJ >= 2 && indexJ <= 11) {
+                    if (indexJ >= 2 && indexJ <= 11 && neiberIndex4 >= Game.startIndex) {
                         if (isSame || (newi + moveTimes) % 2 || j < rangej) {
                             if (this.data[neiberIndex4] && this.data[neiberIndex4].bubble && !isBlank) {
                                 neibers.push(neiberIndex4);

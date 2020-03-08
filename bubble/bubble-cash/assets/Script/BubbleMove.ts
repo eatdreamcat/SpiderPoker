@@ -4,6 +4,7 @@ import { GlobalEvent } from "./Controller/EventName";
 import { Game } from "./Controller/Game";
 import { BubbleSize } from "./Const";
 import { gFactory } from "./Controller/GameFactory";
+import { SpecialType } from "./Data/BubbleMatrix";
 
 
 const {ccclass, property} = cc._decorator;
@@ -131,10 +132,27 @@ export default class BubbleMove extends cc.Component {
                 }
 
 
-                //let targetNeibers = bubbleMatrix.getNeiborMatrix(targetIndex, 1, false);
+                let callback = () => {
+                    Game.checkClear(this.bubble.getIndex(), this.bubble, bubble);
 
-
+                    Game.updateCollisionIndexes();
                 
+                    gEventMgr.emit(GlobalEvent.NEXT_BUBBLE);
+                }
+
+                /** 变色球 */
+                if(this.bubble.Type == SpecialType.Magic) {
+                    if (bubble.Type != SpecialType.Magic) {
+                        this.bubble.setColor(bubble.Color, SpecialType.Normal);
+                        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_color");
+                        this.bubble.playAnimation('bubble_change');
+                    }
+                } else if (bubble.Type == SpecialType.Magic) {
+                    bubble.setColor(this.bubble.Color, SpecialType.Normal);
+                    bubble.playAnimation('bubble_change');
+                    gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_color");
+                    //callback = null;
+                }
 
                 bubble.onCollision();
 
@@ -144,7 +162,7 @@ export default class BubbleMove extends cc.Component {
 
 
                 // 碰撞
-                this.onCollision(targetIndex, index);
+                this.onCollision(targetIndex, callback);
             
                 
                 break;
@@ -154,7 +172,7 @@ export default class BubbleMove extends cc.Component {
     }
 
     /** 飞行碰到泡泡 */
-    onCollision(targetIndex: number, collsion: number) {
+    onCollision(targetIndex: number, callback?: Function) {
 
         let factor = Math.abs(this.speed.x / this.speed.y);
         
@@ -189,13 +207,9 @@ export default class BubbleMove extends cc.Component {
             cc.moveTo(0.1, targetPos),
             cc.callFunc(()=>{
 
+                callback && callback();
                 
                 
-                Game.checkClear(this.bubble.getIndex(), this.bubble);
-
-                Game.updateCollisionIndexes();
-                
-                gEventMgr.emit(GlobalEvent.NEXT_BUBBLE);
 
             }, this)
         ));
@@ -288,7 +302,7 @@ export default class BubbleMove extends cc.Component {
 
         Game.addBubbleDrop(this.bubble.Color);
 
-        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "drop")
+        
     }
 
 
@@ -320,8 +334,8 @@ export default class BubbleMove extends cc.Component {
                  if (this.isDrop && pos.y <= DropBorder) {
                      this.enabled = false;
                      this.scaleBubble(1.1, 0.9);
-
-                     let score = this.bubble.isDouble ? BubbleDropScore * 2 : BubbleDropScore;
+                     gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "drop")
+                     let score = this.bubble.DoubleScore ? BubbleDropScore * 2 : BubbleDropScore;
                      Game.addScore(this.bubble.Color, score, 1, 
                         CMath.ConvertToNodeSpaceAR(this.node, Game.TopNode).add(cc.v2(BubbleSize.width*0.5, BubbleSize.height*0.5)));
 

@@ -21,22 +21,26 @@ const POINT_COUNT = 200;
 
 /** 点点颜色sprite名字 */
 const PointColor = {
+    0:   "bg_pointrainbow",
     1:   "bg_pointblue",
     2:   "bg_pointgreen",
     3:   "bg_pointorange",
     4:   "bg_pointpurple",
     5:   "bg_pointred",
-    6:   "bg_pointyellow"
+    6:   "bg_pointyellow",
+    7:   "bg_pointhorse"
 } 
 
 /** 点点颜色sprite名字 */
 const SignColor = {
+    0:   "bg_signrainbow",
     1:   "bg_signblue",
     2:   "bg_signgreen",
     3:   "bg_signorange",
     4:   "bg_signpurple",
     5:   "bg_signred",
-    6:   "bg_signyellow"
+    6:   "bg_signyellow",
+    7:   "bg_signhorse"
 } 
 
 

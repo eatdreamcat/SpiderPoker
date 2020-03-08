@@ -53,7 +53,7 @@ class AudioController {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.audioID["bgm"] = this.play("bgm", true, 2, true);
+    this.audioID["bgm"] = this.play("bgm", true, 0.5, true);
 
     gEventMgr.on(
       GlobalEvent.SMALL_BGM,

@@ -1,5 +1,5 @@
 import { BubbleMatrix, SpecialType, MatrixSize, UseSize } from "../Data/BubbleMatrix";
-import { BubbleType, ClearCountLimit, GameTime, BubbleColors } from "../Const";
+import { BubbleType, ClearCountLimit, GameTime, BubbleColors, Season, SeasonPool } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
 import { CollsionOffset, CollsionFactor, CollsionMinFactor } from "../BubbleMove";
@@ -38,6 +38,10 @@ class GameCtrl {
     /** 最大连消次数 */
     private maxStreak: number = 0;
 
+    /** 连续完成任务的次数 */
+    private taskStreak: number = 0;
+    private maxTaskStreak: number = 0;
+
     /** 每种颜色的泡泡得分 */
     private bubbleScore = {};
     
@@ -75,6 +79,12 @@ class GameCtrl {
     /** 最上面一排的开始index */
     private _startIndex: number = 58;
 
+    private season: Season;
+
+    public get Season() {
+        return this.season;
+    }
+
     public get startIndex() {
         return this._startIndex;
     }
@@ -95,14 +105,24 @@ class GameCtrl {
         this.gameTime = GameTime;
         this.streak = 0;
         this.maxStreak = 0;
+
+        this.taskStreak = 0;
+        this.maxTaskStreak = 0;
         
         for (let color of BubbleColors) {
             this.bubbleClear[color] = 0;
             this.bubbleDrop[color] = 0;
             this.bubbleScore[color] = 0;
         }
+
+        this.season = SeasonPool[Math.floor(CMath.getRandom(0, SeasonPool.length))];
     }
 
+
+    /** 获取任务的轮数 */
+    public getTaskLength() {
+        return this.targets.length;
+    }
 
 
     /** 获取当前这一轮的目标 */
@@ -293,21 +313,44 @@ class GameCtrl {
 
 
     /** 检测消除泡泡 */
-    public checkClear(index: number, checkBubble: Bubble) {
+    public checkClear(index: number, checkBubble: Bubble, colisionBubble: Bubble) {
 
 
         this.clearIndex.length = 0;
         
-        this.checkRecurily(index, checkBubble);
-        console.log(' --------------- 检测消除 start---------------:', this.startIndex)
-        console.log(this.clearIndex);
-        console.log(' --------------- 检测消除 end---------------')
+        if (checkBubble.Type == SpecialType.Horce) {
 
-        if (this.clearIndex.length < ClearCountLimit) {
+            console.log('小马球')
+            this.clearIndex.push(index);
+            for (let i = this.startIndex; i < this.bubbleMatrix.data.length; i ++) {
+                if (!this.bubbleMatrix.data[i] ||
+                    !this.bubbleMatrix.data[i].bubble ||
+                    !this.bubbleMatrix.data[i].bubble.node.active) {
+                        
+                        continue;
+                }
+
+                if (this.bubbleMatrix.data[i].color == colisionBubble.Color) {
+                    
+                    this.clearIndex.push(i)
+                } 
+            }
+           
+        } else {
+            this.checkRecurily(index, checkBubble);
+        }
+
+        
+
+        if (this.clearIndex.length < ClearCountLimit && checkBubble.Type != SpecialType.Horce) {
             this.clearIndex.length = 0;
             this.streak = 0;
             return;
         }
+
+        console.log(' --------------- 检测消除 start---------------:', this.startIndex)
+        console.log(this.clearIndex);
+        console.log(' --------------- 检测消除 end---------------')
 
         this.checkBoomBubble(this.clearIndex);
 
@@ -326,11 +369,28 @@ class GameCtrl {
 
         this.lastIndex = i;
 
+        let hasDouble: boolean = false;
+        for(let i = 0; i < this.clearIndex.length; i++) {
+            let clear = this.clearIndex[i];
+            let bubble = this.bubbleMatrix.data[clear].bubble;
+            if (!bubble) continue;
+            if (bubble.isDouble) {
+                hasDouble = true;
+                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "double_score");
+                break;
+            }
+        }
+
+        if (checkBubble.Type == SpecialType.Horce) {
+            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "super_clear");
+            gEventMgr.emit(GlobalEvent.HORCE_CLEAR)
+        }
 
         for(let i = 0; i < this.clearIndex.length; i++) {
             let clear = this.clearIndex[i];
             let bubble = this.bubbleMatrix.data[clear].bubble;
             if (!bubble) continue;
+            if (hasDouble) bubble.DoubleScore = true;
             bubble.onClear(i * 0.1, index);
             this.bubbleMatrix.data[clear].bubble = null;
             this.bubbleMatrix.data[clear].color = BubbleType.Blank;
@@ -345,6 +405,8 @@ class GameCtrl {
         this.checkAddBubble();
 
         this.addTarget(1);
+
+        gEventMgr.emit(GlobalEvent.CHECK_TREASURE);
     }
 
     /** 检测是都需要下移泡泡 */
@@ -425,6 +487,18 @@ class GameCtrl {
 
         this.dropIndex.length = 0;
 
+    }
+
+
+    addTaskStreak(streak: number) {
+        this.taskStreak += streak;
+        this.taskStreak = Math.max(0, this.taskStreak);
+        console.error(' task streak:', this.taskStreak)
+        this.maxTaskStreak = Math.max(this.maxTaskStreak, this.taskStreak)
+    }
+
+    getTaskStreak() {
+        return this.taskStreak;
     }
 
     

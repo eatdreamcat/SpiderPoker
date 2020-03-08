@@ -1,13 +1,30 @@
 {
   "collision-matrix": [
     [
-      true
+      false,
+      null,
+      null,
+      null,
+      false
     ],
     [
       false,
       false
     ],
     [
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
+      false,
+      false
+    ],
+    [
+      false,
+      false,
       false,
       false,
       false
@@ -31,15 +48,16 @@
   "group-list": [
     "default",
     "top",
-    "drop"
+    "drop",
+    "effect",
+    "treasure"
   ],
-  "last-module-event-record-time": 1582882948528,
+  "last-module-event-record-time": 1583493253971,
   "simulator-orientation": false,
   "simulator-resolution": {
     "height": 640,
     "width": 960
   },
   "use-customize-simulator": false,
-  "use-project-simulator-setting": false,
-  "start-scene": "current"
+  "use-project-simulator-setting": false
 }
