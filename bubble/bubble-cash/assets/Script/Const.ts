@@ -59,11 +59,11 @@ export enum BubbleType {
     Red,
     Yellow,
     Horce,
-    Treasure_200,
-    Treasure_400,
-    Treasure_600,
-    Treasure_800,
-    Treasure_1000
+    Treasure_200 = 200,
+    Treasure_400 = 400,
+    Treasure_600 = 600,
+    Treasure_800 = 800,
+    Treasure_1000 = 1000
 } 
 
 /** 泡泡颜色随机池 */
@@ -100,7 +100,7 @@ export const ClearTargetRange = {
 };
 
 /** 游戏时间s */
-export const GameTime = 18000;
+export const GameTime = 180;
 
 /** 目标生成概率的改变时间点 */
 export const TargetRandomLimit = 120;
@@ -211,19 +211,20 @@ export const TreasurePool = [TreasureType.Level_1000, TreasureType.Level_800, Tr
 
 /** 宝藏获得图标 */
 export const Treasure_Top = {
+    
     0: {
-        200: "bg_smfinish200",
-        400: "bg_smfinish400",
-        600: "bg_smfinish600",
-        800: "bg_smfinish800",
-        1000: "bg_smfinish1000"
-    },
-    1: {
         200: "bg_sfinish200",
         400: "bg_sfinish400",
         600: "bg_sfinish600",
         800: "bg_sfinish800",
         1000: "bg_sfinish1000"
+    },
+    1: {
+        200: "bg_smfinish200",
+        400: "bg_smfinish400",
+        600: "bg_smfinish600",
+        800: "bg_smfinish800",
+        1000: "bg_smfinish1000"
     },
     2: {
         200: "bg_afinish200",
@@ -239,4 +240,9 @@ export const Treasure_Top = {
         800: "bg_wfinish800",
         1000: "bg_wfinish1000"
     },
+}
+
+export enum OverType {
+    OUT_OF_MOVE,
+    TIME_UP
 }

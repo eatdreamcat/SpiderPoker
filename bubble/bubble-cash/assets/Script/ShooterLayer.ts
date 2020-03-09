@@ -17,7 +17,7 @@ const POINT_OFFSET = 60;
 
 const POINT_OPCIATY = 200;
 
-const POINT_COUNT = 200;
+const POINT_COUNT = 20;
 
 /** 点点颜色sprite名字 */
 const PointColor = {
@@ -173,7 +173,8 @@ export default class ShooterLayer extends cc.Component {
 
         if (!Game.isStart) return;
 
-
+        this.ShooterStar.active = true;
+        this.Point.active = true;
         this.updateStarPosition(e.getLocation());
     }
 

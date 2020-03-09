@@ -99,6 +99,8 @@ class AudioController {
     isBgm: boolean = false,
     timePass: number = 0
   ): number {
+
+    
     if (!AudioController.canPlay && !AudioController.hasBindTouch) {
       AudioController.hasBindTouch = true;
       let self = this;
@@ -116,6 +118,8 @@ class AudioController {
             item.loop,
             item.volume
           );
+
+          
           if (item.isBgm) {
             self.audioID["bgm"] = audioID;
             cc.audioEngine.setCurrentTime(
@@ -134,6 +138,7 @@ class AudioController {
 
       cc.game.canvas.addEventListener("touchstart", playFunc);
     }
+
 
     if (!this.clips.get(clipName)) {
       let now = Date.now();
@@ -160,14 +165,31 @@ class AudioController {
       return -1;
     }
 
+    
+
     if (AudioController.canPlay) {
+      //if (this.audioID[clipName] >= 0) return this.audioID[clipName];
+
       let audioID = cc.audioEngine.play(this.clips.get(clipName), loop, volume);
+      //console.error(' duration:', cc.audioEngine.getDuration(audioID),cc.sys.os.toLowerCase() , cc.sys.OS_IOS.toLowerCase())
       cc.audioEngine.setCurrentTime(
         audioID,
         timePass % cc.audioEngine.getDuration(audioID)
       );
       return audioID;
+
     } else {
+
+      let hasAdd = false;
+      for (let clipItem of AudioController.PlayedList) {
+        if (clipItem.clipName == clipName) {
+          hasAdd = true;
+          break;
+        }
+      }
+
+      if (hasAdd) return -2;
+
       AudioController.PlayedList.push({
         clipName: clipName,
         loop: loop,
@@ -176,6 +198,7 @@ class AudioController {
         skip: false,
         isBgm: isBgm
       });
+
       return -2;
     }
   }

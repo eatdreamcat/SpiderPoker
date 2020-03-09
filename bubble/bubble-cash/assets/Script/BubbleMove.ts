@@ -19,7 +19,7 @@ const ShootSpeed = 4800;
 const ShootAcceleration = 800;
 
 /** 掉落的地板 */
-const DropBorder = -688;
+export const DropBorder = -688;
 
 /** 碰撞衰减系数 */
 export const CollsionFactor = 0.3;
@@ -142,12 +142,12 @@ export default class BubbleMove extends cc.Component {
 
                 /** 变色球 */
                 if(this.bubble.Type == SpecialType.Magic) {
-                    if (bubble.Type != SpecialType.Magic) {
+                    if (bubble.Type != SpecialType.Magic && bubble.node.active) {
                         this.bubble.setColor(bubble.Color, SpecialType.Normal);
                         gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_color");
                         this.bubble.playAnimation('bubble_change');
                     }
-                } else if (bubble.Type == SpecialType.Magic) {
+                } else if (bubble.Type == SpecialType.Magic && bubble.node.active && this.bubble.Type != SpecialType.Horce) {
                     bubble.setColor(this.bubble.Color, SpecialType.Normal);
                     bubble.playAnimation('bubble_change');
                     gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_color");
@@ -209,7 +209,7 @@ export default class BubbleMove extends cc.Component {
 
                 callback && callback();
                 
-                
+                Game.checkOutOfMove();
 
             }, this)
         ));

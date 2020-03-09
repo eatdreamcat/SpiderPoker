@@ -601,28 +601,6 @@
       "borderRight": 0,
       "spriteType": "normal",
       "subMetas": {}
-    },
-    "rainbowlight.png": {
-      "ver": "1.0.3",
-      "uuid": "92b0931a-c69f-49fa-814b-8f26f732e988",
-      "rawTextureUuid": "fd3ad670-ab92-45c2-9242-45b23d2cc6fa",
-      "trimType": "auto",
-      "trimThreshold": 1,
-      "rotated": false,
-      "offsetX": 0,
-      "offsetY": 0,
-      "trimX": 1275,
-      "trimY": 99,
-      "width": 96,
-      "height": 96,
-      "rawWidth": 96,
-      "rawHeight": 96,
-      "borderTop": 0,
-      "borderBottom": 0,
-      "borderLeft": 0,
-      "borderRight": 0,
-      "spriteType": "normal",
-      "subMetas": {}
     }
   }
 }

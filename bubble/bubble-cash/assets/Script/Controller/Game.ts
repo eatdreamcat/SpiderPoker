@@ -1,8 +1,8 @@
 import { BubbleMatrix, SpecialType, MatrixSize, UseSize } from "../Data/BubbleMatrix";
-import { BubbleType, ClearCountLimit, GameTime, BubbleColors, Season, SeasonPool } from "../Const";
+import { BubbleType, ClearCountLimit, GameTime, BubbleColors, Season, SeasonPool, OverType } from "../Const";
 import { gFactory } from "./GameFactory";
 import Bubble from "../Bubble";
-import { CollsionOffset, CollsionFactor, CollsionMinFactor } from "../BubbleMove";
+import { CollsionOffset, CollsionFactor, CollsionMinFactor, DropBorder } from "../BubbleMove";
 import { gEventMgr } from "./EventManager";
 import { GlobalEvent } from "./EventName";
 
@@ -118,6 +118,10 @@ class GameCtrl {
         this.season = SeasonPool[Math.floor(CMath.getRandom(0, SeasonPool.length))];
     }
 
+    public getBubbleScore() {
+        return this.bubbleScore;
+    }
+
 
     /** 获取任务的轮数 */
     public getTaskLength() {
@@ -224,7 +228,29 @@ class GameCtrl {
         if (this.gameTime <= 0) {
             this.gameTime = 0;
             this.isStart = false;
-            gEventMgr.emit(GlobalEvent.GAME_OVER);
+            gEventMgr.emit(GlobalEvent.GAME_OVER, OverType.TIME_UP);
+        }
+    }
+
+
+    /** 检测是否到底 */
+    checkOutOfMove() {
+        let lastBubble: Bubble = null;
+        for (let i = this.bubbleMatrix.data.length - 1; i >= this.startIndex; i--) {
+            if (!this.bubbleMatrix.data[i] || !this.bubbleMatrix.data[i].bubble || !this.bubbleMatrix.data[i].bubble.node.active) {
+                continue;
+            }
+
+            lastBubble = this.bubbleMatrix.data[i].bubble;
+            break;
+        }
+
+        if (lastBubble) {
+            let pos = CMath.ConvertToNodeSpaceAR(lastBubble.node, lastBubble.node.getParent().getParent());
+            console.log(' check out of move:', pos.y)
+            if (pos.y <= DropBorder) {
+                gEventMgr.emit(GlobalEvent.GAME_OVER, OverType.OUT_OF_MOVE)
+            }
         }
     }
 
@@ -275,6 +301,9 @@ class GameCtrl {
 
     /** 增加某颜色泡泡的得分 */
     addBubbleScore(color: BubbleType, score: number) {
+
+        
+        if (!this.bubbleScore[color]) this.bubbleScore[color] = 0;
         this.bubbleScore[color] += score;
     }
 
@@ -402,11 +431,13 @@ class GameCtrl {
 
         this.checkBubbleDrop();
 
-        this.checkAddBubble();
+        
 
         this.addTarget(1);
 
         gEventMgr.emit(GlobalEvent.CHECK_TREASURE);
+
+        this.checkAddBubble();
     }
 
     /** 检测是都需要下移泡泡 */

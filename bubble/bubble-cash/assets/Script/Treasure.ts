@@ -23,6 +23,7 @@ export default class Treasure extends cc.Component {
 
 
     onLoad() {
+        this.node.group = "default"
         this.node.opacity = 255;
         gEventMgr.on(GlobalEvent.CHECK_TREASURE, ()=>{
             if (!Game.isStart) return;
@@ -59,7 +60,7 @@ export default class Treasure extends cc.Component {
 
 
         if (!this.isCollider) {
-            this.node.group = "top";
+           
             this.getTreasure();
         }
     }
@@ -79,10 +80,13 @@ export default class Treasure extends cc.Component {
         //     cc.fadeTo(time / 2, 0)
         // ));
 
+        this.node.group = "treasure";
         this.node.runAction(cc.sequence(
-            cc.scaleTo(0.1, 1.2),
-            cc.delayTime(0.15),
+            cc.delayTime(0.1),
+            cc.scaleTo(0.1, 1.2 * 1.2),
+            cc.delayTime(0.3),
             cc.callFunc(() => {
+               
                 Game.addScore(BubbleType["Treasure_" + this.node.name], parseInt(this.node.name), parseInt(this.node.name) / 200 * 0.1 + 1, CMath.ConvertToNodeSpaceAR(this.node, Game.TopNode))
             }),
             cc.scaleTo(0.1, 1),

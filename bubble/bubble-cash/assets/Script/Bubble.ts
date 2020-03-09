@@ -175,7 +175,15 @@ export default class Bubble extends cc.Component {
         }
 
         this.index = index;
-        //this.IndexLabel.string = index.toString();
+        //
+    }
+
+    updateIndex() {
+        if (this.IndexLabel.string == "") {
+            this.IndexLabel.string = this.index.toString();
+        } else {
+            this.IndexLabel.string = "";
+        }
     }
 
     getIndex(): number {
@@ -206,6 +214,16 @@ export default class Bubble extends cc.Component {
 
 
         this.node["_onSetParent"] = this.onSetParent.bind(this);
+
+        if (CC_DEBUG) {
+            cc.systemEvent.on(cc.SystemEvent.EventType.KEY_UP, event =>{
+                switch (event.keyCode) {
+                    case cc.macro.KEY.w:
+                        this.updateIndex()
+                    break;
+                }
+            }, this);
+        }
     }
 
     updateActive(delay: number = 0) {

@@ -409,21 +409,6 @@
                 <key>textureRotated</key>
                 <false/>
             </dict>
-            <key>rainbowlight.png</key>
-            <dict>
-                <key>aliases</key>
-                <array/>
-                <key>spriteOffset</key>
-                <string>{0,0}</string>
-                <key>spriteSize</key>
-                <string>{96,96}</string>
-                <key>spriteSourceSize</key>
-                <string>{96,96}</string>
-                <key>textureRect</key>
-                <string>{{1275,99},{96,96}}</string>
-                <key>textureRotated</key>
-                <false/>
-            </dict>
         </dict>
         <key>metadata</key>
         <dict>
@@ -438,7 +423,7 @@
             <key>size</key>
             <string>{1372,196}</string>
             <key>smartupdate</key>
-            <string>$TexturePacker:SmartUpdate:4b547b06908b6538b8127d14106a406e:dcca7a39045f76da453a0c3e0fb8bf75:5369421b7db6c1582170f91eec95f4fd$</string>
+            <string>$TexturePacker:SmartUpdate:a47946c4c744ea4a2ccd36ad6ee3e40f:5963a894d7e6c43488c53af44c523db4:5369421b7db6c1582170f91eec95f4fd$</string>
             <key>textureFileName</key>
             <string>bubbles.png</string>
         </dict>

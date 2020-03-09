@@ -1,6 +1,6 @@
 import { gFactory } from "./Controller/GameFactory";
 import { Game } from "./Controller/Game";
-import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange, ShooterDoubleBubbleRange, ShooterDoubleRange, ShooterBoomBubbleRange, ShooterBoomRange, ShooterMagicRange, ShooterMagicBubbleRange, TaskStreakAward, Season, Treasure_Top, TreasureType } from "./Const";
+import { BubbleColor, BubbleHeightOffset, BubbleYOffset, BubbleXOffset, BubbleSize, BubbleQueRange, DefaultTaskCount, BubbleType, BubbleColors, BubbleLightColor, GameTime, TargetRandomLimit, ClearTargetRange, ShooterDoubleBubbleRange, ShooterDoubleRange, ShooterBoomBubbleRange, ShooterBoomRange, ShooterMagicRange, ShooterMagicBubbleRange, TaskStreakAward, Season, Treasure_Top, TreasureType, OverType } from "./Const";
 import { MatrixSize, UseSize, SpecialType } from "./Data/BubbleMatrix";
 import Bubble from "./Bubble";
 import { gEventMgr } from "./Controller/EventManager";
@@ -9,6 +9,7 @@ import { gAudio } from "./Controller/AudioController";
 import { GlobalEvent } from "./Controller/EventName";
 import Guide from "./Guide";
 import Treasure from "./Treasure";
+import ResultLayer from "./ResultLayer";
 const celerx = require("./Utils/celerx");
 
 enum Step {
@@ -75,6 +76,9 @@ export default class GameScene extends cc.Component {
 
     @property(cc.Node)
     SmallTreasure: cc.Node = null;
+
+    @property(cc.SpriteAtlas)
+    ResultTitle: cc.SpriteAtlas = null;
    
 
     /** 节点 */
@@ -161,7 +165,22 @@ export default class GameScene extends cc.Component {
      */
     celerOnStart() {
 
+        let match = celerx.getMatch();
+        if (match && match.sharedRandomSeed) {
+          CMath.randomSeed = match.sharedRandomSeed;
+          CMath.sharedSeed = match.sharedRandomSeed;
+        } else {
+          CMath.randomSeed = Math.random();
+        }
+    
+        if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
+          this.Guide.show();
          
+        } else {
+          this.Guide.hide();
+        }
+
+
          let takeImage = false;
          const canvas = document.getElementsByTagName("canvas")[0];
          cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
@@ -264,6 +283,29 @@ export default class GameScene extends cc.Component {
         gEventMgr.on(GlobalEvent.NEXT_BUBBLE, this.getShooterBubble, this);
         gEventMgr.on(GlobalEvent.ADD_SCORE, this.addScore, this);
 
+        gEventMgr.on(GlobalEvent.GAME_OVER, (type: OverType)=>{
+            gEventMgr.off(GlobalEvent.GAME_OVER);
+            Game.isStart = false;
+            cc.loader.loadRes("prefabs/" + Season[Game.Season] + "/ResultLayer", cc.Prefab, (err, prefab)=>{
+                if (err) {
+                    cc.error('load result :', err);
+                    celerx.submitScore(Game.getScore());
+                } else {
+
+                    let title: cc.SpriteFrame;
+                    if (type == OverType.OUT_OF_MOVE) {
+                        title = this.ResultTitle.getSpriteFrame("bg_result_font2")
+                    } else {
+                        title = this.ResultTitle.getSpriteFrame("bg_result_font1")
+                    }
+
+                    let resultLayer: cc.Node = cc.instantiate(prefab);
+                    resultLayer.getComponent(ResultLayer).setTexture(title);
+                    this.node.addChild(resultLayer);
+                }
+            })
+        }, this);
+
         if (CC_DEBUG) {
             cc.director.on("space-press", ()=>{
                 this.addNextBubble(3);
@@ -310,7 +352,12 @@ export default class GameScene extends cc.Component {
         bubbleMatrix.moveRow(1);
         
         this.BubbleLayer.height += (BubbleSize.height + BubbleHeightOffset);
-        this.BubbleLayer.runAction(cc.moveBy(0.2, 0, -(BubbleSize.height + BubbleHeightOffset)));
+        this.BubbleLayer.runAction(cc.sequence(
+            cc.moveBy(0.2, 0, -(BubbleSize.height + BubbleHeightOffset)),
+            cc.callFunc(()=>{
+                Game.checkOutOfMove();
+            }, this)
+            ));
 
         this.addBubble(bubbleMatrix.index2i(Game.startIndex) - 1, bubbleMatrix.index2i(Game.startIndex) - 1, 2, 11, 1);
 
