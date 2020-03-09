@@ -94,7 +94,8 @@ enum Step {
   Point = 1 << 3,
   Task = 1 << 4,
   Score = 1 << 5,
-  DONE = Bubble | Point | Task | Score
+  Font = 1 << 6,
+  DONE = Bubble | Point | Task | Score | Font
 }
 
 class GameFactory {
@@ -111,13 +112,15 @@ class GameFactory {
     bubble?: cc.Prefab,
     point?: cc.Prefab,
     task?: cc.Prefab,
-    score?: cc.Prefab
+    score?: cc.Prefab,
+    font?: cc.Prefab
   ) {
     this.doneCallback = callback;
     this.initBubble(200, bubble);
     this.initPoint(20, point);
     this.initTask(8, task);
     this.initScore(30, score);
+    this.initFont(5, font);
   }
 
   private nextStep(step: Step) {
@@ -231,6 +234,32 @@ class GameFactory {
 
   putScore(Score: cc.Node) {
     this.ScorePool.get("Score").put(Score);
+  }
+
+  private FontPool: HashMap<string, ObjPool> = new HashMap();
+  initFont(initCount: number, prefab?: cc.Prefab) {
+    let self = this;
+    if (prefab) {
+      self.FontPool.add("Font", new ObjPool(prefab, initCount));
+      self.nextStep(Step.Font);
+    } else {
+      cc.loader.loadRes("prefabs/Font", cc.Prefab, (err, prefabRes) => {
+        if (err) {
+          console.error(err);
+        } else {
+          self.FontPool.add("Font", new ObjPool(prefabRes, initCount));
+          self.nextStep(Step.Font);
+        }
+      });
+    }
+  }
+
+  getFont(...args): cc.Node {
+    return this.FontPool.get("Font").get(args);
+  }
+
+  putFont(Font: cc.Node) {
+    this.FontPool.get("Font").put(Font);
   }
   
 }

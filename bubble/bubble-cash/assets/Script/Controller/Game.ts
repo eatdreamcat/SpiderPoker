@@ -21,6 +21,8 @@ class GameCtrl {
 
     public TopNode: cc.Node = null;
 
+    public FontRoot: cc.Node = null;
+
     /** 下移的次数 */
     private moveTimes: number = 0;
     /**
@@ -384,6 +386,21 @@ class GameCtrl {
         this.checkBoomBubble(this.clearIndex);
 
         this.streak ++;
+        if (this.streak >= 2) {
+            gEventMgr.emit(GlobalEvent.SHOW_STREAK, true, this.streak);
+        }
+
+        if (this.clearIndex.length >= 5) {
+            if (this.clearIndex.length <= 8) {
+                gEventMgr.emit(GlobalEvent.SHOW_STREAK, false, 4);
+            } else if (this.clearIndex.length <= 12) {
+
+                gEventMgr.emit(GlobalEvent.SHOW_STREAK, false, 5);
+            } else {
+                gEventMgr.emit(GlobalEvent.SHOW_STREAK, false, 6);
+            }
+        }
+
         this.maxStreak = Math.max(this.streak, this.maxStreak);
 
         let length = this.bubbleMatrix.data.length;
@@ -440,6 +457,7 @@ class GameCtrl {
         this.checkAddBubble();
     }
 
+    
     /** 检测是都需要下移泡泡 */
     private checkAddBubble() {
         let count = 0;

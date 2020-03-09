@@ -53,13 +53,13 @@ class AudioController {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.audioID["bgm"] = this.play("bgm", true, 0.5, true);
+    this.audioID["bgm"] = this.play("bgm", true, 1, true);
 
     gEventMgr.on(
       GlobalEvent.SMALL_BGM,
       () => {
         if (this.audioID["bgm"] != null) {
-          cc.audioEngine.setVolume(this.audioID["bgm"], 0.9);
+          cc.audioEngine.setVolume(this.audioID["bgm"], 0.5);
         }
       },
       this
@@ -69,7 +69,18 @@ class AudioController {
       GlobalEvent.NORMAL_BGM,
       () => {
         if (this.audioID["bgm"] != null) {
-          cc.audioEngine.setVolume(this.audioID["bgm"], 2);
+          cc.audioEngine.setVolume(this.audioID["bgm"], 1);
+        }
+      },
+      this
+    );
+
+    gEventMgr.on(
+      GlobalEvent.CHANGE_BGM,
+      (name: string) => {
+        if (this.audioID["bgm"] != null) {
+          this.stop(this.audioID["bgm"], "bgm");
+          this.audioID["bgm"] = this.play(name,true, 1, true)
         }
       },
       this

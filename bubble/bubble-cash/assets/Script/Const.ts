@@ -63,7 +63,8 @@ export enum BubbleType {
     Treasure_400 = 400,
     Treasure_600 = 600,
     Treasure_800 = 800,
-    Treasure_1000 = 1000
+    Treasure_1000 = 1000,
+    Streak
 } 
 
 /** 泡泡颜色随机池 */

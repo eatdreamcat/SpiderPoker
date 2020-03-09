@@ -66,6 +66,11 @@ export default class ResultLayer extends cc.Component {
 
     onLoad() {
 
+
+        for(let child of this.TreasureRoot.children) {
+            child.getChildByName('icon').opacity = 0;
+        }
+        
        let bubbleScore = Game.getBubbleScore();
         
         console.log(bubbleScore)

@@ -12,7 +12,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "ScoreFloat",
+    "_name": "Font",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -36,18 +36,18 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 0,
-      "height": 21.92
+      "width": 511,
+      "height": 141
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
       "x": 0.5,
-      "y": 0.5
+      "y": 0
     },
     "_position": {
       "__type__": "cc.Vec3",
-      "x": -1038,
-      "y": 242,
+      "x": 0,
+      "y": 0,
       "z": 0
     },
     "_scale": {
@@ -68,11 +68,11 @@
     "_skewX": 0,
     "_skewY": 0,
     "_zIndex": 0,
-    "groupIndex": 3,
+    "groupIndex": 4,
     "_id": ""
   },
   {
-    "__type__": "cc.Label",
+    "__type__": "cc.Sprite",
     "_name": "",
     "_objFlags": 0,
     "node": {
@@ -81,22 +81,24 @@
     "_enabled": true,
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
-    "_string": "",
-    "_N$string": "",
-    "_fontSize": 40,
-    "_lineHeight": 40,
-    "_enableWrapText": true,
-    "_N$file": {
-      "__uuid__": "5c1ea74e-4ff3-4f37-b536-1e39a149f3fb"
+    "_spriteFrame": {
+      "__uuid__": "26fbef80-bcd6-4ce9-93a9-92545f6cbc94"
     },
-    "_isSystemFontUsed": false,
-    "_spacingX": 0,
-    "_batchAsBitmap": false,
-    "_N$horizontalAlign": 1,
-    "_N$verticalAlign": 1,
-    "_N$fontFamily": "Arial",
-    "_N$overflow": 0,
+    "_type": 0,
+    "_sizeMode": 1,
+    "_fillType": 0,
+    "_fillCenter": {
+      "__type__": "cc.Vec2",
+      "x": 0,
+      "y": 0
+    },
+    "_fillStart": 0,
+    "_fillRange": 0,
+    "_isTrimmedMode": true,
+    "_state": 0,
+    "_atlas": {
+      "__uuid__": "f23f7542-5a36-489a-acd1-a05c526c4ca2"
+    },
     "_id": ""
   },
   {
@@ -105,9 +107,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "2381d779-f6fb-4f85-851d-4461ab2b443c"
+      "__uuid__": "f287116c-7e23-412b-888e-90bf1cebe700"
     },
-    "fileId": "33Txr+w1dL4Jj8BcQxrgML",
+    "fileId": "2doQSdpEVJubTY+Xj71cWI",
     "sync": false
   }
 ]

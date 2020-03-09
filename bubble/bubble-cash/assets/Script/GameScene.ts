@@ -67,6 +67,18 @@ export default class GameScene extends cc.Component {
     @property(cc.Animation)
     Effect: cc.Animation = null;
 
+    @property(cc.SpriteAtlas)
+    FontAtlas: cc.SpriteAtlas = null;
+
+    @property(cc.SpriteAtlas)
+    TimeFont: cc.SpriteAtlas = null;
+
+    @property(cc.Prefab)
+    FontPrefab: cc.Prefab = null;
+
+    @property(cc.Node)
+    FontRoot: cc.Node = null;
+
 
     @property(cc.Node)
     TreasureRoot: cc.Node = null;
@@ -120,7 +132,7 @@ export default class GameScene extends cc.Component {
     onLoad () {
         
 
-        
+        Game.FontRoot = this.FontRoot;
         Game.BubbleLayer = this.BubbleLayer;
         Game.TopNode = this.TopNode;
 
@@ -141,7 +153,7 @@ export default class GameScene extends cc.Component {
 
         gFactory.init(()=>{
             gStep.nextStep(Step.Prefab);
-        }, this.BubblePrefab, this.PointPrefab, this.TaskPrefab, this.AddScorePrefab);
+        }, this.BubblePrefab, this.PointPrefab, this.TaskPrefab, this.AddScorePrefab, this.FontPrefab);
         
         gAudio.init(()=>{
             gStep.nextStep(Step.Audio);
@@ -149,6 +161,8 @@ export default class GameScene extends cc.Component {
 
 
         this.initEvent();
+
+        this.TimeLabel.node.getChildByName('noTime').opacity = 0;
     }
 
     celerReady() {
@@ -276,6 +290,56 @@ export default class GameScene extends cc.Component {
             if (treasure) {
                 treasure.getComponent(cc.Animation).play();
             }
+        }, this);
+
+        gEventMgr.on(GlobalEvent.SHOW_STREAK, (isStreak: boolean, streak: number) =>{
+
+            let spriteFrame = null;
+            switch(streak) {
+                case 2:
+                    spriteFrame = this.FontAtlas.getSpriteFrame("f_streak")
+                    break;
+                case 3:
+                    spriteFrame = this.FontAtlas.getSpriteFrame("f_sstreak")
+                    break;
+                case 4:
+                    spriteFrame = this.FontAtlas.getSpriteFrame("f_great")
+                    break;
+                case 5: 
+                    spriteFrame = this.FontAtlas.getSpriteFrame("f_awesome")
+                    break;
+                default:
+                    spriteFrame = this.FontAtlas.getSpriteFrame("f_amazing")
+                    break;
+            }
+
+            let fontNode = gFactory.getFont();
+            fontNode.getComponent(cc.Sprite).spriteFrame = spriteFrame;
+            fontNode.scale = 0;
+            fontNode.opacity = 255;
+            this.FontRoot.addChild(fontNode);
+            fontNode.x = 0;
+            let targetScale = 1 + streak * 0.1;
+            fontNode.y = this.FontRoot.childrenCount * (fontNode.height * targetScale + 50);
+            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "font");
+            fontNode.runAction(cc.sequence(
+                cc.scaleTo(0.1, targetScale),
+                cc.delayTime(0.5),
+                cc.callFunc(()=>{
+                    if (isStreak) {
+                        let baseScore = 25;
+                        let streakScore = 15;
+                        Game.addScore(BubbleType.Streak, baseScore + (streak - 2) * streakScore, (streak - 2) * 0.3 + 2,
+                        CMath.ConvertToNodeSpaceAR(fontNode, this.TopNode).add(cc.v2(fontNode.width / 2, fontNode.height / 2)))
+                    }
+                }, this),
+                cc.scaleTo(0.1, 1),
+                cc.fadeTo(0.1, 0),
+                cc.callFunc(()=>{
+                    gFactory.putFont(fontNode)
+                }, this)
+            ));
+            
         }, this);
 
         gEventMgr.on(GlobalEvent.ADD_BUBBLE, this.addNextBubble, this);
@@ -425,7 +489,6 @@ export default class GameScene extends cc.Component {
             cc.fadeTo(0.2, 255),
             cc.moveTo(0.3, 0, 0),
             cc.callFunc(()=>{
-
             })
         ));
 
@@ -546,6 +609,7 @@ export default class GameScene extends cc.Component {
                         if (Game.getTaskStreak() >= TaskStreakAward) {
                             Game.addTaskStreak(-Game.getTaskStreak());
                             gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_horce");
+                            
                             bubble.getComponent(Bubble).setColor(BubbleType.Horce, SpecialType.Horce);
                             bubble.getComponent(Bubble).playAnimation("bubble_horce");
                         }
@@ -742,6 +806,24 @@ export default class GameScene extends cc.Component {
     }
 
 
+    updateTimeCount() {
+        let time = Math.floor(Game.getGameTime());
+        if (time > 5) return;
+
+        let font = this.TimeLabel.node.getChildByName('font').getComponent(cc.Sprite);
+        let timeFrame = this.TimeFont.getSpriteFrame("bg_time" + time);
+        if (font.spriteFrame == timeFrame) return;
+
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT,"count")
+        font.spriteFrame = timeFrame;
+        font.node.runAction(cc.sequence(
+            cc.fadeTo(0.2, 255),
+            cc.scaleTo(0.1, 1.2),
+            cc.delayTime(0.5),
+            cc.scaleTo(0.1, 1),
+            cc.fadeTo(0.1, 0)
+        ));
+    }
 
 
     update (dt: number) {
@@ -751,6 +833,13 @@ export default class GameScene extends cc.Component {
                 Game.addGameTime(-dt);
 
                 this.TimeLabel.string = CMath.TimeFormat(Game.getGameTime());
+
+                if (Math.floor(Game.getGameTime()) == 30 && this.TimeLabel.node.getChildByName("noTime").opacity <= 0) {
+                    this.TimeLabel.getComponent(cc.Animation).play();
+                    gEventMgr.emit(GlobalEvent.CHANGE_BGM, "bgm_30");
+                }
+
+                this.updateTimeCount();
             }
 
             if (this.showScore < this.score) {
