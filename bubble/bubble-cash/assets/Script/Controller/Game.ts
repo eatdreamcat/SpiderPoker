@@ -148,6 +148,8 @@ class GameCtrl {
 
     /** 刷新最新一轮的目标信息 */
     public pushTarget(target: Target) {
+        this.streak = 0;
+        this.taskStreak = 0;
         this.targets.push(target);
     }
 

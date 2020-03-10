@@ -81,6 +81,7 @@ export default class Treasure extends cc.Component {
         // ));
 
         this.node.group = "treasure";
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "get_treasure")
         this.node.runAction(cc.sequence(
             cc.delayTime(0.1),
             cc.scaleTo(0.1, 1.2 * 1.2),

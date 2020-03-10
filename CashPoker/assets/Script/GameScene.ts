@@ -960,7 +960,7 @@ export default class GameScene extends cc.Component {
     cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
       if (takeImage) {
         takeImage = false;
-        celerx.didTakeSnapshot(canvas.toDataURL());
+        celerx.didTakeSnapshot(canvas.toDataURL("image/jpeg", 0.25));
       }
     });
     celerx.provideCurrentFrameData(function () {

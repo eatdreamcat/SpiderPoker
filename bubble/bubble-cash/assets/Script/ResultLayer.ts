@@ -1,5 +1,7 @@
 import { Game } from "./Controller/Game";
 import { TreasurePool } from "./Const";
+import { gEventMgr } from "./Controller/EventManager";
+import { GlobalEvent } from "./Controller/EventName";
 
 // Learn TypeScript:
 //  - [Chinese] https://docs.cocos.com/creator/manual/zh/scripting/typescript.html
@@ -118,6 +120,8 @@ export default class ResultLayer extends cc.Component {
     private show: boolean = false;
 
     showScore() {
+
+        gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "over")
         this.show = true;
         let count = 0;
         let bubbleScore = Game.getBubbleScore();

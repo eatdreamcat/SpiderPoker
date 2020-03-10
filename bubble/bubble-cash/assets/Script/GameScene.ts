@@ -92,6 +92,8 @@ export default class GameScene extends cc.Component {
     @property(cc.SpriteAtlas)
     ResultTitle: cc.SpriteAtlas = null;
    
+    @property(cc.Sprite)
+    ResultFont: cc.Sprite = null;
 
     /** 节点 */
     @property(cc.Node)
@@ -132,6 +134,7 @@ export default class GameScene extends cc.Component {
     onLoad () {
         
 
+        this.ResultFont.node.scale = 0;
         Game.FontRoot = this.FontRoot;
         Game.BubbleLayer = this.BubbleLayer;
         Game.TopNode = this.TopNode;
@@ -167,7 +170,7 @@ export default class GameScene extends cc.Component {
 
     celerReady() {
         celerx.ready();
-        if (CC_DEBUG || true) {
+        if (CC_DEBUG) {
             this.celerOnStart();
         }
     }
@@ -294,18 +297,24 @@ export default class GameScene extends cc.Component {
 
         gEventMgr.on(GlobalEvent.SHOW_STREAK, (isStreak: boolean, streak: number) =>{
 
+            if (!isStreak) return;
+
             let spriteFrame = null;
+           
             switch(streak) {
                 case 2:
                     spriteFrame = this.FontAtlas.getSpriteFrame("f_streak")
                     break;
                 case 3:
+                  
                     spriteFrame = this.FontAtlas.getSpriteFrame("f_sstreak")
                     break;
                 case 4:
+                   
                     spriteFrame = this.FontAtlas.getSpriteFrame("f_great")
                     break;
                 case 5: 
+                   
                     spriteFrame = this.FontAtlas.getSpriteFrame("f_awesome")
                     break;
                 default:
@@ -320,11 +329,11 @@ export default class GameScene extends cc.Component {
             this.FontRoot.addChild(fontNode);
             fontNode.x = 0;
             let targetScale = 1 + streak * 0.1;
-            fontNode.y = this.FontRoot.childrenCount * (fontNode.height * targetScale + 50);
+            fontNode.y = this.FontRoot.childrenCount * (150 * targetScale);
             gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "font");
             fontNode.runAction(cc.sequence(
                 cc.scaleTo(0.1, targetScale),
-                cc.delayTime(0.5),
+                cc.delayTime(0.3),
                 cc.callFunc(()=>{
                     if (isStreak) {
                         let baseScore = 25;
@@ -333,8 +342,8 @@ export default class GameScene extends cc.Component {
                         CMath.ConvertToNodeSpaceAR(fontNode, this.TopNode).add(cc.v2(fontNode.width / 2, fontNode.height / 2)))
                     }
                 }, this),
-                cc.scaleTo(0.1, 1),
-                cc.fadeTo(0.1, 0),
+                cc.spawn(cc.scaleTo(0.2, 1),
+                cc.fadeTo(0.2, 0),),
                 cc.callFunc(()=>{
                     gFactory.putFont(fontNode)
                 }, this)
@@ -350,24 +359,37 @@ export default class GameScene extends cc.Component {
         gEventMgr.on(GlobalEvent.GAME_OVER, (type: OverType)=>{
             gEventMgr.off(GlobalEvent.GAME_OVER);
             Game.isStart = false;
-            cc.loader.loadRes("prefabs/" + Season[Game.Season] + "/ResultLayer", cc.Prefab, (err, prefab)=>{
-                if (err) {
-                    cc.error('load result :', err);
-                    celerx.submitScore(Game.getScore());
-                } else {
+            if (type == OverType.OUT_OF_MOVE) {
+                this.ResultFont.spriteFrame = this.ResultTitle.getSpriteFrame('bg_result_font2');
+            } else {
+                this.ResultFont.spriteFrame = this.ResultTitle.getSpriteFrame("bg_result_font1");
+            }
 
-                    let title: cc.SpriteFrame;
-                    if (type == OverType.OUT_OF_MOVE) {
-                        title = this.ResultTitle.getSpriteFrame("bg_result_font2")
-                    } else {
-                        title = this.ResultTitle.getSpriteFrame("bg_result_font1")
-                    }
-
-                    let resultLayer: cc.Node = cc.instantiate(prefab);
-                    resultLayer.getComponent(ResultLayer).setTexture(title);
-                    this.node.addChild(resultLayer);
-                }
-            })
+            this.ResultFont.node.runAction(cc.sequence(
+                cc.scaleTo(0.1, 1.5),
+                cc.delayTime(0.3),
+                cc.scaleTo(0.1, 1.2),
+                cc.callFunc(()=>{
+                    cc.loader.loadRes("prefabs/" + Season[Game.Season] + "/ResultLayer", cc.Prefab, (err, prefab)=>{
+                        if (err) {
+                            cc.error('load result :', err);
+                            celerx.submitScore(Game.getScore());
+                        } else {
+        
+                            let title: cc.SpriteFrame;
+                            if (type == OverType.OUT_OF_MOVE) {
+                                title = this.ResultTitle.getSpriteFrame("bg_result_font2")
+                            } else {
+                                title = this.ResultTitle.getSpriteFrame("bg_result_font1")
+                            }
+        
+                            let resultLayer: cc.Node = cc.instantiate(prefab);
+                            resultLayer.getComponent(ResultLayer).setTexture(title);
+                            this.node.addChild(resultLayer);
+                        }
+                    })
+                }, this)
+            ))
         }, this);
 
         if (CC_DEBUG) {
@@ -572,6 +594,18 @@ export default class GameScene extends cc.Component {
             bubbleArray.push(BubbleColors[Math.floor(CMath.getRandom() * BubbleColors.length)])
         }
 
+        let lastTask = Game.getCurTarget();
+        if (lastTask.now >= lastTask.target && lastTask.target > 0) {
+            Game.addTaskStreak(1);
+                    // 完成目标
+            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_success");
+        } else {
+            Game.addTaskStreak(-Game.getTaskStreak());
+            // 未完成目标
+            if (lastTask.target > 0) {
+                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_fail");
+            }
+        }
 
         for (let i = 0; i < bubbleArray.length; i++) {
             
@@ -601,13 +635,17 @@ export default class GameScene extends cc.Component {
             if (i == 0) {
                 bubble.x = -200;
                 this.Shooter.addChild(bubble);
+                let horce = false;
+                if (Game.getTaskStreak() >= TaskStreakAward) {
+                    Game.addTaskStreak(-Game.getTaskStreak());
+                    horce = true;
+                }
                 bubble.runAction(cc.spawn(
                     cc.scaleTo(0.2, 1),
                     cc.fadeTo(0.2, 255),
                     cc.moveTo(0.3, 0, 0),
                     cc.callFunc(()=>{
-                        if (Game.getTaskStreak() >= TaskStreakAward) {
-                            Game.addTaskStreak(-Game.getTaskStreak());
+                        if(horce) {
                             gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "change_horce");
                             
                             bubble.getComponent(Bubble).setColor(BubbleType.Horce, SpecialType.Horce);
@@ -654,19 +692,9 @@ export default class GameScene extends cc.Component {
 
         console.error('任务数：', targetCount)
 
-        let lastTask = Game.getCurTarget();
+        
 
-        if (lastTask.now >= lastTask.target && lastTask.target > 0) {
-            Game.addTaskStreak(1);
-                    // 完成目标
-            gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_success");
-        } else {
-            Game.addTaskStreak(-Game.getTaskStreak());
-            // 未完成目标
-            if (lastTask.target > 0) {
-                gEventMgr.emit(GlobalEvent.PLAY_EFFECT, "task_fail");
-            }
-        }
+        
 
         
         if (this.TaskArray.childrenCount > 0) {

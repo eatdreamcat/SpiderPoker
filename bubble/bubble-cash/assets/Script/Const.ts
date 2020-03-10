@@ -207,7 +207,13 @@ export enum TreasureType {
     Level_1000 = 1000
 }
 
-export const TreasurePool = [TreasureType.Level_1000, TreasureType.Level_800, TreasureType.Level_600, TreasureType.Level_400, TreasureType.Level_200]
+export const TreasurePool = [
+    TreasureType.Level_200,
+    TreasureType.Level_400,
+    TreasureType.Level_600,
+    TreasureType.Level_800, 
+    TreasureType.Level_1000  
+]
 
 
 /** 宝藏获得图标 */
