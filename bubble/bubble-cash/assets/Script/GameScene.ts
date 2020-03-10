@@ -170,7 +170,7 @@ export default class GameScene extends cc.Component {
 
     celerReady() {
         celerx.ready();
-        if (CC_DEBUG) {
+        if (CC_DEBUG || true) {
             this.celerOnStart();
         }
     }
