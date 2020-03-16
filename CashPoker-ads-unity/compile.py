@@ -43,12 +43,12 @@ else:
 
 
 
-settingMatchKey = '{#settings}'
-mainMatchKey = '{#main}'
-engineMatchKey = '{#cocosengine}'
-toolMatchKey = '{#tool}'
-projectMatchKey = '{#project}'
-resMapMatchKey = '{#resMap}'
+settingMatchKey = '"{#settings}"'
+mainMatchKey = '"{#main}"'
+engineMatchKey = '"{#cocosengine}"'
+toolMatchKey = '"{#tool}"'
+projectMatchKey = '"{#project}"'
+resMapMatchKey = '"{#resMap}"'
 
 addScriptPathList = [settingScrPath, mainScrPath, engineScrPath, toolSrcPath, projectScrPath]
 
@@ -76,7 +76,7 @@ def read_in_chunks(filePath, chunk_size=1024*1024):
     preName = base64PreList[extName]
     if preName != None:
       base64Str = preName + base64Str
-      print('------ remove :' + filePath)
+      # print('------ remove :' + filePath)
       os.remove(filePath)
     return base64Str
   elif extName == '':
@@ -88,7 +88,7 @@ def read_in_chunks(filePath, chunk_size=1024*1024):
   
   
   file_object = open(filePath)
-  print('------ remove :' + filePath)
+  # print('------ remove :' + filePath)
   os.remove(filePath)
   return file_object.read()
 
