@@ -1,7 +1,16 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker, { CardState } from "./Poker";
-import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex, Empty_Offset, GuidePokers, Poker_Root, Poker_Fly } from "./Pokers";
+import {
+  Pokers,
+  ACTION_TAG,
+  OFFSET_Y,
+  PokerIndex,
+  Empty_Offset,
+  GuidePokers,
+  Poker_Root,
+  Poker_Fly
+} from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Stop from "./Stop";
@@ -23,12 +32,12 @@ export enum LOAD_STEP {
   CELER = 2 << 4,
   GUIDE = 2 << 1,
 
-  CELER_READY = AUDIO  | PREFABS | READY,
+  CELER_READY = AUDIO | PREFABS | READY,
 
   GUIDE_READY = LOAD_STEP.READY |
-  LOAD_STEP.PREFABS |
-  LOAD_STEP.CELER |
-  LOAD_STEP.AUDIO,
+    LOAD_STEP.PREFABS |
+    LOAD_STEP.CELER |
+    LOAD_STEP.AUDIO,
 
   /** 完成 */
   DONE = LOAD_STEP.READY |
@@ -51,7 +60,6 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Node)
   PokerDevl: cc.Node = null;
-
 
   @property(cc.Node)
   GuideEmpty: cc.Node = null;
@@ -136,8 +144,8 @@ export default class GameScene extends cc.Component {
   @property(cc.Node)
   Tip: cc.Node = null;
 
-  @property(cc.SpriteAtlas)
-  TipAtlas: cc.SpriteAtlas = null;
+  // @property(cc.SpriteAtlas)
+  // TipAtlas: cc.SpriteAtlas = null;
 
   @property(cc.Animation)
   SubmitTip: cc.Animation = null;
@@ -163,7 +171,6 @@ export default class GameScene extends cc.Component {
 
   private hasShowSubmitTip: boolean = false;
   init() {
-
     this.SubmitTip.node.active = false;
     // this.Stop.hide();
     this.Complete.node.active = false;
@@ -178,7 +185,6 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
-      
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
@@ -187,9 +193,7 @@ export default class GameScene extends cc.Component {
     }
   }
 
-
   registerGuide() {
-    
     let poker_8 = Game.getPlacePokerRoot().get(1);
     let poker_A_3 = this.PlaceRoot.children[2].children[0];
     let poker_7 = poker_A_3.getComponent(Poker).getNext().node;
@@ -201,127 +205,115 @@ export default class GameScene extends cc.Component {
       /** 把 7 移动到 8 */
       {
         touches: [
-         
-          
           {
             node: poker_8,
-            start: ()=>{
+            start: () => {
               poker_8.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_8.getComponent(Poker).setGuide(false);
-              poker_8.group = "default"
+              poker_8.group = "default";
             },
-            callback:()=>{},
+            callback: () => {},
             isButton: false,
             isAction: true
           },
 
           {
             node: poker_7,
-            start: ()=>{
+            start: () => {
               poker_7.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_7.getComponent(Poker).setGuide(true);
-              poker_7.group = "default"
+              poker_7.group = "default";
             },
-            callback:()=>{},
-            isButton: false,
+            callback: () => {},
+            isButton: false
           },
 
           {
             node: this.GuideEmpty,
-            start: ()=>{},
-            end: ()=>{},
-            callback: ()=>{},
+            start: () => {},
+            end: () => {},
+            callback: () => {},
             isAction: true,
             isButton: false
-          },
+          }
         ]
       },
 
       /** 把 A 移动到 2 */
       {
         touches: [
-         
           {
             node: poker_2_club,
-            start: ()=>{
+            start: () => {
               poker_2_club.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_2_club.getComponent(Poker).setGuide(false);
-              poker_2_club.group = "default"
+              poker_2_club.group = "default";
             },
-            callback:()=>{},
+            callback: () => {},
             isButton: false,
             isAction: true
           },
 
           {
             node: poker_A_3,
-            start: ()=>{
+            start: () => {
               poker_A_3.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_A_3.getComponent(Poker).setGuide(true);
-              poker_A_3.group = "default"
+              poker_A_3.group = "default";
             },
-            callback:()=>{},
+            callback: () => {},
             isButton: false,
             isAction: true
-          },
-
-
+          }
         ]
       },
 
       /** 把 A 移动到 2 */
       {
         touches: [
-         
           {
             node: poker_2_spade,
-            start: ()=>{
+            start: () => {
               poker_2_spade.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_2_spade.getComponent(Poker).setGuide(false);
-              poker_2_spade.group = "default"
+              poker_2_spade.group = "default";
             },
-            callback:()=>{},
+            callback: () => {},
             isButton: false,
             isAction: true
           },
 
           {
             node: poker_A_diamond,
-            start: ()=>{
+            start: () => {
               poker_A_diamond.getComponent(Poker).setGuide(true);
             },
-            end: () =>{
+            end: () => {
               poker_A_diamond.getComponent(Poker).setGuide(true);
-              poker_A_diamond.group = "default"
+              poker_A_diamond.group = "default";
             },
-            callback:()=>{},
+            callback: () => {},
             isButton: false,
             isAction: true
-          },
-
-          
+          }
         ]
-      },
-
-
+      }
     ]);
   }
 
-
   onLoad() {
-
     this.DrawCardAni.node.active = false;
-    this.Guide.node.active  = false;
+    this.Guide.node.active = false;
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
     this.Tip.active = false;
@@ -338,13 +330,15 @@ export default class GameScene extends cc.Component {
       return parseInt(Game.getScore().toString());
     });
 
-    
-
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
-    this.CheatToggle.node.on("toggle", () => {
-      window["cheat"] = this.CheatToggle.isChecked;
-    }, this);
+    this.CheatToggle.node.on(
+      "toggle",
+      () => {
+        window["cheat"] = this.CheatToggle.isChecked;
+      },
+      this
+    );
 
     // init prefabs
 
@@ -365,7 +359,6 @@ export default class GameScene extends cc.Component {
 
     this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
 
-
     gEventMgr.on(GlobalEvent.RESTART_PLAY_AD, this.startAdVersion, this);
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
@@ -380,72 +373,71 @@ export default class GameScene extends cc.Component {
       this
     );
 
-    gEventMgr.on(GlobalEvent.UPDATE_TIP_ANIMATION, (isActive: boolean) => {
-      if (!this.hasShowSubmitTip) {
-        if (this.SubmitTip.node.active == isActive) return;
-        this.SubmitTip.node.active = isActive;
+    // gEventMgr.on(GlobalEvent.UPDATE_TIP_ANIMATION, (isActive: boolean) => {
+    //   if (!this.hasShowSubmitTip) {
+    //     if (this.SubmitTip.node.active == isActive) return;
+    //     this.SubmitTip.node.active = isActive;
 
-        if (this.SubmitTip.node.active) {
-          if (this.tipTimeout != -1) {
-            clearTimeout(this.tipTimeout);
-          }
-          this.tipTimeout = setTimeout(() => {
-            this.SubmitTip.node.active = false;
-            this.hasShowSubmitTip = true;
-            Game.resetFreeTime();
-          }, 3000);
-        }
+    //     if (this.SubmitTip.node.active) {
+    //       if (this.tipTimeout != -1) {
+    //         clearTimeout(this.tipTimeout);
+    //       }
+    //       this.tipTimeout = setTimeout(() => {
+    //         this.SubmitTip.node.active = false;
+    //         this.hasShowSubmitTip = true;
+    //         Game.resetFreeTime();
+    //       }, 3000);
+    //     }
 
-        return;
-      }
+    //     return;
+    //   }
 
-      this.SubmitTip.node.active = false;
-      if (this.Tip.active == isActive) return;
-      if (this.tipTimeout != -1) {
-        clearTimeout(this.tipTimeout);
-      }
+    //   this.SubmitTip.node.active = false;
+    //   if (this.Tip.active == isActive) return;
+    //   if (this.tipTimeout != -1) {
+    //     clearTimeout(this.tipTimeout);
+    //   }
 
-      this.Tip.stopAllActions();
-      if (isActive) {
-        this.Tip.active = isActive;
-        this.Tip.opacity = 0;
-        this.Tip.runAction(cc.fadeIn(0.1));
-        this.Tip.getComponent(
-          cc.Sprite
-        ).spriteFrame = this.TipAtlas.getSpriteFrame("tips0" + this.tipIndex);
+    //   this.Tip.stopAllActions();
+    //   if (isActive) {
+    //     this.Tip.active = isActive;
+    //     this.Tip.opacity = 0;
+    //     this.Tip.runAction(cc.fadeIn(0.1));
+    //     this.Tip.getComponent(
+    //       cc.Sprite
+    //     ).spriteFrame = this.TipAtlas.getSpriteFrame("tips0" + this.tipIndex);
 
-        if (this.isNewPlayer) {
-          this.tipIndex = (this.tipIndex++ % 4) + 1;
-        } else {
-          this.tipIndex = (this.tipIndex++ % 7) + 1;
-        }
-        this.tipTimeout = setTimeout(() => {
-          this.Tip.runAction(
-            cc.sequence(
-              cc.fadeOut(0.1),
-              cc.callFunc(() => {
-                this.Tip.active = false;
-              })
-            )
-          );
-          Game.resetFreeTime();
-        }, 3000);
-      } else {
-        this.Tip.runAction(
-          cc.sequence(
-            cc.fadeOut(0.1),
-            cc.callFunc(() => {
-              this.Tip.active = false;
-            })
-          )
-        );
-      }
-    });
+    //     if (this.isNewPlayer) {
+    //       this.tipIndex = (this.tipIndex++ % 4) + 1;
+    //     } else {
+    //       this.tipIndex = (this.tipIndex++ % 7) + 1;
+    //     }
+    //     this.tipTimeout = setTimeout(() => {
+    //       this.Tip.runAction(
+    //         cc.sequence(
+    //           cc.fadeOut(0.1),
+    //           cc.callFunc(() => {
+    //             this.Tip.active = false;
+    //           })
+    //         )
+    //       );
+    //       Game.resetFreeTime();
+    //     }, 3000);
+    //   } else {
+    //     this.Tip.runAction(
+    //       cc.sequence(
+    //         cc.fadeOut(0.1),
+    //         cc.callFunc(() => {
+    //           this.Tip.active = false;
+    //         })
+    //       )
+    //     );
+    //   }
+    // });
 
     this.SubmitButton.node.on(
       cc.Node.EventType.TOUCH_END,
       (e: cc.Event.EventCustom) => {
-
         if (Game.isComplete()) return;
         Game.resetFreeTime();
 
@@ -455,7 +447,7 @@ export default class GameScene extends cc.Component {
         } else {
           // this.Stop.show(-1);
         }
-        
+
         Game.setPause(true);
       },
       this
@@ -650,16 +642,12 @@ export default class GameScene extends cc.Component {
   }
 
   openResult(isForceOpen?: boolean) {
-
-
     this.Complete.node.active = false;
-    if (!this.isStart && !isForceOpen) 
-    {
+    if (!this.isStart && !isForceOpen) {
       // this.Guide.hide();
       // this.nextStep(LOAD_STEP.GUIDE);
       return;
     }
-    
 
     // this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
@@ -699,14 +687,25 @@ export default class GameScene extends cc.Component {
    */
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
-    console.log(' step:', LOAD_STEP[this.step], "," , this.step, ", now:" , LOAD_STEP[loadStep]);
+    console.log(
+      " step:",
+      LOAD_STEP[this.step],
+      ",",
+      this.step,
+      ", now:",
+      LOAD_STEP[loadStep]
+    );
     if (this.step >= LOAD_STEP.DONE && !this.isStart) {
       console.log("  startGame ---------------------- ");
       this.isStart = true;
       this.Guide.hide();
       this.startGame();
-    } else if (this.step >= LOAD_STEP.GUIDE_READY && this.isNewPlayer && !this.guideDone) {
-      console.log("  start guide ------------")
+    } else if (
+      this.step >= LOAD_STEP.GUIDE_READY &&
+      this.isNewPlayer &&
+      !this.guideDone
+    ) {
+      console.log("  start guide ------------");
       // this.startGuide();
       this.startAdVersion();
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
@@ -719,8 +718,7 @@ export default class GameScene extends cc.Component {
   private isCelerStart: boolean = false;
   private guideDone: boolean = false;
   startGuide() {
-
-    this.guideDone  = true;
+    this.guideDone = true;
     let pokers = GuidePokers.concat([]).reverse();
     Game.allPokers.length = 0;
     while (pokers.length > 0) {
@@ -733,29 +731,23 @@ export default class GameScene extends cc.Component {
       Game.allPokers.push(pokerNode.getComponent(Poker));
     }
 
-    this.startDevPoker([0, 7, 13, 18, 19, 22, 25, 26, 27], [22, 27], ()=>{
-
+    this.startDevPoker([0, 7, 13, 18, 19, 22, 25, 26, 27], [22, 27], () => {
       this.registerGuide();
 
-    // 开始新手引导
-    this.Guide.startGuide(()=>{
-      this.nextStep(LOAD_STEP.GUIDE)
+      // 开始新手引导
+      this.Guide.startGuide(() => {
+        this.nextStep(LOAD_STEP.GUIDE);
+      });
     });
-    });
-
-    
   }
 
   startAdVersion() {
-
-
     this.Complete.node.active = false;
     Game.initAllData();
     this.prepareGame();
-    this.guideDone  = true;
+    this.guideDone = true;
     for (let poker of Game.allPokers) {
-      if (poker.node.parent)
-         gFactory.putPoker(poker.node);
+      if (poker.node.parent) gFactory.putPoker(poker.node);
     }
     Game.allPokers.length = 0;
     Game.setFlipCount(43);
@@ -767,27 +759,26 @@ export default class GameScene extends cc.Component {
     Game.setGameTime(180);
 
     let gameTime = Game.getGameTime();
-      this.TimeLabel.string = CMath.TimeFormat(gameTime);
+    this.TimeLabel.string = CMath.TimeFormat(gameTime);
 
     let count = 0;
     /** 底下的牌 */
-    for (let key = 0; key < Poker_Root.length; key ++) {
-    let pokers = Poker_Root[key];
-    
-      
+    for (let key = 0; key < Poker_Root.length; key++) {
+      let pokers = Poker_Root[key];
+
       for (let pokerInfo of pokers) {
         let root = Game.getPlacePokerRoot().get(key);
-        let info = pokerInfo.split('|');
+        let info = pokerInfo.split("|");
         let pokerNode = gFactory.getPoker([info[0]]);
         pokerNode.name = (count++).toString();
-        Game.allPokers.push(pokerNode.getComponent(Poker))
+        Game.allPokers.push(pokerNode.getComponent(Poker));
         if (info[1] == "1") {
           pokerNode.getComponent(Poker).setCardState(CardState.Front);
           pokerNode.getComponent(Poker).setNormal();
         }
         root.addChild(pokerNode);
         if (root.getComponent(Poker)) {
-          if(root.getComponent(Poker).getCardState() == CardState.Back) {
+          if (root.getComponent(Poker).getCardState() == CardState.Back) {
             pokerNode.y = OFFSET_Y / 3;
           } else {
             pokerNode.y = OFFSET_Y;
@@ -798,44 +789,39 @@ export default class GameScene extends cc.Component {
         pokerNode.getComponent(Poker).setDefaultPosition();
         Game.getPlacePokerRoot().add(key, pokerNode);
       }
-
-      
     }
 
     console.log(Game.getPlacePokerRoot().values);
 
     /** 发完的牌 */
-    for(let pokerInfo of Poker_Fly) {
-      let info = pokerInfo.split('|');
-        let pokerNode = gFactory.getPoker([info[0]]);
-        Game.allPokers.push(pokerNode.getComponent(Poker))
-        
-        if (info[1] == "1") {
-          pokerNode.getComponent(Poker).setCardState(CardState.Front);
-          pokerNode.getComponent(Poker).setNormal();
-        }
-        this.PokerFlipRoot.addChild(pokerNode);
-    }
+    for (let pokerInfo of Poker_Fly) {
+      let info = pokerInfo.split("|");
+      let pokerNode = gFactory.getPoker([info[0]]);
+      Game.allPokers.push(pokerNode.getComponent(Poker));
 
+      if (info[1] == "1") {
+        pokerNode.getComponent(Poker).setCardState(CardState.Front);
+        pokerNode.getComponent(Poker).setNormal();
+      }
+      this.PokerFlipRoot.addChild(pokerNode);
+    }
 
     this.registerGuide();
 
     // 开始新手引导
-    this.Guide.startGuide(()=>{
-      this.nextStep(LOAD_STEP.GUIDE)
+    this.Guide.startGuide(() => {
+      this.nextStep(LOAD_STEP.GUIDE);
     });
 
     console.log(this.Guide.node.active);
   }
 
   prepareGame() {
-
     for (let poker of Game.allPokers) {
       gFactory.putPoker(poker.node);
-      console.log('put poker ')
+      console.log("put poker ");
     }
-    
-    
+
     Game.allPokers.length = 0;
     this.Top.group = "default";
     // Game.addScore(-Game.getScore());
@@ -843,9 +829,7 @@ export default class GameScene extends cc.Component {
     this.showScore = 0;
     this.TimeAnimation.node.active = false;
     this.TimeLabel.font = this.SmallGreen;
-    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame(
-      "icon_time"
-    );
+    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame("icon_time");
     let gameTime = Game.getGameTime();
     this.TimeLabel.string = CMath.TimeFormat(gameTime);
     Game.getCycledPokerRoot().clear();
@@ -858,21 +842,15 @@ export default class GameScene extends cc.Component {
     for (let child of this.CycleRoot.children) {
       Game.addCycledPokerRoot(parseInt(child.name), child);
     }
-
   }
 
   startGame() {
-
-
     Game.initAllData();
     this.prepareGame();
 
-    
-
-
     let pokers = Pokers.concat([]);
-    console.error(pokers.length)
-    
+    console.error(pokers.length);
+
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
 
@@ -882,7 +860,7 @@ export default class GameScene extends cc.Component {
       let randomIndex = Math.floor(random * totalWeight);
 
       let i = pokers.splice(randomIndex, 1);
-     
+
       let pokerNode = gFactory.getPoker(i);
       pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
@@ -891,12 +869,12 @@ export default class GameScene extends cc.Component {
       this.PokerDevl.addChild(pokerNode);
     }
 
-    console.log(" ------------------------ start game ------------------------");
-    console.error(this.PokerDevl.childrenCount)
-    
+    console.log(
+      " ------------------------ start game ------------------------"
+    );
+    console.error(this.PokerDevl.childrenCount);
 
     this.startDevPoker([0, 7, 13, 18, 22, 25, 27], []);
-    
   }
 
   startDevPoker(pokerFlips: number[], offsets: number[], callback?: Function) {
@@ -1537,8 +1515,7 @@ export default class GameScene extends cc.Component {
   update(dt: number) {
     this.devTime += dt;
     this.backTime += dt;
-    
-    
+
     if (Game.isGameStarted()) {
       Game.addGameTime(-dt);
       Game.addFreeTime(dt);
@@ -1555,8 +1532,6 @@ export default class GameScene extends cc.Component {
           );
         }
       }
-
-      
     }
 
     if (this.score < this.showScore) {
