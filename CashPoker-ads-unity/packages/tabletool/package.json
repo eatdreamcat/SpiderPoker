@@ -1,0 +1,35 @@
+{
+  "name": "tabletool",
+  "version": "0.0.1",
+  "description": "吃吃的工具",
+  "author": "吃吃大魔王",
+  "main": "main.js",
+  "main-menu": {
+    "转表工具/转表": {
+      "message": "tabletool:openTableToolPanel"
+    },
+    "转表工具/帮助": {
+      "message": "tabletool:openTableHelpPanel"
+    }
+  },
+  "panel-table": {
+    "main": "panel-table/index.js",
+    "type": "dockable",
+    "title": "转表工具",
+    "width": 600,
+    "height": 800,
+    "resizable": "false"
+  },
+  "panel-help": {
+    "main": "panel-help/index.js",
+    "type": "dockable",
+    "title": "帮助",
+    "width": 600,
+    "height": 800,
+    "resizable": "false"
+  },
+  "dependencies": {
+    "node-pinyin": "^0.2.3",
+    "xlsx": "^0.15.1"
+  }
+}

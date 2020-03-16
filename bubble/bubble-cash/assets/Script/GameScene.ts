@@ -233,6 +233,8 @@ export default class GameScene extends cc.Component {
     this.updateSeason();
     this.updateTreasure();
     this.show();
+
+    cc.loader.loadRes("prefabs/" + Season[Game.Season] + "/ResultLayer");
   }
 
   /** 初始化宝藏 */
