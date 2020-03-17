@@ -200,7 +200,6 @@ export default class Bubble extends cc.Component {
     }
 
     this.index = index;
-    //
   }
 
   updateIndex() {

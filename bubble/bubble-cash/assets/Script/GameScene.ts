@@ -370,10 +370,10 @@ export default class GameScene extends cc.Component {
             spriteFrame = this.FontAtlas.getSpriteFrame("f_great");
             break;
           case 5:
-            spriteFrame = this.FontAtlas.getSpriteFrame("f_awesome");
+            spriteFrame = this.FontAtlas.getSpriteFrame("f_amazing");
             break;
           default:
-            spriteFrame = this.FontAtlas.getSpriteFrame("f_amazing");
+            spriteFrame = this.FontAtlas.getSpriteFrame("f_awesome");
             break;
         }
 

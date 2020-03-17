@@ -38,5 +38,12 @@
     "subContext": ""
   },
   "xxteaKey": "e13fcad9-cb8c-48",
-  "zipCompressJs": true
+  "zipCompressJs": true,
+  "baidugame": {
+    "appid": "testappid",
+    "orientation": "portrait",
+    "REMOTE_SERVER_ROOT": "",
+    "subContext": ""
+  },
+  "appBundle": false
 }
