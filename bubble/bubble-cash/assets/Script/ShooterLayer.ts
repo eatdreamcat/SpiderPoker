@@ -168,7 +168,7 @@ export default class ShooterLayer extends cc.Component {
 
     if (!Game.isStart) return;
 
-    if (this.curTouchID != e.getID()) return;
+    if (this.curTouchID == null || this.curTouchID != e.getID()) return;
 
     this.ShooterStar.active = true;
     this.Point.active = true;
@@ -176,11 +176,11 @@ export default class ShooterLayer extends cc.Component {
   }
 
   onTouchEnd(e: cc.Event.EventTouch) {
-    if (this.Shooter.childrenCount <= 0) return;
+    // if (this.Shooter.childrenCount <= 0) return;
 
     if (!Game.isStart) return;
 
-    if (this.curTouchID != e.getID()) return;
+    if (this.curTouchID == null || this.curTouchID != e.getID()) return;
 
     this.ShooterStar.active = false;
     this.Point.active = false;
