@@ -141,8 +141,8 @@ export default class GameScene extends cc.Component {
   @property(cc.Toggle)
   CheatToggle: cc.Toggle = null;
 
-  @property(cc.Node)
-  Tip: cc.Node = null;
+  // @property(cc.Node)
+  // Tip: cc.Node = null;
 
   // @property(cc.SpriteAtlas)
   // TipAtlas: cc.SpriteAtlas = null;
@@ -316,7 +316,7 @@ export default class GameScene extends cc.Component {
     this.Guide.node.active = false;
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
-    this.Tip.active = false;
+    // this.Tip.active = false;
     // celerx.ready();
     CMath.randomSeed = Math.random();
     let self = this;
