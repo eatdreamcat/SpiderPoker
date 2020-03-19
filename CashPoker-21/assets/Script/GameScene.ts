@@ -237,6 +237,15 @@ export default class GameScene extends cc.Component {
           },
 
           {
+            node: null,
+            nodeFunc: () => {
+              let poker = Game.getCurSelectPoker();
+              if (poker) return poker.node;
+              return null;
+            }
+          },
+
+          {
             node: this.ValueRootNode.children[0]
           },
           {
@@ -245,23 +254,138 @@ export default class GameScene extends cc.Component {
           },
           {
             node: this.TouchRoot.children[0]
+          }
+        ]
+      },
+      /** 把 6 移动到第一列   */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[0]
+          }
+        ]
+      },
+      /** 把 10 移动到第二列  */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[0].children[0]
+          },
+
+          {
+            node: this.ValueRootNode.children[1]
+          },
+
+          {
+            node: this.TouchRoot.children[1]
           },
           {
-            node: null,
-            nodeFunc: () => {
-              let poker = Game.getCurSelectPoker();
-              if (poker) return poker.node;
-              return null;
+            node: this.TouchRoot.children[1].children[0],
+            isAction: true
+          }
+        ]
+      },
+      /** 把 8 移动到第一列 */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[0].children[0],
+            isAction: true,
+            end: () => {
+              this.TouchRoot.children[0].children[0].group = "default";
+            }
+          },
+          {
+            node: this.TouchRoot.children[0],
+            end: () => {
+              this.TouchRoot.children[0].group = "default";
+            }
+          },
+          {
+            node: this.ValueRootNode.children[0],
+            end: () => {
+              this.ValueRootNode.children[0].group = "default";
+            }
+          }
+        ]
+      },
+      /** 把 A 移动到第二列 */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[1],
+            end: () => {
+              this.TouchRoot.children[1].group = "default";
+            }
+          },
+          {
+            node: this.TouchRoot.children[1].children[0],
+            isAction: true,
+            end: () => {
+              this.TouchRoot.children[1].children[0].group = "default";
+            }
+          },
+          {
+            node: this.ValueRootNode.children[1],
+            end: () => {
+              this.ValueRootNode.children[1].group = "default";
+            }
+          }
+        ]
+      },
+      /** 把 4 移动到第一列 */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[0].children[0],
+            isAction: true
+          },
+          {
+            node: this.TouchRoot.children[0]
+          },
+          {
+            node: this.ValueRootNode.children[0]
+          }
+        ]
+      },
+      /** 把 J 移动到第一列 */
+      {
+        touches: [
+          {
+            node: this.TouchRoot.children[0].children[0],
+            isAction: true,
+            end: () => {
+              this.TouchRoot.children[0].children[0].group = "default";
+            }
+          },
+          {
+            node: this.TouchRoot.children[0],
+            end: () => {
+              this.TouchRoot.children[0].group = "default";
+            }
+          },
+          {
+            node: this.ValueRootNode.children[0],
+            end: () => {
+              this.ValueRootNode.children[0].group = "default";
+            }
+          },
+
+          {
+            node: this.Top,
+            end: () => {
+              this.Top.group = "default";
+            }
+          },
+
+          {
+            node: this.PlaceBack,
+            end: () => {
+              this.PlaceBack.group = "default";
             }
           }
         ]
       }
-      /** 把 6 移动到第一列   */
-      /** 把 10 移动到第二列  */
-      /** 把 8 移动到第一列 */
-      /** 把 A 移动到第二列 */
-      /** 把 4 移动到第一列 */
-      /** 把 J 移动到第一列 */
     ]);
   }
 
@@ -560,7 +684,11 @@ export default class GameScene extends cc.Component {
           let scoreLabel = gFactory.getAddScore("/" + score.toString());
           scoreLabel.setParent(this.RemoveNode);
           scoreLabel.setPosition(pos);
-
+          if (this.isStart) {
+            scoreLabel.group = "top";
+          } else {
+            scoreLabel.group = "top-guide";
+          }
           scoreLabel.runAction(
             cc.sequence(
               cc.scaleTo(0, 0),
@@ -578,6 +706,11 @@ export default class GameScene extends cc.Component {
           let scoreLabel = gFactory.getSubScore(
             "/" + Math.abs(score).toString()
           );
+          if (this.isStart) {
+            scoreLabel.group = "top";
+          } else {
+            scoreLabel.group = "top-guide";
+          }
           scoreLabel.setParent(this.RemoveNode);
           scoreLabel.setPosition(pos);
           scoreLabel.runAction(
@@ -901,6 +1034,7 @@ export default class GameScene extends cc.Component {
   updateCurSelectPoker() {
     console.log(" poker clip childcount:", this.PokerClip.childrenCount);
     if (this.PokerClip.childrenCount <= 0) return;
+
     let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
     let poker = child.getComponent(Poker);
     let pos = CMath.ConvertToNodeSpaceAR(child, this.SelectPokerNode);
@@ -908,12 +1042,16 @@ export default class GameScene extends cc.Component {
     child.setPosition(pos);
 
     if (poker.isGuide && Game.isGameStarted()) child.group = "top-guide";
+    else {
+      child.group = "top";
+    }
     poker.flipCard(0.1);
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
     let action = cc.sequence(
       cc.moveTo(0.3, 0, 0),
       cc.callFunc(() => {
         poker.setDefaultPosition();
+        if (!poker.isGuide) child.group = "default";
       }, this)
     );
     action.setTag(ACTION_TAG.SELECT_POKER);
@@ -1042,6 +1180,8 @@ export default class GameScene extends cc.Component {
 
   prepareGame() {
     for (let poker of Game.allPokers) {
+      poker.stopAllActions();
+      poker.rotation = 0;
       gFactory.putPoker(poker);
     }
 
@@ -1095,26 +1235,20 @@ export default class GameScene extends cc.Component {
   startDevPoker(callback: Function) {
     let count = 1;
     let totalCount = this.PokerDevl.childrenCount;
-    /** 发底牌 */
-    //let count2 = 0;
+
     let func2 = () => {
       let pokerNode = this.PokerDevl.getChildByName(
         (totalCount - count++).toString()
       );
 
-      //let pokerNode = this.PokerDevl.getChildByName((count2++).toString());
-
       if (pokerNode) {
-        let targetPos = cc.v2(0, 0);
-        if (this.PokerClip.childrenCount > 0) {
-          let child = this.PokerClip.children[this.PokerClip.childrenCount - 1];
-          targetPos = cc.v2(child.x + 2, child.y);
-        }
+        let targetPos = cc.v2(this.PokerClip.childrenCount * 2, 0);
 
         let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, this.PokerClip);
         let poker = pokerNode.getComponent(Poker);
         poker.setLastPosition(targetPos);
         pokerNode.setParent(this.PokerClip);
+        pokerNode.zIndex = this.PokerClip.childrenCount;
         pokerNode.setPosition(selfPos);
         pokerNode.group = "top";
         gEventMgr.emit(GlobalEvent.DEV_POKERS);

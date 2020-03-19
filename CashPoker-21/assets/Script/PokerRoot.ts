@@ -276,6 +276,8 @@ export default class PokerRoot extends cc.Component {
           addScore += this.overFive(isCheck);
         } else {
           if (!isCheck) {
+            console.error(" pop guide 279 ");
+            gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
             this.scheduleOnce(() => {
               gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, 0);
             }, 0.1);
@@ -457,8 +459,9 @@ export default class PokerRoot extends cc.Component {
     this.flyCount++;
     if (this.flyCount >= this.totalFlyCount) {
       this.canTouch = true;
+      console.error(" pop guide completeFly");
+      gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
     }
-    gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
   }
 
   private flyCount: number = 0;

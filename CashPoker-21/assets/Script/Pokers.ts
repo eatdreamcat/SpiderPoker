@@ -57,7 +57,7 @@ export const GuidePokers = [
 
   "spade_,1",
   "club_,4",
-  "heart_,11",
+  "spade_,11",
   "heart_,2", //5
 
   "spade_,3", //8

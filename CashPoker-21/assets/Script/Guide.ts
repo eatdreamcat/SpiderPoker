@@ -1,6 +1,7 @@
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Poker from "./Poker";
+import { Game } from "./controller/Game";
 
 /** 新手指引的步骤 */
 export interface GuideStep {
@@ -70,6 +71,9 @@ export default class Guide extends cc.Component {
   private index: number = 1;
   private guideDefaultY: number = 0;
   onLoad() {
+    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("new1");
+    this.Corn.node.position = cc.v2(252, -48);
+
     this.guideDefaultY = this.Corn.node.y;
     this.GuideHand.node.active = false;
     this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
@@ -147,6 +151,7 @@ export default class Guide extends cc.Component {
       ) {
         exceptChild = touch.node.getComponent(Poker).getNext().node;
       }
+
       if (
         CMath.GetBoxToWorld(touch.node, exceptChild).contains(e.getLocation())
       ) {
@@ -229,6 +234,9 @@ export default class Guide extends cc.Component {
   popStep() {
     if (this.guideSteps.length <= 0) return;
 
+    console.log(
+      " pop guide step---------------------------------------------------"
+    );
     let curStep = this.guideSteps.shift();
     for (let touch of curStep.touches) {
       if (touch.end) {
@@ -251,7 +259,7 @@ export default class Guide extends cc.Component {
   showEnd() {
     console.log(" show end ");
     this.Corn.node.active = true;
-    this.Corn.node.y = this.guideDefaultY;
+    this.Corn.node.position = cc.v2(0, 100);
     this.Corn.spriteFrame = this.GuideEnd;
     this.OK.node.active = true;
 
@@ -265,6 +273,9 @@ export default class Guide extends cc.Component {
     );
 
     this.GuideHand.node.active = false;
+    if (Game.getCurSelectPoker()) {
+      Game.getCurSelectPoker().node.group = "default";
+    }
   }
 
   onBlockTouchMove(e: cc.Event.EventTouch) {
@@ -291,7 +302,7 @@ export default class Guide extends cc.Component {
   }
 
   startGuide(closeCallback?: Function) {
-    this.OK.node.active = true;
+    this.OK.node.active = false;
     this.isGuide = true;
     this.node.active = true;
     this.Next.node.active = false;
@@ -302,7 +313,7 @@ export default class Guide extends cc.Component {
     this.Skip.node.active = true;
     this.callback = closeCallback;
 
-    //this.nextGuide()
+    this.nextGuide();
   }
 
   nextGuide() {
@@ -312,8 +323,15 @@ export default class Guide extends cc.Component {
       return;
     }
 
+    if (this.index == 6) {
+      this.Corn.node.position = cc.v2(227, -295);
+    }
+
+    if (this.index == 7) {
+      this.Corn.node.position = cc.v2(227, 0);
+    }
+
     this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("new" + this.index);
-    this.Corn.node.y = -265;
     this.index++;
     let curStep = this.guideSteps[0];
     let actions: cc.FiniteTimeAction[] = [];
