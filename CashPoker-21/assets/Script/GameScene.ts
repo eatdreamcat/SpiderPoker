@@ -34,7 +34,9 @@ export enum LOAD_STEP {
   AUDIO = 2 << 3,
   CELER = 2 << 4,
   GUIDE = 2 << 5,
-  CELER_READY  = AUDIO | PREFABS | READY,
+  CELER_READY = AUDIO | PREFABS | READY,
+
+  GUIDE_READY = READY | PREFABS | CELER | AUDIO,
   /** 完成 */
   DONE = LOAD_STEP.READY |
     LOAD_STEP.PREFABS |
@@ -201,10 +203,7 @@ export default class GameScene extends cc.Component {
     }
   }
 
-  // restart() {
-  //   this.init();
-  //   this.startGame();
-  // }
+  registerGuide() {}
 
   onLoad() {
     Game.removeNode = this.RemoveNode;
@@ -220,7 +219,7 @@ export default class GameScene extends cc.Component {
     this.Bust03.getChildByName("Cover").active = false;
 
     this.WildCount.string = Game.getWildCount().toString();
-    
+
     CMath.randomSeed = Math.random();
     let self = this;
     celerx.onStart(
@@ -349,19 +348,24 @@ export default class GameScene extends cc.Component {
       this
     );
 
-    gEventMgr.on(GlobalEvent.UPDATE_STREAK_COUNT, ()=>{
-      this.combo1.node.active = Game.getStreak() >= 2 && Game.getWildCount() == 0;
-      //this.combo2.node.active = Game.getStreak() >= 3 && Game.getWildCount() == 0;
-    }, this);
+    gEventMgr.on(
+      GlobalEvent.UPDATE_STREAK_COUNT,
+      () => {
+        this.combo1.node.active =
+          Game.getStreak() >= 2 && Game.getWildCount() == 0;
+        //this.combo2.node.active = Game.getStreak() >= 3 && Game.getWildCount() == 0;
+      },
+      this
+    );
 
     gEventMgr.on(
       GlobalEvent.UPDATE_WILD_COUNT,
       (wild: number) => {
         if (wild > 0) {
-          gEventMgr.emit(GlobalEvent.PLAY_WILD_ANI)
+          gEventMgr.emit(GlobalEvent.PLAY_WILD_ANI);
           this.AddWildEffect.play();
         }
-        
+
         this.WildCount.string = Game.getWildCount().toString();
         this.SubmitButton.interactable = Game.getWildCount() > 0;
         this.WildCount.node.getParent().active = this.SubmitButton.interactable;
@@ -369,23 +373,23 @@ export default class GameScene extends cc.Component {
         if (this.SubmitButton.interactable) {
           if (Game.getWildCount() == 1) {
             this.combo2.node.active = true;
-            setTimeout(()=>{
+            setTimeout(() => {
               if (Game.getWildCount() > 0) {
                 this.SubmitButton.node
-            .getChildByName("Background")
-            .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
-            "btn_wild"
-          );
+                  .getChildByName("Background")
+                  .getComponent(
+                    cc.Sprite
+                  ).spriteFrame = this.WildBtn.getSpriteFrame("btn_wild");
               }
-          this.combo2.node.active = false;
+              this.combo2.node.active = false;
             }, 300);
           } else {
             this.combo2.node.active = false;
             this.SubmitButton.node
-            .getChildByName("Background")
-            .getComponent(cc.Sprite).spriteFrame = this.WildBtn.getSpriteFrame(
-            "btn_wild"
-          );
+              .getChildByName("Background")
+              .getComponent(
+                cc.Sprite
+              ).spriteFrame = this.WildBtn.getSpriteFrame("btn_wild");
           }
         } else {
           this.SubmitButton.node
@@ -607,9 +611,15 @@ export default class GameScene extends cc.Component {
             bgNode.stopAllActions();
             bgNode.scaleY = 0;
             bgNode.runAction(
-              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2), cc.scaleTo(0, 1, 0))
+              cc.sequence(
+                cc.fadeIn(0),
+                cc.scaleTo(0.1, 1, 1),
+                cc.fadeOut(0.2),
+                cc.scaleTo(0, 1, 0)
+              )
             );
-          },true
+          },
+          true
         );
 
         this.RemoveNode.addChild(node);
@@ -779,7 +789,12 @@ export default class GameScene extends cc.Component {
             bgNode.stopAllActions();
             bgNode.scaleY = 0;
             bgNode.runAction(
-              cc.sequence(cc.fadeIn(0), cc.scaleTo(0.1, 1, 1), cc.fadeOut(0.2), cc.scaleTo(0, 1,0))
+              cc.sequence(
+                cc.fadeIn(0),
+                cc.scaleTo(0.1, 1, 1),
+                cc.fadeOut(0.2),
+                cc.scaleTo(0, 1, 0)
+              )
             );
           }
         );
@@ -927,18 +942,16 @@ export default class GameScene extends cc.Component {
 
     let takeImage = false;
     const canvas = document.getElementsByTagName("canvas")[0];
-    cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
+    cc.director.on(cc.Director.EVENT_AFTER_DRAW, function() {
       if (takeImage) {
         takeImage = false;
-       
-        celerx.didTakeSnapshot(canvas.toDataURL("image/jpeg", 0.25));
+
+        celerx.didTakeSnapshot(canvas.toDataURL("image/jpeg", 0.1));
       }
     });
-    celerx.provideCurrentFrameData(function () {
+    celerx.provideCurrentFrameData(function() {
       takeImage = true;
     });
-
-    
   }
 
   /**
@@ -952,7 +965,7 @@ export default class GameScene extends cc.Component {
       console.log("  startGame ---------------------- ");
       this.isStart = true;
       this.startGame();
-    } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCeler){
+    } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCeler) {
       celerx.ready();
       this.isCeler = true;
     }

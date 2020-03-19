@@ -1,7 +1,14 @@
 import { gFactory } from "./controller/GameFactory";
 import { Game, StepFunc } from "./controller/Game";
 import Poker from "./Poker";
-import { Pokers, ACTION_TAG, OFFSET_Y, PokerIndex, Empty_Offset, GuidePokers } from "./Pokers";
+import {
+  Pokers,
+  ACTION_TAG,
+  OFFSET_Y,
+  PokerIndex,
+  Empty_Offset,
+  GuidePokers
+} from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
 import Stop from "./Stop";
@@ -23,12 +30,12 @@ export enum LOAD_STEP {
   CELER = 2 << 4,
   GUIDE = 2 << 1,
 
-  CELER_READY = AUDIO  | PREFABS | READY,
+  CELER_READY = AUDIO | PREFABS | READY,
 
   GUIDE_READY = LOAD_STEP.READY |
-  LOAD_STEP.PREFABS |
-  LOAD_STEP.CELER |
-  LOAD_STEP.AUDIO,
+    LOAD_STEP.PREFABS |
+    LOAD_STEP.CELER |
+    LOAD_STEP.AUDIO,
 
   /** 完成 */
   DONE = LOAD_STEP.READY |
@@ -51,7 +58,6 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Node)
   PokerDevl: cc.Node = null;
-
 
   @property(cc.Node)
   GuideEmpty: cc.Node = null;
@@ -163,7 +169,6 @@ export default class GameScene extends cc.Component {
 
   private hasShowSubmitTip: boolean = false;
   init() {
-
     this.SubmitTip.node.active = false;
     this.Stop.hide();
     this.Complete.node.active = false;
@@ -178,7 +183,6 @@ export default class GameScene extends cc.Component {
     Game.getPlacePokerRoot().clear();
 
     for (let child of this.PlaceRoot.children) {
-      
       Game.addPlacePokerRoot(parseInt(child.name), child);
     }
 
@@ -187,13 +191,11 @@ export default class GameScene extends cc.Component {
     }
   }
 
-
   registerGuide() {
-
     let nodeA = Game.getPlacePokerRoot().get(0);
     let node2 = Game.getPlacePokerRoot().get(3);
     let nodeK = Game.getPlacePokerRoot().get(2);
-    let root0 = this.PlaceRoot.children[0]
+    let root0 = this.PlaceRoot.children[0];
     let root4 = this.PlaceRoot.children[4];
     let node5 = Game.getPlacePokerRoot().get(4);
     let node6 = node5.parent;
@@ -203,10 +205,9 @@ export default class GameScene extends cc.Component {
 
     let nodeTop = this.PokerDevl.children[this.PokerDevl.childrenCount - 3];
     let node5_1 = Game.getPlacePokerRoot().get(1);
-    let root1 = this.PlaceRoot.children[1]
+    let root1 = this.PlaceRoot.children[1];
 
     this.Guide.register([
-
       /** 移动A到回收槽 */
 
       {
@@ -214,11 +215,11 @@ export default class GameScene extends cc.Component {
           {
             node: this.Top,
             isButton: false,
-            callback: ()=>{},
-            start: ()=>{},
-            end: ()=>{}
+            callback: () => {},
+            start: () => {},
+            end: () => {}
           },
-          
+
           {
             node: this.CycleRoot.children[0],
             isButton: false,
@@ -236,15 +237,12 @@ export default class GameScene extends cc.Component {
             callback: () => {},
             start: () => {
               if (nodeA.getComponent(Poker)) {
-                nodeA.getComponent(Poker).setGuide(true)
+                nodeA.getComponent(Poker).setGuide(true);
               }
             },
-            end: () => {
-              
-            },
+            end: () => {},
             isAction: true
-          },
-
+          }
         ]
       },
 
@@ -272,7 +270,7 @@ export default class GameScene extends cc.Component {
             callback: () => {},
             start: () => {
               if (node2.getComponent(Poker)) {
-                node2.getComponent(Poker).setGuide(true)
+                node2.getComponent(Poker).setGuide(true);
               }
             },
             end: () => {
@@ -286,13 +284,11 @@ export default class GameScene extends cc.Component {
         ]
       },
 
-      /** 
+      /**
        * 移动6-5 到 8-7列
        */
       {
         touches: [
-
-
           // {
           //   node: node5,
           //   callback: () =>{},
@@ -310,61 +306,51 @@ export default class GameScene extends cc.Component {
           //   isButton: false
           // },
 
-          
-          
           {
             node: node7,
-            callback: () =>{},
+            callback: () => {},
             start: () => {
               if (node7.getComponent(Poker)) {
-                node7.getComponent(Poker).setGuide(true)
+                node7.getComponent(Poker).setGuide(true);
               }
             },
-            end: () =>{
+            end: () => {
               if (node7.getComponent(Poker)) {
                 node7.getComponent(Poker).setGuide(false);
               }
               node7.group = "default";
             },
             isButton: false,
-            
+
             isAction: true
           },
 
           {
             node: node6,
-            callback: () =>{},
+            callback: () => {},
             start: () => {
               if (node6.getComponent(Poker)) {
-                node6.getComponent(Poker).setGuide(true)
+                node6.getComponent(Poker).setGuide(true);
               }
-
             },
-            end: () =>{
+            end: () => {
               if (node6.getComponent(Poker)) {
                 node6.getComponent(Poker).setGuide(false);
               }
               node6.group = "default";
             },
-            isButton: false,
+            isButton: false
             //isAction: true
           },
 
           {
             node: this.GuideEmpty2,
-            callback: () =>{},
-            start: () => {
-             
-
-            },
-            end: () =>{
-            
-              
-            },
+            callback: () => {},
+            start: () => {},
+            end: () => {},
             isButton: false,
             isAction: true
           },
-
 
           // {
           //   node: node8,
@@ -386,8 +372,8 @@ export default class GameScene extends cc.Component {
           {
             node: root4,
             callback: () => {},
-            start: ()=>{},
-            end: ()=>{
+            start: () => {},
+            end: () => {
               root4.group = "default";
             },
             isButton: false
@@ -396,8 +382,8 @@ export default class GameScene extends cc.Component {
           {
             node: root6,
             callback: () => {},
-            start: ()=>{},
-            end: ()=>{
+            start: () => {},
+            end: () => {
               root6.group = "default";
             },
             isButton: false
@@ -411,60 +397,58 @@ export default class GameScene extends cc.Component {
       {
         touches: [
           {
-          node: root0,
-          callback: ()=>{},
-          start: ()=>{},
-          end: ()=>{
-            root0.group = "default";
+            node: root0,
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              root0.group = "default";
+            },
+            isButton: false,
+            isAction: true
           },
-          isButton: false,
-          isAction: true
-        },
-        {
-          node: nodeK,
-          callback: () =>{},
-          start: () => {
-            if (nodeK.getComponent(Poker)) {
-              nodeK.getComponent(Poker).setGuide(true)
-            }
-
-          },
-          end: () =>{
-            if (nodeK.getComponent(Poker)) {
-              nodeK.getComponent(Poker).setGuide(false);
-            }
-            nodeK.group = "default";
-          },
-          isButton: false,
-          isAction: true
-        },
-
-      ]
+          {
+            node: nodeK,
+            callback: () => {},
+            start: () => {
+              if (nodeK.getComponent(Poker)) {
+                nodeK.getComponent(Poker).setGuide(true);
+              }
+            },
+            end: () => {
+              if (nodeK.getComponent(Poker)) {
+                nodeK.getComponent(Poker).setGuide(false);
+              }
+              nodeK.group = "default";
+            },
+            isButton: false,
+            isAction: true
+          }
+        ]
       },
 
       /** 翻牌 */
       {
-        touches:[
+        touches: [
           {
             node: this.PokerDevl,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              this.PokerDevl.group = "default"
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              this.PokerDevl.group = "default";
             },
-            isButton: true,
+            isButton: true
             //isAction: true
-          }
-          ,{
+          },
+          {
             node: this.DrawCardAni.node,
-            callback: ()=>{},
-            start: ()=>{
+            callback: () => {},
+            start: () => {
               this.DrawCardAni.node.active = true;
               this.DrawCardAni.play();
             },
-            end:()=>{
+            end: () => {
               this.DrawCardAni.node.active = false;
-              this.DrawCardAni.node.group = "default"
+              this.DrawCardAni.node.group = "default";
             },
             isButton: true
           }
@@ -476,43 +460,39 @@ export default class GameScene extends cc.Component {
         touches: [
           {
             node: this.PokerFlipRoot,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              this.PokerFlipRoot.group = "default"
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              this.PokerFlipRoot.group = "default";
             },
             isButton: true
           },
 
-          
-
           {
             node: nodeTop,
-            callback: () =>{},
+            callback: () => {},
             start: () => {
               if (nodeTop.getComponent(Poker)) {
-                nodeTop.getComponent(Poker).setGuide(true)
+                nodeTop.getComponent(Poker).setGuide(true);
               }
-  
             },
-            end: () =>{
+            end: () => {
               if (nodeTop.getComponent(Poker)) {
                 nodeTop.getComponent(Poker).setGuide(false);
               }
               nodeTop.group = "default";
             },
-            isButton: false,
+            isButton: false
           },
           {
             node: node5_1,
-            callback: () =>{},
+            callback: () => {},
             start: () => {
               if (node5_1.getComponent(Poker)) {
-                node5_1.getComponent(Poker).setGuide(true)
+                node5_1.getComponent(Poker).setGuide(true);
               }
-  
             },
-            end: () =>{
+            end: () => {
               if (node5_1.getComponent(Poker)) {
                 node5_1.getComponent(Poker).setGuide(false);
               }
@@ -523,71 +503,63 @@ export default class GameScene extends cc.Component {
           },
           {
             node: this.GuideEmpty,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              this.GuideEmpty.group = "default"
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              this.GuideEmpty.group = "default";
             },
             isButton: true,
-            
+
             isAction: true
           },
           {
             node: root1,
-            callback: ()=>{},
-            start: ()=>{},
-            end:()=>{
-              root1.group = "default"
+            callback: () => {},
+            start: () => {},
+            end: () => {
+              root1.group = "default";
             },
-            isButton: true,
-            
-          },
-
+            isButton: true
+          }
         ]
       },
 
       /** 提交分数 */
       {
-      touches: [
-        {
-        node: this.SubmitButton.node,
-        callback: () => {
-          this.SubmitButton.node.group = "default";
-          this.SubmitTip.node.active = false;
-        },
-        start: () => {
-          this.SubmitTip.node.active = true;
-        },
-        end: () => {
-          
-        },
-        isButton: true
-       },
+        touches: [
+          {
+            node: this.SubmitButton.node,
+            callback: () => {
+              this.SubmitButton.node.group = "default";
+              this.SubmitTip.node.active = false;
+            },
+            start: () => {
+              this.SubmitTip.node.active = true;
+            },
+            end: () => {},
+            isButton: true
+          },
 
-       {
-         node: this.Stop.EndButton.node,
-         callback: () => {
-          this.Stop.EndButton.node.group = "default";
-          // this.nextStep(LOAD_STEP.GUIDE);
-          this.Guide.showEnd();
-          //gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
-          
-        },
-        start: () => {
-        },
-        end: () => {},
-         isButton: true
-       }
-    ]
-      
-    }]);
+          {
+            node: this.Stop.EndButton.node,
+            callback: () => {
+              this.Stop.EndButton.node.group = "default";
+              // this.nextStep(LOAD_STEP.GUIDE);
+              this.Guide.showEnd();
+              //gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
+            },
+            start: () => {},
+            end: () => {},
+            isButton: true
+          }
+        ]
+      }
+    ]);
   }
 
-
   onLoad() {
-
     this.DrawCardAni.node.active = false;
-    this.Guide.node.active  = false;
+    this.Guide.node.active = false;
     Game.removeNode = this.RemoveNode;
     Game.pokerFlipRoot = this.PokerFlipRoot;
     this.Tip.active = false;
@@ -604,13 +576,15 @@ export default class GameScene extends cc.Component {
       return parseInt(Game.getScore().toString());
     });
 
-    
-
     this.CheatToggle.node.active = CHEAT_OPEN;
     this.CheatToggle.isChecked = false;
-    this.CheatToggle.node.on("toggle", () => {
-      window["cheat"] = this.CheatToggle.isChecked;
-    }, this);
+    this.CheatToggle.node.on(
+      "toggle",
+      () => {
+        window["cheat"] = this.CheatToggle.isChecked;
+      },
+      this
+    );
 
     // init prefabs
 
@@ -709,7 +683,6 @@ export default class GameScene extends cc.Component {
     this.SubmitButton.node.on(
       cc.Node.EventType.TOUCH_END,
       (e: cc.Event.EventCustom) => {
-
         if (Game.isComplete()) return;
         Game.resetFreeTime();
 
@@ -719,7 +692,7 @@ export default class GameScene extends cc.Component {
         } else {
           this.Stop.show(-1);
         }
-        
+
         Game.setPause(true);
       },
       this
@@ -914,14 +887,11 @@ export default class GameScene extends cc.Component {
   }
 
   openResult(isForceOpen?: boolean) {
-
-    if (!this.isStart && !isForceOpen) 
-    {
+    if (!this.isStart && !isForceOpen) {
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
       return;
     }
-    
 
     this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
@@ -957,16 +927,15 @@ export default class GameScene extends cc.Component {
 
     let takeImage = false;
     const canvas = document.getElementsByTagName("canvas")[0];
-    cc.director.on(cc.Director.EVENT_AFTER_DRAW, function () {
+    cc.director.on(cc.Director.EVENT_AFTER_DRAW, function() {
       if (takeImage) {
         takeImage = false;
-        celerx.didTakeSnapshot(canvas.toDataURL("image/jpeg", 0.25));
+        celerx.didTakeSnapshot(canvas.toDataURL("image/jpeg", 0.1));
       }
     });
-    celerx.provideCurrentFrameData(function () {
+    celerx.provideCurrentFrameData(function() {
       takeImage = true;
     });
-    
   }
 
   /**
@@ -974,16 +943,26 @@ export default class GameScene extends cc.Component {
    */
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
-    console.log(' step:', LOAD_STEP[this.step], "," , this.step, ", now:" , LOAD_STEP[loadStep]);
+    console.log(
+      " step:",
+      LOAD_STEP[this.step],
+      ",",
+      this.step,
+      ", now:",
+      LOAD_STEP[loadStep]
+    );
     if (this.step >= LOAD_STEP.DONE && !this.isStart) {
       console.log("  startGame ---------------------- ");
       this.isStart = true;
       this.Guide.hide();
       this.startGame();
-    } else if (this.step >= LOAD_STEP.GUIDE_READY && this.isNewPlayer && !this.guideDone) {
-      console.log("  start guide ------------")
+    } else if (
+      this.step >= LOAD_STEP.GUIDE_READY &&
+      this.isNewPlayer &&
+      !this.guideDone
+    ) {
+      console.log("  start guide ------------");
       this.startGuide();
-      
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
       celerx.ready();
       CC_DEBUG && this.celerStart();
@@ -994,8 +973,7 @@ export default class GameScene extends cc.Component {
   private isCelerStart: boolean = false;
   private guideDone: boolean = false;
   startGuide() {
-
-    this.guideDone  = true;
+    this.guideDone = true;
     let pokers = GuidePokers.concat([]).reverse();
     Game.allPokers.length = 0;
     while (pokers.length > 0) {
@@ -1008,27 +986,23 @@ export default class GameScene extends cc.Component {
       Game.allPokers.push(pokerNode.getComponent(Poker));
     }
 
-    this.startDevPoker([0, 7, 13, 18, 19, 22, 25, 26, 27], [22, 27], ()=>{
-
+    this.Guide.showBlock();
+    this.startDevPoker([0, 7, 13, 18, 19, 22, 25, 26, 27], [22, 27], () => {
       this.registerGuide();
 
-    // 开始新手引导
-    this.Guide.startGuide(()=>{
-      this.nextStep(LOAD_STEP.GUIDE)
+      // 开始新手引导
+      this.Guide.startGuide(() => {
+        this.nextStep(LOAD_STEP.GUIDE);
+      });
     });
-    });
-
-    
   }
 
   prepareGame() {
-
     for (let poker of Game.allPokers) {
       gFactory.putPoker(poker.node);
-      console.log('put poker ')
+      console.log("put poker ");
     }
-    
-    
+
     Game.allPokers.length = 0;
     this.Top.group = "default";
     // Game.addScore(-Game.getScore());
@@ -1036,9 +1010,7 @@ export default class GameScene extends cc.Component {
     this.showScore = 0;
     this.TimeAnimation.node.active = false;
     this.TimeLabel.font = this.SmallGreen;
-    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame(
-      "icon_time"
-    );
+    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame("icon_time");
     let gameTime = Game.getGameTime();
     this.TimeLabel.string = CMath.TimeFormat(gameTime);
     Game.getCycledPokerRoot().clear();
@@ -1051,21 +1023,15 @@ export default class GameScene extends cc.Component {
     for (let child of this.CycleRoot.children) {
       Game.addCycledPokerRoot(parseInt(child.name), child);
     }
-
   }
 
   startGame() {
-
-
     Game.initAllData();
     this.prepareGame();
 
-    
-
-
     let pokers = Pokers.concat([]);
-    console.error(pokers.length)
-    
+    console.error(pokers.length);
+
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
 
@@ -1075,7 +1041,7 @@ export default class GameScene extends cc.Component {
       let randomIndex = Math.floor(random * totalWeight);
 
       let i = pokers.splice(randomIndex, 1);
-     
+
       let pokerNode = gFactory.getPoker(i);
       pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
@@ -1084,12 +1050,12 @@ export default class GameScene extends cc.Component {
       this.PokerDevl.addChild(pokerNode);
     }
 
-    console.log(" ------------------------ start game ------------------------");
-    console.error(this.PokerDevl.childrenCount)
-    
+    console.log(
+      " ------------------------ start game ------------------------"
+    );
+    console.error(this.PokerDevl.childrenCount);
 
     this.startDevPoker([0, 7, 13, 18, 22, 25, 27], []);
-    
   }
 
   startDevPoker(pokerFlips: number[], offsets: number[], callback?: Function) {
@@ -1730,8 +1696,7 @@ export default class GameScene extends cc.Component {
   update(dt: number) {
     this.devTime += dt;
     this.backTime += dt;
-    
-    
+
     if (Game.isGameStarted()) {
       Game.addGameTime(-dt);
       Game.addFreeTime(dt);
@@ -1748,8 +1713,6 @@ export default class GameScene extends cc.Component {
           );
         }
       }
-
-      
     }
 
     if (this.score < this.showScore) {

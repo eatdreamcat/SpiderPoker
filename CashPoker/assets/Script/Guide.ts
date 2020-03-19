@@ -4,29 +4,25 @@ import Poker from "./Poker";
 
 /** 新手指引的步骤 */
 export interface GuideStep {
-
-  /** 
-   * 可以点击的节点 
+  /**
+   * 可以点击的节点
    * 对应的回调
    * */
   touches: {
-    node: cc.Node,
-    isButton: boolean,
-    callback: Function,
-    start: Function,
-    end: Function,
-    touchStarted?:boolean,
-    isAction?: boolean
+    node: cc.Node;
+    isButton: boolean;
+    callback: Function;
+    start: Function;
+    end: Function;
+    touchStarted?: boolean;
+    isAction?: boolean;
   }[];
-
-
 }
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Guide extends cc.Component {
-
   @property(cc.SpriteAtlas)
   GuideAtlas: cc.SpriteAtlas = null;
 
@@ -66,7 +62,6 @@ export default class Guide extends cc.Component {
   @property(cc.Node)
   GuideBlock: cc.Node = null;
 
-
   private callback: Function = null;
 
   private guideSteps: GuideStep[] = [];
@@ -74,7 +69,6 @@ export default class Guide extends cc.Component {
   private index: number = 1;
   private guideDefaultY: number = 0;
   onLoad() {
-    
     this.guideDefaultY = this.Corn.node.y;
     this.GuideHand.node.active = false;
     this.Next.node.on(cc.Node.EventType.TOUCH_END, this.nextPage, this);
@@ -91,8 +85,6 @@ export default class Guide extends cc.Component {
       cc.Node.EventType.TOUCH_END,
       () => {
         this.hide();
-        
-        
       },
       this
     );
@@ -106,164 +98,171 @@ export default class Guide extends cc.Component {
       this
     );
 
-    gEventMgr.on(GlobalEvent.POP_GUIDE_STEP, ()=>{
-      if (this.guideSteps.length <= 0 || !this.node.active) return;
+    gEventMgr.on(
+      GlobalEvent.POP_GUIDE_STEP,
+      () => {
+        if (this.guideSteps.length <= 0 || !this.node.active) return;
 
-      this.popStep();
+        this.popStep();
 
-      this.nextGuide();
-    }, this);
+        this.nextGuide();
+      },
+      this
+    );
 
     this.Block.on(cc.Node.EventType.TOUCH_START, this.onBlockTouch, this);
-    this.Block.on(cc.Node.EventType.TOUCH_CANCEL, this.onBlockTouchCancel, this);
+    this.Block.on(
+      cc.Node.EventType.TOUCH_CANCEL,
+      this.onBlockTouchCancel,
+      this
+    );
     this.Block.on(cc.Node.EventType.TOUCH_END, this.onBlockTouchEnd, this);
     this.Block.on(cc.Node.EventType.TOUCH_MOVE, this.onBlockTouchMove, this);
   }
 
   onBlockTouch(e: cc.Event.EventTouch) {
-        
-    // if (this.guideSteps.length <= 0) {
-    //   this.hide();
-    //   return;
-    // }
+    if (this.guideSteps.length <= 0) {
+      //this.hide();
+      return;
+    }
 
-    
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       let exceptChild = null;
-      if (touch.node.getComponent(Poker) && touch.node.getComponent(Poker).getNext()) {
+      if (
+        touch.node.getComponent(Poker) &&
+        touch.node.getComponent(Poker).getNext()
+      ) {
         exceptChild = touch.node.getComponent(Poker).getNext().node;
       }
-       if (CMath.GetBoxToWorld(touch.node, exceptChild).contains(e.getLocation())) {
-         let event = new cc.Event.EventCustom(e.getType(), false);
-         event.setUserData(touch.callback);
-         touch.node.dispatchEvent(event);
-         touch.touchStarted = true;
+      if (
+        CMath.GetBoxToWorld(touch.node, exceptChild).contains(e.getLocation())
+      ) {
+        let event = new cc.Event.EventCustom(e.getType(), false);
+        event.setUserData(touch.callback);
+        touch.node.dispatchEvent(event);
+        touch.touchStarted = true;
 
         //  if (touch.node.getComponent(Poker)) {
         //   console.log(touch.node.getComponent(Poker).getKey(), touch.node.getComponent(Poker).getValue())
         // }
-       }
+      }
+    }
+  }
+
+  onBlockTouchCancel(e: cc.Event.EventTouch) {
+    if (this.guideSteps.length <= 0) {
+      this.hide();
+      return;
     }
 
-
-}
-
-onBlockTouchCancel(e: cc.Event.EventTouch) {
-        
-  if (this.guideSteps.length <= 0) {
-    this.hide();
-    return;
-  }
-
-  
-  let curStep = this.guideSteps[0];
-  for (let touch of curStep.touches) {
-
-     let exceptChild = null;
-     if (touch.node.getComponent(Poker) && touch.node.getComponent(Poker).getNext()) {
-      exceptChild = touch.node.getComponent(Poker).getNext().node;
+    let curStep = this.guideSteps[0];
+    for (let touch of curStep.touches) {
+      let exceptChild = null;
+      if (
+        touch.node.getComponent(Poker) &&
+        touch.node.getComponent(Poker).getNext()
+      ) {
+        exceptChild = touch.node.getComponent(Poker).getNext().node;
+      }
+      if (
+        CMath.GetBoxToWorld(touch.node, exceptChild).contains(
+          e.getLocation()
+        ) &&
+        touch.touchStarted
+      ) {
+        let event = new cc.Event.EventCustom(e.getType(), false);
+        event.setUserData(touch.callback);
+        touch.node.dispatchEvent(event);
+        touch.touchStarted = false;
+      }
     }
-     if (CMath.GetBoxToWorld(touch.node, exceptChild).contains(e.getLocation()) && touch.touchStarted) {
-       let event = new cc.Event.EventCustom(e.getType(), false);
-       event.setUserData(touch.callback);
-       touch.node.dispatchEvent(event);
-       touch.touchStarted = false;
-     }
   }
 
-
-}
-
-
-onBlockTouchEnd(e: cc.Event.EventTouch) {
-        
-  if (this.guideSteps.length <= 0) {
-    this.hide();
-    return;
-  }
-
-  
-  let curStep = this.guideSteps[0];
-  for (let touch of curStep.touches) {
-    let exceptChild = null;
-    if (touch.node.getComponent(Poker) && touch.node.getComponent(Poker).getNext()) {
-      exceptChild = touch.node.getComponent(Poker).getNext().node;
+  onBlockTouchEnd(e: cc.Event.EventTouch) {
+    if (this.guideSteps.length <= 0) {
+      this.hide();
+      return;
     }
-     if (CMath.GetBoxToWorld(touch.node, exceptChild).contains(e.getLocation()) && touch.touchStarted) {
-       let event = new cc.Event.EventCustom(e.getType(), false);
-       event.setUserData(touch.callback);
-       touch.node.dispatchEvent(event);
-       touch.touchStarted = false;
-     }
+
+    let curStep = this.guideSteps[0];
+    for (let touch of curStep.touches) {
+      let exceptChild = null;
+      if (
+        touch.node.getComponent(Poker) &&
+        touch.node.getComponent(Poker).getNext()
+      ) {
+        exceptChild = touch.node.getComponent(Poker).getNext().node;
+      }
+      if (
+        CMath.GetBoxToWorld(touch.node, exceptChild).contains(
+          e.getLocation()
+        ) &&
+        touch.touchStarted
+      ) {
+        let event = new cc.Event.EventCustom(e.getType(), false);
+        event.setUserData(touch.callback);
+        touch.node.dispatchEvent(event);
+        touch.touchStarted = false;
+      }
+    }
   }
 
+  popStep() {
+    if (this.guideSteps.length <= 0) return;
 
-}
+    let curStep = this.guideSteps.shift();
+    for (let touch of curStep.touches) {
+      if (touch.end) {
+        touch.end();
+      }
+    }
+  }
 
+  clearStep() {
+    if (this.guideSteps.length <= 0) return;
 
-popStep() {
-  if (this.guideSteps.length <= 0) return;
-
-      let curStep = this.guideSteps.shift();
-      for(let touch of curStep.touches) {
+    for (let curStep of this.guideSteps)
+      for (let touch of curStep.touches) {
         if (touch.end) {
           touch.end();
         }
       }
-}
-
-clearStep() {
-  if (this.guideSteps.length <= 0) return;
-
-      for (let curStep of this.guideSteps)
-      for(let touch of curStep.touches) {
-        if (touch.end) {
-          touch.end();
-        }
-      }
-}
-
-showEnd() {
-  console.log(" show end ");
-  this.Corn.node.active = true;
-  this.Corn.node.y = this.guideDefaultY;
-  this.Corn.spriteFrame = this.GuideEnd;
-  this.OK.node.active = true;
-  
-  this.OK.node.targetOff(this);
-  this.OK.node.on(
-    cc.Node.EventType.TOUCH_END,
-    () => {
-      
-      this.popStep();
-      this.nextGuide();
-    },
-    this
-  );
-}
-
-onBlockTouchMove(e: cc.Event.EventTouch) {
-        
-  if (this.guideSteps.length <= 0) {
-    //this.hide();
-    
-    return;
   }
 
-  
-  let curStep = this.guideSteps[0];
-  for (let touch of curStep.touches) {
-    if (touch.isButton || !touch.touchStarted) continue;
-    
-    e.bubbles = false;
-    touch.node.dispatchEvent(e);
+  showEnd() {
+    console.log(" show end ");
+    this.Corn.node.active = true;
+    this.Corn.node.y = this.guideDefaultY;
+    this.Corn.spriteFrame = this.GuideEnd;
+    this.OK.node.active = true;
+
+    this.OK.node.targetOff(this);
+    this.OK.node.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        this.popStep();
+        this.nextGuide();
+      },
+      this
+    );
   }
 
+  onBlockTouchMove(e: cc.Event.EventTouch) {
+    if (this.guideSteps.length <= 0) {
+      //this.hide();
 
-}
+      return;
+    }
 
+    let curStep = this.guideSteps[0];
+    for (let touch of curStep.touches) {
+      if (touch.isButton || !touch.touchStarted) continue;
 
+      e.bubbles = false;
+      touch.node.dispatchEvent(e);
+    }
+  }
 
   /** 注册新手指引步骤 */
   register(steps: GuideStep[]) {
@@ -271,7 +270,6 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
   }
 
   startGuide(closeCallback?: Function) {
-    
     this.OK.node.active = true;
     this.isGuide = true;
     this.node.active = true;
@@ -284,20 +282,19 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.callback = closeCallback;
 
     //this.nextGuide()
-
   }
 
   nextGuide() {
-
     let count = this.guideSteps.length;
     if (count <= 0) {
       this.hide();
       return;
-
     }
-    
-    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("guide"+this.index);
-    this.Corn.node.y = -265; 
+
+    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame(
+      "guide" + this.index
+    );
+    this.Corn.node.y = -265;
     this.index++;
     let curStep = this.guideSteps[0];
     let actions: cc.FiniteTimeAction[] = [];
@@ -305,33 +302,41 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
 
     let touchActions = [];
     for (let touch of curStep.touches) {
-      if (touch.isAction) touchActions.push(touch.node)
+      if (touch.isAction) touchActions.push(touch.node);
     }
 
     if (touchActions.length > 0) {
-      let pos
+      let pos;
       if (curStep.touches.length > 1) {
-        pos = CMath.ConvertToNodeSpaceAR(touchActions[1], this.GuideHand.node.parent);
-        
+        pos = CMath.ConvertToNodeSpaceAR(
+          touchActions[1],
+          this.GuideHand.node.parent
+        );
       } else {
-        pos = CMath.ConvertToNodeSpaceAR(touchActions[0], this.GuideHand.node.parent);
+        pos = CMath.ConvertToNodeSpaceAR(
+          touchActions[0],
+          this.GuideHand.node.parent
+        );
       }
       this.GuideHand.node.position = pos;
     }
 
     for (let touch of curStep.touches) {
-      touch.node.group = "guide"
+      touch.node.group = "guide";
       touch.start();
       if (touch.isAction) {
-      let pos = CMath.ConvertToNodeSpaceAR(touch.node, this.GuideHand.node.parent);
-      let time = CMath.Distance(pos, this.GuideHand.node.position);
-      let action = cc.moveTo(time / speed, pos);
-      
-      actions.push(action);
-      if (actions.length ==1) {
-        actions.push(cc.fadeTo(0.3, 0));
-        actions.push(cc.delayTime(0.3));
-      }
+        let pos = CMath.ConvertToNodeSpaceAR(
+          touch.node,
+          this.GuideHand.node.parent
+        );
+        let time = CMath.Distance(pos, this.GuideHand.node.position);
+        let action = cc.moveTo(time / speed, pos);
+
+        actions.push(action);
+        if (actions.length == 1) {
+          actions.push(cc.fadeTo(0.3, 0));
+          actions.push(cc.delayTime(0.3));
+        }
       }
     }
 
@@ -342,13 +347,13 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.GuideHand.node.opacity = 255;
     if (actions.length > 1) {
       actions.push(cc.fadeTo(0.4, 255));
-      
+
       this.GuideHand.node.runAction(cc.repeatForever(cc.sequence(actions)));
-    } 
+    }
   }
 
   hide() {
-    console.error(" hide ")
+    console.error(" hide ");
     if (!this.node.active) return;
     this.clearStep();
     this.node.active = false;
@@ -356,8 +361,15 @@ onBlockTouchMove(e: cc.Event.EventTouch) {
     this.callback = null;
   }
 
+  showBlock() {
+    this.Block.active = true;
+    this.node.active = true;
+    this.Corn.node.active = true;
+    this.OK.node.active = false;
+    this.Skip.node.active = false;
+  }
+
   show(closeCallback: Function) {
-    
     this.OK.node.active = false;
     this.Corn.node.active = false;
     this.GuideHand.node.active = false;

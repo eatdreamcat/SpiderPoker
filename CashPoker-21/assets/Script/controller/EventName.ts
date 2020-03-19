@@ -40,5 +40,7 @@ export enum GlobalEvent {
   NORMAL_BGM,
   PLAY_RECYCLE,
   PLAY_CHANGE_2_WILD,
-  PLAY_WILD_ANI
+  PLAY_WILD_ANI,
+
+  POP_GUIDE_STEP
 }
