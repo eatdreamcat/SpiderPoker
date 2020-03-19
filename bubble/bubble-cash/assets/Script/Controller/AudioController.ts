@@ -37,9 +37,13 @@ class AudioController {
         console.error(err);
       } else {
         for (let clip of clips) {
-          if (typeof clip["_audio"] == 'string') {
-            
-            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"]
+          if (
+            typeof clip["_audio"] == "string" &&
+            cc.loader["_cache"] &&
+            cc.loader["_cache"][clip["_audio"]] &&
+            cc.loader["_cache"][clip["_audio"]]["buffer"]
+          ) {
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"];
           }
           self.clips.add(clip.name, clip);
         }
@@ -80,17 +84,19 @@ class AudioController {
       (name: string) => {
         if (this.audioID["bgm"] != null) {
           this.stop(this.audioID["bgm"], "bgm");
-          this.audioID["bgm"] = this.play(name,true, 1, true)
+          this.audioID["bgm"] = this.play(name, true, 1, true);
         }
       },
       this
     );
 
-    gEventMgr.on(GlobalEvent.PLAY_EFFECT, (name: string)=>{
-      this.audioID[name] = this.play(name);
-    },this)
-
-    
+    gEventMgr.on(
+      GlobalEvent.PLAY_EFFECT,
+      (name: string) => {
+        this.audioID[name] = this.play(name);
+      },
+      this
+    );
   }
 
   stop(audioID: number, clipName?: string) {
@@ -110,8 +116,6 @@ class AudioController {
     isBgm: boolean = false,
     timePass: number = 0
   ): number {
-
-    
     if (!AudioController.canPlay && !AudioController.hasBindTouch) {
       AudioController.hasBindTouch = true;
       let self = this;
@@ -130,7 +134,6 @@ class AudioController {
             item.volume
           );
 
-          
           if (item.isBgm) {
             self.audioID["bgm"] = audioID;
             cc.audioEngine.setCurrentTime(
@@ -150,16 +153,19 @@ class AudioController {
       cc.game.canvas.addEventListener("touchstart", playFunc);
     }
 
-
     if (!this.clips.get(clipName)) {
       let now = Date.now();
       cc.loader.loadRes("sounds/" + clipName, cc.AudioClip, (err, clip) => {
         if (err) {
           console.error(err);
         } else {
-          if (typeof clip["_audio"] == 'string') {
-            
-            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"]
+          if (
+            typeof clip["_audio"] == "string" &&
+            cc.loader["_cache"] &&
+            cc.loader["_cache"][clip["_audio"]] &&
+            cc.loader["_cache"][clip["_audio"]]["buffer"]
+          ) {
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"];
           }
 
           this.clips.add(clip.name, clip);
@@ -176,8 +182,6 @@ class AudioController {
       return -1;
     }
 
-    
-
     if (AudioController.canPlay) {
       //if (this.audioID[clipName] >= 0) return this.audioID[clipName];
 
@@ -188,9 +192,7 @@ class AudioController {
         timePass % cc.audioEngine.getDuration(audioID)
       );
       return audioID;
-
     } else {
-
       let hasAdd = false;
       for (let clipItem of AudioController.PlayedList) {
         if (clipItem.clipName == clipName) {

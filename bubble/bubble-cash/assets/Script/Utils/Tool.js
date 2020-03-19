@@ -6,30 +6,30 @@ if (CC_DEBUG) {
   // console.warn = function(...args) {};
   // console.error = function(...args) {};
 } else {
-  console.log = function(...args) {};
-  console.warn = function(...args) {};
-  console.error = function(...args) {};
+  // console.log = function(...args) {};
+  // console.warn = function(...args) {};
+  // console.error = function(...args) {};
 }
 
 cc.DebugMode = cc.debug.DebugMode;
 
 
 CMath = {};
-CMath.Clamp = function(val, max, min) {
+CMath.Clamp = function (val, max, min) {
   return Math.max(Math.min(val, max), min);
 };
 
-CMath.Distance = function(p1, p2) {
+CMath.Distance = function (p1, p2) {
   return Math.sqrt(
     (p1.x - p2.x) * (p1.x - p2.x) + (p1.y - p2.y) * (p1.y - p2.y)
   );
 };
 
-CMath.isInRange = function(val, min, max) {
+CMath.isInRange = function (val, min, max) {
   return val.x >= min.x && val.y >= min.y && val.x <= max.x && val.y <= max.y;
 };
 
-CMath.NumberFormat = function(val) {
+CMath.NumberFormat = function (val) {
   let strArr = val.toString().split(".");
   let strValArr = strArr[0].split("").reverse();
   let resStr = "";
@@ -47,7 +47,7 @@ CMath.NumberFormat = function(val) {
   return resStr;
 };
 
-CMath.TimeFormat = function(time) {
+CMath.TimeFormat = function (time) {
   let min = Math.floor(time / 60);
   //if (min < 10) min = "0" + min;
   let sec = Math.floor(time % 60);
@@ -70,7 +70,7 @@ function seededRandom(seed, min, max) {
   return min + rand * (max - min);
 }
 
-CMath.getRandom = function(min, max) {
+CMath.getRandom = function (min, max) {
   const seed = CMath.randomSeed;
   min = min || 0;
   max = max || 1;
@@ -81,24 +81,24 @@ CMath.getRandom = function(min, max) {
   return result;
 };
 
-CMath.GetWorldPosition = function(node) {
+CMath.GetWorldPosition = function (node) {
   if (!node || !node.getParent || !node.getParent()) return cc.v2(0, 0);
   let parent = node.getParent();
   return parent.convertToWorldSpaceAR(node.position);
 };
 
-CMath.ConvertToNodeSpaceAR = function(node, spaceNode) {
+CMath.ConvertToNodeSpaceAR = function (node, spaceNode) {
   if (!spaceNode) return cc.v2(0, 0);
   let worldPos = CMath.GetWorldPosition(node);
   return spaceNode.convertToNodeSpaceAR(worldPos);
 };
 
-CMath.CheckNumberBit = function(a, b) {
+CMath.CheckNumberBit = function (a, b) {
   if (a == b) return false;
   return (a | b) < a + b;
 };
 
-CMath.getK = function(a, b) {
+CMath.getK = function (a, b) {
   let dx = a.x - b.x;
   let dy = a.y - b.y;
   if (dx == 0) return null;
