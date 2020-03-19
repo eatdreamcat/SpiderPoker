@@ -107,8 +107,10 @@ export default class Result extends cc.Component {
 
           window.location.reload();
         } else {
-          celerx.submitScore(Game.getScore());
-          this.alreadySubmit = true;
+          if (!this.alreadySubmit) {
+            celerx.submitScore(Game.getScore());
+            this.alreadySubmit = true;
+          }
         }
       },
       this
@@ -161,6 +163,7 @@ export default class Result extends cc.Component {
       this.scheduleOnce(() => {
         if (!this.alreadySubmit) {
           celerx.submitScore(Game.getScore());
+          this.alreadySubmit = true;
         }
       }, 2);
     }
