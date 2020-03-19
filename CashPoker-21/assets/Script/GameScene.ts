@@ -12,7 +12,8 @@ import {
   SPECIAL_TYPE,
   ADD_SCORE_SPECILA_OFFSET_Y,
   NORMAL_SCORE_MOVE_TIME,
-  NO_BUST_EXTRA_SCORE
+  NO_BUST_EXTRA_SCORE,
+  GuidePokers
 } from "./Pokers";
 import { gEventMgr } from "./controller/EventManager";
 import { GlobalEvent } from "./controller/EventName";
@@ -49,6 +50,15 @@ export enum LOAD_STEP {
 export default class GameScene extends cc.Component {
   @property(cc.Prefab)
   Poker: cc.Prefab = null;
+
+  @property(cc.Node)
+  Top: cc.Node = null;
+
+  @property(cc.Node)
+  TouchRoot: cc.Node = null;
+
+  @property(cc.Node)
+  ValueRootNode: cc.Node = null;
 
   @property(cc.Node)
   PokerClip: cc.Node = null;
@@ -94,6 +104,9 @@ export default class GameScene extends cc.Component {
 
   @property(cc.Font)
   SmallOrg: cc.Font = null;
+
+  @property(cc.Font)
+  SmallWhite: cc.Font = null;
 
   @property(cc.Prefab)
   SubScoreLabel: cc.Prefab = null;
@@ -180,6 +193,9 @@ export default class GameScene extends cc.Component {
 
   private isStart: boolean = false;
 
+  private isNewPlayer: boolean = false;
+  private guideDone: boolean = false;
+
   init() {
     this.Stop.hide();
     this.Complete.node.active = false;
@@ -203,7 +219,34 @@ export default class GameScene extends cc.Component {
     }
   }
 
-  registerGuide() {}
+  registerGuide() {
+    this.Guide.register([
+      /** 把 6 移动到第一列 */
+      {
+        touches: [
+          // 得分显示
+          {
+            node: this.Top
+          },
+          {
+            node: this.ValueRootNode.children[0]
+          },
+          {
+            node: this.TouchRoot.children[0],
+            isAction: true
+          },
+          {
+            node: null,
+            nodeFunc: () => {
+              let poker = Game.getCurSelectPoker();
+              if (poker) return poker.node;
+              return null;
+            }
+          }
+        ]
+      }
+    ]);
+  }
 
   onLoad() {
     Game.removeNode = this.RemoveNode;
@@ -231,8 +274,6 @@ export default class GameScene extends cc.Component {
     celerx.provideScore(() => {
       return parseInt(Game.getScore().toString());
     });
-
-    CC_DEBUG && this.celerStart();
 
     for (let child of this.SpecialBust.children) {
       child.scaleY = 0;
@@ -855,7 +896,6 @@ export default class GameScene extends cc.Component {
       cc.moveTo(0.3, 0, 0),
       cc.callFunc(() => {
         poker.setDefaultPosition();
-        child.group = "default";
       }, this)
     );
     action.setTag(ACTION_TAG.SELECT_POKER);
@@ -866,6 +906,12 @@ export default class GameScene extends cc.Component {
   openResult(delay: number) {
     this.Stop.hide();
     if (this.node.getChildByName("Result")) return;
+
+    if (!this.isStart) {
+      this.Guide.hide();
+      this.nextStep(LOAD_STEP.GUIDE);
+      return;
+    }
 
     if (Game.getGameTime() > 0) {
       if (Game.isBoom()) {
@@ -923,19 +969,14 @@ export default class GameScene extends cc.Component {
     if (match && match.sharedRandomSeed) {
       CMath.randomSeed = match.sharedRandomSeed;
       CMath.sharedSeed = match.sharedRandomSeed;
-      this.nextStep(LOAD_STEP.CELER);
     } else {
       CMath.randomSeed = Math.random();
-      CC_DEBUG && this.nextStep(LOAD_STEP.CELER);
     }
 
     if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      this.Guide.show(() => {
-        this.nextStep(LOAD_STEP.GUIDE);
-      });
-      // this.Guide.hide();
-      // this.nextStep(LOAD_STEP.GUIDE);
+      this.isNewPlayer = true;
     } else {
+      this.isNewPlayer = false;
       this.Guide.hide();
       this.nextStep(LOAD_STEP.GUIDE);
     }
@@ -952,6 +993,8 @@ export default class GameScene extends cc.Component {
     celerx.provideCurrentFrameData(function() {
       takeImage = true;
     });
+
+    this.nextStep(LOAD_STEP.CELER);
   }
 
   /**
@@ -968,49 +1011,70 @@ export default class GameScene extends cc.Component {
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCeler) {
       celerx.ready();
       this.isCeler = true;
+      CC_DEBUG && this.celerStart();
+    } else if (
+      this.step >= LOAD_STEP.GUIDE_READY &&
+      this.isNewPlayer &&
+      !this.guideDone
+    ) {
+      this.guideDone = true;
+      this.startGuide();
     }
   }
 
-  startGame() {
-    let pokers = Pokers.concat([]).reverse();
-    //let pokers = Pokers.concat([]);
-    console.log(pokers);
-    console.log(pokers.length);
-    /**
-     *生成可解牌局
-     */
-    // let origPokers = Pokers.concat();
-    // let solutionPokers = [];
-    // let group1 = [];
-    /**
-     *
-     */
+  prepareGame() {
+    for (let poker of Game.allPokers) {
+      gFactory.putPoker(poker);
+    }
+
+    Game.allPokers.length = 0;
+
+    this.showScore = 0;
+    this.TimeAnimation.node.active = false;
+    this.TimeLabel.font = this.SmallWhite;
+    this.TimeIcon.spriteFrame = this.TimeIconAtlas.getSpriteFrame("icon_time");
+    let gameTime = Game.getGameTime();
+    this.TimeLabel.string = CMath.TimeFormat(gameTime);
+
+    Game.getCycledPokerRoot().clear();
+    Game.getPlacePokerRoot().clear();
+
+    for (let child of this.PlaceRoot.children) {
+      if (
+        child.getComponent(cc.Sprite) &&
+        child.getComponent(cc.Sprite).enabled
+      ) {
+        child.getComponent(cc.Sprite).enabled = CC_DEBUG;
+      }
+      Game.addPlacePokerRoot(parseInt(child.name), child);
+    }
+  }
+
+  startGuide() {
+    let pokers = GuidePokers.concat();
+    Game.allPokers.length = 0;
+
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
-
-      let totalWeight = pokers.length;
-
-      let random = CMath.getRandom(0, 1);
-      let randomIndex = Math.floor(random * totalWeight);
-
-      let i = pokers.splice(randomIndex, 1);
-      //let i = pokers.splice(curIndex, 1);
-      console.warn(
-        "randomIndex:",
-        randomIndex,
-        ", poker:",
-        i,
-
-        ",random:",
-        random
-      );
-      let pokerNode = gFactory.getPoker(i);
+      let pokerNode = gFactory.getPoker([pokers.pop(), true]);
       pokerNode.name = curIndex.toString();
       pokerNode.x = 0;
       pokerNode.y = 0;
       this.PokerDevl.addChild(pokerNode);
+      Game.allPokers.push(pokerNode);
     }
 
+    this.Guide.showBlock();
+
+    this.startDevPoker(() => {
+      this.registerGuide();
+      this.Guide.startGuide(() => {
+        this.nextStep(LOAD_STEP.GUIDE);
+      });
+    });
+  }
+
+  startDevPoker(callback: Function) {
     let count = 1;
     let totalCount = this.PokerDevl.childrenCount;
     /** 发底牌 */
@@ -1050,101 +1114,57 @@ export default class GameScene extends cc.Component {
         // console.log(this.PokerDevl.children);
         this.canDispatchPoker = true;
         this.updateCurSelectPoker();
+        callback();
         return;
-      }
-    };
-
-    // let pokerPos = [
-    //   0,
-    //   1,
-    //   2,
-    //   3,
-    //   4,
-    //   5,
-    //   6,
-
-    //   1,
-    //   2,
-    //   3,
-    //   4,
-    //   5,
-    //   6,
-
-    //   2,
-    //   3,
-    //   4,
-    //   5,
-    //   6,
-
-    //   3,
-    //   4,
-    //   5,
-    //   6,
-
-    //   4,
-    //   5,
-    //   6,
-    //   5,
-    //   6,
-
-    //   6
-    // ];
-
-    //let pokerFlips = [0, 7, 13, 18, 22, 25, 27];
-    /** 上面发牌 */
-    let func1 = () => {
-      if (count++ >= this.dispatchCardCount) {
-        func2();
-        // this.canDispatchPoker = true;
-        // this.LightAnimation.node.active = true;
-        // this.LightAnimation.play();
-        return;
-      }
-
-      let pokerNode = this.PokerDevl.getChildByName(
-        (totalCount - count).toString()
-      );
-
-      if (!pokerNode) {
-        // console.error(" poker node invaild!");
-        // console.log(this.PokerDevl);
-        return;
-      }
-
-      let rootIndex = (count - 1) % 8;
-      let targetNode = Game.getPlacePokerRoot().get(rootIndex);
-      if (targetNode) {
-        let selfPos = CMath.ConvertToNodeSpaceAR(pokerNode, targetNode);
-
-        let offset = OFFSET_Y / 3;
-        if (!targetNode.getComponent(Poker)) {
-          Game.addPlacePokerRoot(rootIndex, pokerNode);
-          offset = 0;
-        }
-        pokerNode.setParent(targetNode);
-        let poker = pokerNode.getComponent(Poker);
-        pokerNode.setPosition(selfPos);
-
-        pokerNode.group = "top";
-        if (count > 30) {
-          poker.flipCard(0.1);
-          poker.setNormal();
-        }
-        gEventMgr.emit(GlobalEvent.DEV_POKERS);
-        pokerNode.runAction(
-          cc.sequence(
-            cc.moveTo(0.05, 0, offset),
-            cc.callFunc(() => {
-              pokerNode.group = "default";
-              poker.setDefaultPosition();
-              func1();
-            }, this)
-          )
-        );
       }
     };
 
     func2();
+  }
+
+  startGame() {
+    Game.initData();
+    this.prepareGame();
+    let pokers = Pokers.concat([]).reverse();
+    //let pokers = Pokers.concat([]);
+    console.log(pokers);
+    console.log(pokers.length);
+    /**
+     *生成可解牌局
+     */
+    // let origPokers = Pokers.concat();
+    // let solutionPokers = [];
+    // let group1 = [];
+    /**
+     *
+     */
+    while (pokers.length > 0) {
+      let curIndex = pokers.length - 1;
+
+      let totalWeight = pokers.length;
+
+      let random = CMath.getRandom(0, 1);
+      let randomIndex = Math.floor(random * totalWeight);
+
+      let i = pokers.splice(randomIndex, 1);
+      //let i = pokers.splice(curIndex, 1);
+      console.warn(
+        "randomIndex:",
+        randomIndex,
+        ", poker:",
+        i,
+
+        ",random:",
+        random
+      );
+      let pokerNode = gFactory.getPoker(i);
+      pokerNode.name = curIndex.toString();
+      pokerNode.x = 0;
+      pokerNode.y = 0;
+      this.PokerDevl.addChild(pokerNode);
+    }
+
+    this.startDevPoker(() => {});
   }
 
   recyclePoker() {}
@@ -1208,8 +1228,6 @@ export default class GameScene extends cc.Component {
       );
     });
   }
-
-  start() {}
 
   update(dt: number) {
     this.devTime += dt;

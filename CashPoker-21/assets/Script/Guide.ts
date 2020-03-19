@@ -10,10 +10,11 @@ export interface GuideStep {
    * */
   touches: {
     node: cc.Node;
-    isButton: boolean;
-    callback: Function;
-    start: Function;
-    end: Function;
+    nodeFunc?: Function;
+    isButton?: boolean;
+    callback?: Function;
+    start?: Function;
+    end?: Function;
     touchStarted?: boolean;
     isAction?: boolean;
   }[];
@@ -122,15 +123,23 @@ export default class Guide extends cc.Component {
   }
 
   onBlockTouch(e: cc.Event.EventTouch) {
-    // if (this.guideSteps.length <= 0) {
-    //   this.hide();
-    //   return;
-    // }
+    if (this.guideSteps.length <= 0) {
+      // this.hide();
+      return;
+    }
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       let exceptChild = null;
+      if (touch.node == null) {
+        if (touch.nodeFunc) {
+          touch.node = touch.nodeFunc();
+        } else {
+          continue;
+        }
+      }
       if (
+        touch.node &&
         touch.node.getComponent(Poker) &&
         touch.node.getComponent(Poker).getNext()
       ) {
@@ -153,7 +162,7 @@ export default class Guide extends cc.Component {
 
   onBlockTouchCancel(e: cc.Event.EventTouch) {
     if (this.guideSteps.length <= 0) {
-      this.hide();
+      //this.hide();
       return;
     }
 
@@ -161,6 +170,7 @@ export default class Guide extends cc.Component {
     for (let touch of curStep.touches) {
       let exceptChild = null;
       if (
+        touch.node &&
         touch.node.getComponent(Poker) &&
         touch.node.getComponent(Poker).getNext()
       ) {
@@ -182,7 +192,7 @@ export default class Guide extends cc.Component {
 
   onBlockTouchEnd(e: cc.Event.EventTouch) {
     if (this.guideSteps.length <= 0) {
-      this.hide();
+      //this.hide();
       return;
     }
 
@@ -190,6 +200,7 @@ export default class Guide extends cc.Component {
     for (let touch of curStep.touches) {
       let exceptChild = null;
       if (
+        touch.node &&
         touch.node.getComponent(Poker) &&
         touch.node.getComponent(Poker).getNext()
       ) {
@@ -215,7 +226,7 @@ export default class Guide extends cc.Component {
     let curStep = this.guideSteps.shift();
     for (let touch of curStep.touches) {
       if (touch.end) {
-        touch.end();
+        touch.end && touch.end();
       }
     }
   }
@@ -226,7 +237,7 @@ export default class Guide extends cc.Component {
     for (let curStep of this.guideSteps)
       for (let touch of curStep.touches) {
         if (touch.end) {
-          touch.end();
+          touch.end && touch.end();
         }
       }
   }
@@ -258,7 +269,7 @@ export default class Guide extends cc.Component {
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
-      if (touch.isButton || !touch.touchStarted) continue;
+      if (touch.isButton || !touch.touchStarted || !touch.node) continue;
 
       e.bubbles = false;
       touch.node.dispatchEvent(e);
@@ -303,7 +314,10 @@ export default class Guide extends cc.Component {
 
     let touchActions = [];
     for (let touch of curStep.touches) {
-      if (touch.isAction) touchActions.push(touch.node);
+      if (!touch.node && touch.nodeFunc) {
+        touch.node = touch.nodeFunc();
+      }
+      if (touch.isAction && touch.node) touchActions.push(touch.node);
     }
 
     if (touchActions.length > 0) {
@@ -324,7 +338,7 @@ export default class Guide extends cc.Component {
 
     for (let touch of curStep.touches) {
       touch.node.group = "guide";
-      touch.start();
+      touch.start && touch.start();
       if (touch.isAction) {
         let pos = CMath.ConvertToNodeSpaceAR(
           touch.node,
@@ -360,6 +374,14 @@ export default class Guide extends cc.Component {
     this.node.active = false;
     this.callback && this.callback();
     this.callback = null;
+  }
+
+  showBlock() {
+    this.Block.active = true;
+    this.Corn.node.active = true;
+    this.OK.node.active = false;
+    this.Skip.node.active = false;
+    this.node.active = true;
   }
 
   show(closeCallback: Function) {

@@ -78,6 +78,28 @@ class GameMgr {
 
   private recyclePoker: number = 0;
 
+  allPokers: cc.Node[] = [];
+
+  initData() {
+    this.gameTime = 180;
+    this.gameStart = false;
+    this.wildCount = 1;
+    this.removePokerCount = 0;
+    this.recycleCount = 0;
+    this.combo = -1;
+    this.totalStreak = 0;
+    this.streakCount = 0;
+    this.clearStack = 0;
+    this.cardUsed = 0;
+    this.busted = 0;
+    this.recyclePoker = 0;
+    this.stepInfoArray.length = 0;
+    this.timeBonus = 0;
+    this.flipCounts = 0;
+    this.score = 0;
+    this.freeDrawTimes = 3;
+  }
+
   public addRecyclePoker(count: number) {
     this.recyclePoker += count;
     this.recyclePoker = Math.max(0, this.recyclePoker);

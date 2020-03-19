@@ -48,6 +48,72 @@ export const PokerTypes = {
 // console.log(
 //   "----------------AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA------------------"
 // );
+
+export const GuidePokers = [
+  "spade_,6",
+  "heart_,7",
+  "diamond_,10",
+  "club_,1",
+  "spade_,11",
+  /**   =================================================                          */
+  "heart_,2", //5
+  "club_,2", //6
+  "diamond_,2", //7
+
+  "spade_,3", //8
+  "heart_,3", //9
+  "club_,3", //10
+  "diamond_,3", //11
+
+  "spade_,4",
+  "heart_,4",
+  "club_,4",
+  "diamond_,4",
+
+  "spade_,5",
+  "heart_,5",
+  "club_,5",
+  "diamond_,5",
+
+  "spade_,6",
+  "heart_,6",
+  "club_,6",
+  "diamond_,6",
+
+  "spade_,7",
+  "heart_,7",
+  "club_,7",
+  "diamond_,7",
+
+  "spade_,8",
+  "heart_,8",
+  "club_,8",
+  "diamond_,8",
+  "diamond_,9",
+  "spade_,9",
+  "heart_,9",
+  "club_,9",
+
+  "diamond_,10",
+  "spade_,10",
+  "club_,10",
+  "heart_,10",
+  "spade_,11",
+  "heart_,11",
+  "club_,11",
+  "diamond_,11",
+
+  "spade_,12",
+  "heart_,12",
+  "club_,12",
+  "diamond_,12",
+
+  "spade_,13",
+  "heart_,13",
+  "club_,13",
+  "diamond_,13"
+];
+
 export const Pokers = [
   "spade_,1", //0
   "heart_,1", //1

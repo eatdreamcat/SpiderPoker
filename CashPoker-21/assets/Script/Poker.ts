@@ -86,6 +86,8 @@ export default class Poker extends cc.Component {
 
   private cycled: boolean = false;
 
+  private isguided: boolean = false;
+
   private placeLimit: cc.Size = cc.size(0, 0);
 
   private isReadyAutoComplete: boolean = false;
@@ -102,7 +104,8 @@ export default class Poker extends cc.Component {
     console.log(
       " ----------------------- poker reuse ---------------------------"
     );
-    console.log(arguments[0][0][0]);
+
+    this.isguided = arguments[0][0][1];
     this.value = parseInt(pokerInfo.split(",")[1]);
 
     let type = pokerInfo.split(",")[0];
@@ -345,7 +348,7 @@ export default class Poker extends cc.Component {
           cc.delayTime(delay),
           cc.callFunc(() => {
             this.frontCard.node.opacity = 255;
-            this.node.group = "top";
+            this.node.group = this.isguided ? "top-guide" : "top";
             Game.addCombo(1);
 
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
@@ -607,7 +610,7 @@ export default class Poker extends cc.Component {
   }
 
   setWild() {
-    gEventMgr.emit(GlobalEvent.PLAY_CHANGE_2_WILD)
+    gEventMgr.emit(GlobalEvent.PLAY_CHANGE_2_WILD);
     this.value = 11;
     this.pokerColer = PokerColor.Black;
     this.RecycleAnimation.node.opacity = 255;
@@ -619,10 +622,14 @@ export default class Poker extends cc.Component {
   }
 
   checkPos() {
-    if (this.node.group != "default") {
+    if (
+      (!this.isguided && this.node.group != "default") ||
+      (this.isguided && this.node.group != "guide")
+    ) {
       console.error(" checkPos");
       return;
     }
+
     if (this.isCycled()) return;
     let rootNode = Game.getPlacePokerRoot().get(this.key);
     if (!rootNode) return;
@@ -701,6 +708,10 @@ export default class Poker extends cc.Component {
     }
   }
 
+  get isGuide() {
+    return this.isguided;
+  }
+
   shake() {
     if (this.isCycled()) return;
     if (
@@ -710,7 +721,7 @@ export default class Poker extends cc.Component {
     )
       return;
     console.error(" shake:", this.node.parent.name);
-    this.node.group = "default";
+    this.node.group = this.isguided ? "guide" : "default";
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
       cc.repeat(
@@ -1014,22 +1025,24 @@ export default class Poker extends cc.Component {
     //   this.setKey(parseInt(parent.name));
     // }
 
-    if (
-      parent.name == "RemoveCardNode" ||
-      parent.name == "RemoveCardNodeBust"
-    ) {
-      this.setComplete(true);
-    } else {
-      this.setComplete(false);
+    if (parent) {
       if (
-        this.RecycleAnimation.node.opacity <= 0 &&
-        this.isWildCard() &&
-        !this.complete &&
-        !this.isCycled() &&
-        this.carState == CardState.Front
+        parent.name == "RemoveCardNode" ||
+        parent.name == "RemoveCardNodeBust"
       ) {
-        this.RecycleAnimation.node.opacity = 255;
-        this.RecycleAnimation.play();
+        this.setComplete(true);
+      } else {
+        this.setComplete(false);
+        if (
+          this.RecycleAnimation.node.opacity <= 0 &&
+          this.isWildCard() &&
+          !this.complete &&
+          !this.isCycled() &&
+          this.carState == CardState.Front
+        ) {
+          this.RecycleAnimation.node.opacity = 255;
+          this.RecycleAnimation.play();
+        }
       }
     }
   }

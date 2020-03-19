@@ -113,14 +113,16 @@ export default class PokerRoot extends cc.Component {
     curSelectPoker.node.setPosition(pos);
 
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
-    curSelectPoker.node.group = "top";
+    curSelectPoker.node.group = curSelectPoker.isGuide ? "top-guide" : "top";
     curSelectPoker.node.stopActionByTag(ACTION_TAG.SELECT_POKER);
     curSelectPoker.node.stopActionByTag(ACTION_TAG.SHAKE);
     curSelectPoker.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),
         cc.callFunc(() => {
-          curSelectPoker.node.group = "default";
+          curSelectPoker.node.group = curSelectPoker.isGuide
+            ? "guide"
+            : "default";
           this.canTouch = true;
         }, this)
       )
@@ -345,7 +347,7 @@ export default class PokerRoot extends cc.Component {
       this.updateValueLabel();
       Game.clearStreak();
       Game.addRecyclePoker(1);
-      gEventMgr.emit(GlobalEvent.PLAY_BUST)
+      gEventMgr.emit(GlobalEvent.PLAY_BUST);
       gEventMgr.emit(GlobalEvent.BUST, parseInt(this.node.name));
       this.scheduleOnce(() => {
         gEventMgr.emit(GlobalEvent.CHECK_COMPLETE, SPECIAL_TIME_OFFSET);
