@@ -458,6 +458,7 @@ export default class PokerRoot extends cc.Component {
     if (this.flyCount >= this.totalFlyCount) {
       this.canTouch = true;
     }
+    gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
   }
 
   private flyCount: number = 0;

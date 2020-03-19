@@ -128,6 +128,8 @@ export default class Guide extends cc.Component {
       return;
     }
 
+    if (this.OK.node.active) return;
+
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       let exceptChild = null;
@@ -166,6 +168,8 @@ export default class Guide extends cc.Component {
       return;
     }
 
+    if (this.OK.node.active) return;
+
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       let exceptChild = null;
@@ -195,6 +199,8 @@ export default class Guide extends cc.Component {
       //this.hide();
       return;
     }
+
+    if (this.OK.node.active) return;
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
@@ -253,11 +259,12 @@ export default class Guide extends cc.Component {
     this.OK.node.on(
       cc.Node.EventType.TOUCH_END,
       () => {
-        this.popStep();
-        this.nextGuide();
+        this.hide();
       },
       this
     );
+
+    this.GuideHand.node.active = false;
   }
 
   onBlockTouchMove(e: cc.Event.EventTouch) {
@@ -266,6 +273,8 @@ export default class Guide extends cc.Component {
 
       return;
     }
+
+    if (this.OK.node.active) return;
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
@@ -299,13 +308,11 @@ export default class Guide extends cc.Component {
   nextGuide() {
     let count = this.guideSteps.length;
     if (count <= 0) {
-      this.hide();
+      this.showEnd();
       return;
     }
 
-    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame(
-      "guide" + this.index
-    );
+    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("new" + this.index);
     this.Corn.node.y = -265;
     this.index++;
     let curStep = this.guideSteps[0];
@@ -344,26 +351,11 @@ export default class Guide extends cc.Component {
           touch.node,
           this.GuideHand.node.parent
         );
-        let time = CMath.Distance(pos, this.GuideHand.node.position);
-        let action = cc.moveTo(time / speed, pos);
 
-        actions.push(action);
-        if (actions.length == 1) {
-          actions.push(cc.fadeTo(0.3, 0));
-          actions.push(cc.delayTime(0.3));
-        }
+        this.GuideHand.node.active = true;
+        this.GuideHand.node.position = pos;
+        this.GuideHand.node.opacity = 255;
       }
-    }
-
-    if (actions.length == 2) actions.pop();
-
-    this.GuideHand.node.active = actions.length > 0;
-    this.GuideHand.node.stopAllActions();
-    this.GuideHand.node.opacity = 255;
-    if (actions.length > 1) {
-      actions.push(cc.fadeTo(0.4, 255));
-
-      this.GuideHand.node.runAction(cc.repeatForever(cc.sequence(actions)));
     }
   }
 

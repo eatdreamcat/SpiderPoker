@@ -132,6 +132,7 @@ export default class Poker extends cc.Component {
     if (!this.frontCard.spriteFrame) {
       console.error(pokerInfo.split(",")[0] + this.value);
     }
+    this.node.rotation = 0;
     this.setCardState(CardState.Back);
     this.initEvent();
   }
@@ -148,6 +149,7 @@ export default class Poker extends cc.Component {
     this.node.targetOff(this);
     gEventMgr.targetOff(this);
     this.cycled = false;
+    this.node.group = "default";
   }
 
   getNext() {

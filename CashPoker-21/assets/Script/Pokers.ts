@@ -50,15 +50,15 @@ export const PokerTypes = {
 // );
 
 export const GuidePokers = [
-  "spade_,6",
-  "heart_,7",
+  "spade_,7",
+  "heart_,6",
   "diamond_,10",
-  "club_,1",
-  "spade_,11",
-  /**   =================================================                          */
+  "club_,8",
+
+  "spade_,1",
+  "club_,4",
+  "heart_,11",
   "heart_,2", //5
-  "club_,2", //6
-  "diamond_,2", //7
 
   "spade_,3", //8
   "heart_,3", //9
@@ -89,6 +89,7 @@ export const GuidePokers = [
   "heart_,8",
   "club_,8",
   "diamond_,8",
+
   "diamond_,9",
   "spade_,9",
   "heart_,9",
@@ -98,6 +99,7 @@ export const GuidePokers = [
   "spade_,10",
   "club_,10",
   "heart_,10",
+
   "spade_,11",
   "heart_,11",
   "club_,11",
@@ -154,6 +156,7 @@ export const Pokers = [
   "heart_,8",
   "club_,8",
   "diamond_,8",
+
   "diamond_,9",
   "spade_,9",
   "heart_,9",
@@ -163,6 +166,7 @@ export const Pokers = [
   "spade_,10",
   "club_,10",
   "heart_,10",
+
   "spade_,11",
   "heart_,11",
   "club_,11",

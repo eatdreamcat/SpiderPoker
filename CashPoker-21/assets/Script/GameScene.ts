@@ -55,6 +55,9 @@ export default class GameScene extends cc.Component {
   Top: cc.Node = null;
 
   @property(cc.Node)
+  PlaceBack: cc.Node = null;
+
+  @property(cc.Node)
   TouchRoot: cc.Node = null;
 
   @property(cc.Node)
@@ -221,19 +224,27 @@ export default class GameScene extends cc.Component {
 
   registerGuide() {
     this.Guide.register([
-      /** 把 6 移动到第一列 */
+      /** 把 7 移动到第一列 */
       {
         touches: [
           // 得分显示
           {
             node: this.Top
           },
+
+          {
+            node: this.PlaceBack
+          },
+
           {
             node: this.ValueRootNode.children[0]
           },
           {
-            node: this.TouchRoot.children[0],
+            node: this.TouchRoot.children[0].children[0],
             isAction: true
+          },
+          {
+            node: this.TouchRoot.children[0]
           },
           {
             node: null,
@@ -245,6 +256,12 @@ export default class GameScene extends cc.Component {
           }
         ]
       }
+      /** 把 6 移动到第一列   */
+      /** 把 10 移动到第二列  */
+      /** 把 8 移动到第一列 */
+      /** 把 A 移动到第二列 */
+      /** 把 4 移动到第一列 */
+      /** 把 J 移动到第一列 */
     ]);
   }
 
@@ -890,6 +907,7 @@ export default class GameScene extends cc.Component {
     child.setParent(this.SelectPokerNode);
     child.setPosition(pos);
 
+    if (poker.isGuide && Game.isGameStarted()) child.group = "top-guide";
     poker.flipCard(0.1);
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
     let action = cc.sequence(
