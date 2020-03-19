@@ -94,6 +94,7 @@ export default class Guide extends cc.Component {
       () => {
         this.nextGuide();
         this.OK.node.active = false;
+        this.isGuide = true;
       },
       this
     );
@@ -126,6 +127,8 @@ export default class Guide extends cc.Component {
       return;
     }
 
+    if (!this.isGuide) return;
+
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       let exceptChild = null;
@@ -152,9 +155,11 @@ export default class Guide extends cc.Component {
 
   onBlockTouchCancel(e: cc.Event.EventTouch) {
     if (this.guideSteps.length <= 0) {
-      this.hide();
+      //this.hide();
       return;
     }
+
+    if (!this.isGuide) return;
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
@@ -181,9 +186,11 @@ export default class Guide extends cc.Component {
 
   onBlockTouchEnd(e: cc.Event.EventTouch) {
     if (this.guideSteps.length <= 0) {
-      this.hide();
+      //this.hide();
       return;
     }
+
+    if (!this.isGuide) return;
 
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
@@ -255,6 +262,8 @@ export default class Guide extends cc.Component {
       return;
     }
 
+    if (!this.isGuide) return;
+
     let curStep = this.guideSteps[0];
     for (let touch of curStep.touches) {
       if (touch.isButton || !touch.touchStarted) continue;
@@ -271,7 +280,6 @@ export default class Guide extends cc.Component {
 
   startGuide(closeCallback?: Function) {
     this.OK.node.active = true;
-    this.isGuide = true;
     this.node.active = true;
     this.Next.node.active = false;
     this.Forward.node.active = false;
@@ -280,7 +288,7 @@ export default class Guide extends cc.Component {
     this.GuideBlock.active = false;
     this.Skip.node.active = true;
     this.callback = closeCallback;
-
+    this.isGuide = false;
     //this.nextGuide()
   }
 
@@ -367,6 +375,7 @@ export default class Guide extends cc.Component {
     this.Corn.node.active = true;
     this.OK.node.active = false;
     this.Skip.node.active = false;
+    this.isGuide = false;
   }
 
   show(closeCallback: Function) {
