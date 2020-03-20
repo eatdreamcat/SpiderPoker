@@ -87,7 +87,7 @@ export default class GameScene extends cc.Component {
   Lodinging: cc.Animation = null;
 
   @property(cc.Node)
-  Hand: cc.Node=  null;
+  Hand: cc.Node = null;
   // @property(cc.PageView)
   // GuidePage: cc.PageView = null;
 
@@ -100,7 +100,7 @@ export default class GameScene extends cc.Component {
   private canUpdateScore: boolean = false;
   private rainbowEffectArray: string[] = [];
   private rainbowScoreArray: string[] = [];
-  
+
   onLoad() {
     this.ADNode.active = false;
     this.RainbowEffect.node.opacity = 0;
@@ -247,13 +247,21 @@ export default class GameScene extends cc.Component {
   initEvent() {
     gEventMgr.targetOff(this);
 
-    this.DownloadButton.on(cc.Node.EventType.TOUCH_END, ()=>{
-      FbPlayableAd.onCTAClick();
-    }, this);
+    this.DownloadButton.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        FbPlayableAd.onCTAClick();
+      },
+      this
+    );
 
-    this.ReplayButton.on(cc.Node.EventType.TOUCH_END, ()=>{
-      Game.restart();
-    }, this)
+    this.ReplayButton.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        Game.restart();
+      },
+      this
+    );
 
     gEventMgr.on(GlobalEvent.Cube_ADJUST_DONE, this.adjustDragPanel, this);
     gEventMgr.on(GlobalEvent.CUBE_BOX_DRAGING, this.onBoxDrag, this);
@@ -270,16 +278,27 @@ export default class GameScene extends cc.Component {
     gEventMgr.on(GlobalEvent.SHOW_TEXT, this.showText, this);
     gEventMgr.on(GlobalEvent.GAME_START, this.gameStart, this);
     gEventMgr.on(GlobalEvent.SHOW_OVER_LAYER, this.gameOver, this);
-    gEventMgr.on(GlobalEvent.GAME_RESTART, this.initGamePanel, this);
-    gEventMgr.on(GlobalEvent.PLAY_TOUCH, ()=>{
-      this.Hand.active = false;
-    }, this)
+    gEventMgr.on(
+      GlobalEvent.GAME_RESTART,
+      () => {
+        //this.onCubePlaceDone(true);
+        this.initGamePanel();
+      },
+      this
+    );
+    gEventMgr.on(
+      GlobalEvent.PLAY_TOUCH,
+      () => {
+        this.Hand.active = false;
+      },
+      this
+    );
     gEventMgr.on(
       GlobalEvent.PLAY_RAINBOW_EFFECT,
       (name: string) => {
-        let state1 = this.RainbowEffect.getAnimationState("rainbow");
+        // let state1 = this.RainbowEffect.getAnimationState("rainbow");
         let state2 = this.RainbowEffect.getAnimationState("hourse");
-        if (state1.isPlaying || state2.isPlaying) {
+        if (state2.isPlaying) {
           this.rainbowEffectArray.push(name);
           return;
         }
@@ -292,9 +311,9 @@ export default class GameScene extends cc.Component {
     gEventMgr.on(
       GlobalEvent.UPDATE_RAINBOW_SCORE,
       (score: string) => {
-        let state1 = this.RainbowEffect.getAnimationState("rainbow");
+        // let state1 = this.RainbowEffect.getAnimationState("rainbow");
         let state2 = this.RainbowEffect.getAnimationState("hourse");
-        if (state1.isPlaying || state2.isPlaying) {
+        if (state2.isPlaying) {
           this.rainbowScoreArray[
             Math.max(this.rainbowEffectArray.length - 1, 0)
           ] = score;
@@ -421,7 +440,7 @@ export default class GameScene extends cc.Component {
         boxSize.height / 2 - cellSize.height / 2
       )
     );
-     this.draging = true;
+    this.draging = true;
     this.floatScorePos = cc.v2(boxPos.x, boxPos.y + 80);
 
     Game.canPlace = this.checkCanPlace(
@@ -447,30 +466,42 @@ export default class GameScene extends cc.Component {
     if (this.DragPanel.childrenCount > 0) {
       this.Hand.opacity = 0;
       this.Hand.active = true;
-      switch(this.DragPanel.childrenCount) {
+      switch (this.DragPanel.childrenCount) {
         case 1:
-          this.Hand.runAction(cc.repeatForever(cc.sequence(
-            cc.moveTo(0, 337, -778),
-            cc.fadeTo(0.3, 255), 
-            cc.moveTo(0.3, -436, 120),
-            cc.fadeTo(0.4, 0)
-            )))
+          this.Hand.runAction(
+            cc.repeatForever(
+              cc.sequence(
+                cc.moveTo(0, 337, -778),
+                cc.fadeTo(0.3, 255),
+                cc.moveTo(0.3, -436, 120),
+                cc.fadeTo(0.4, 0)
+              )
+            )
+          );
           break;
         case 2:
-          this.Hand.runAction(cc.repeatForever(cc.sequence(
-            cc.moveTo(0, 25, -778),
-            cc.fadeTo(0.3, 255), 
-            cc.moveTo(0.3, -102, 400),
-            cc.fadeTo(0.4, 0)
-            )))
+          this.Hand.runAction(
+            cc.repeatForever(
+              cc.sequence(
+                cc.moveTo(0, 25, -778),
+                cc.fadeTo(0.3, 255),
+                cc.moveTo(0.3, -102, 400),
+                cc.fadeTo(0.4, 0)
+              )
+            )
+          );
           break;
         case 3:
-          this.Hand.runAction(cc.repeatForever(cc.sequence(
-            cc.moveTo(0, -285, -778),
-            cc.fadeTo(0.3, 255), 
-            cc.moveTo(0.3, 116, -371),
-            cc.fadeTo(0.4, 0)
-            )))
+          this.Hand.runAction(
+            cc.repeatForever(
+              cc.sequence(
+                cc.moveTo(0, -285, -778),
+                cc.fadeTo(0.3, 255),
+                cc.moveTo(0.3, 116, -371),
+                cc.fadeTo(0.4, 0)
+              )
+            )
+          );
           break;
       }
     } else {
@@ -725,7 +756,6 @@ export default class GameScene extends cc.Component {
 
   /** 方块放置完成，需要检测需不需要生成新的方块，判断游戏是否结束 */
   onCubePlaceDone(isStart) {
-   
     this.FloatScore.node.runAction(
       cc.sequence(
         cc.scaleTo(0.1, 1.5),
@@ -734,19 +764,18 @@ export default class GameScene extends cc.Component {
       )
     );
     Game.check();
-    if (this.DragPanel.childrenCount <= 0) {
-      
-      if (isStart) {
-/** 方块用完，需要重新生成方块 */
-this.genNewDragShape(Game.getShapes());
-      } else {
-        
+    if (isStart) {
+      for (let child of this.DragPanel.children) {
+        gFactory.putCubeRoot(child);
       }
+    }
+    if (this.DragPanel.childrenCount <= 0 && isStart) {
+      this.genNewDragShape(Game.getShapes());
     } else {
       this.checkIsGameOver();
     }
 
-    this.playHandAction()
+    this.playHandAction();
   }
 
   /** 检测是否还有位置可以放置 */
