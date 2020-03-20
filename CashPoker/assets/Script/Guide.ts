@@ -361,7 +361,6 @@ export default class Guide extends cc.Component {
   }
 
   hide() {
-    console.error(" hide ");
     if (!this.node.active) return;
     this.clearStep();
     this.node.active = false;

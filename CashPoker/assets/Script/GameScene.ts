@@ -558,6 +558,8 @@ export default class GameScene extends cc.Component {
   }
 
   onLoad() {
+    console.error = celerx.log;
+
     this.DrawCardAni.node.active = false;
     this.Guide.node.active = false;
     Game.removeNode = this.RemoveNode;
@@ -603,7 +605,7 @@ export default class GameScene extends cc.Component {
       this.nextStep(LOAD_STEP.AUDIO);
     });
 
-    this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
+    //this.PokerClip.on(cc.Node.EventType.TOUCH_START, this.dispatchPoker, this);
 
     this.PauseButton.node.on(
       cc.Node.EventType.TOUCH_START,
@@ -738,7 +740,7 @@ export default class GameScene extends cc.Component {
     this.PokerDevl.on(
       cc.Node.EventType.TOUCH_START,
       () => {
-        if (Game.isTimeOver() || Game.isComplete()) return;
+        if (Game.isTimeOver() || Game.isComplete() || !this.canFilp) return;
         Game.resetFreeTime();
         if (this.devTime >= 0.3) {
           this.devPoker();
@@ -923,8 +925,6 @@ export default class GameScene extends cc.Component {
       this.nextStep(LOAD_STEP.GUIDE);
     }
 
-    this.nextStep(LOAD_STEP.CELER);
-
     let takeImage = false;
     const canvas = document.getElementsByTagName("canvas")[0];
     cc.director.on(cc.Director.EVENT_AFTER_DRAW, function() {
@@ -936,6 +936,8 @@ export default class GameScene extends cc.Component {
     celerx.provideCurrentFrameData(function() {
       takeImage = true;
     });
+
+    this.nextStep(LOAD_STEP.CELER);
   }
 
   /**
@@ -943,7 +945,7 @@ export default class GameScene extends cc.Component {
    */
   private nextStep(loadStep: LOAD_STEP) {
     this.step |= loadStep;
-    console.log(
+    console.error(
       " step:",
       LOAD_STEP[this.step],
       ",",
@@ -952,7 +954,7 @@ export default class GameScene extends cc.Component {
       LOAD_STEP[loadStep]
     );
     if (this.step >= LOAD_STEP.DONE && !this.isStart) {
-      console.log("  startGame ---------------------- ");
+      console.error("  startGame ---------------------- ");
       this.isStart = true;
       this.Guide.hide();
       this.startGame();
@@ -961,9 +963,10 @@ export default class GameScene extends cc.Component {
       this.isNewPlayer &&
       !this.guideDone
     ) {
-      console.log("  start guide ------------");
+      console.error("  start guide ------------");
       this.startGuide();
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCelerStart) {
+      console.error("  celerx.ready ------------");
       celerx.ready();
       CC_DEBUG && this.celerStart();
       this.isCelerStart = true;
@@ -1025,12 +1028,13 @@ export default class GameScene extends cc.Component {
     }
   }
 
+  private canFilp = false;
   startGame() {
+    this.canFilp = false;
     Game.initAllData();
     this.prepareGame();
 
     let pokers = Pokers.concat([]);
-    console.error(pokers.length);
 
     while (pokers.length > 0) {
       let curIndex = pokers.length - 1;
@@ -1050,12 +1054,9 @@ export default class GameScene extends cc.Component {
       this.PokerDevl.addChild(pokerNode);
     }
 
-    console.log(
-      " ------------------------ start game ------------------------"
-    );
-    console.error(this.PokerDevl.childrenCount);
-
-    this.startDevPoker([0, 7, 13, 18, 22, 25, 27], []);
+    this.startDevPoker([0, 7, 13, 18, 22, 25, 27], [], () => {
+      this.canFilp = true;
+    });
   }
 
   startDevPoker(pokerFlips: number[], offsets: number[], callback?: Function) {

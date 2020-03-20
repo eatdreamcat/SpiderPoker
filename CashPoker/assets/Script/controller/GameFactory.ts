@@ -134,7 +134,7 @@ class GameFactory {
     } else {
       cc.loader.loadRes("prefabs/poker", cc.Prefab, (err, prefabRes) => {
         if (err) {
-          console.error(err);
+          console.error("load poker prefab err:", err);
         } else {
           //let cube = cc.instantiate(prefab);
           self.PokerPool.add("Poker", new ObjPool(prefabRes, initCount));
@@ -164,7 +164,7 @@ class GameFactory {
         cc.Prefab,
         (err, prefabRes) => {
           if (err) {
-            console.error(err);
+            console.error("load scoreLabel prefab err :", err);
           } else {
             //let cube = cc.instantiate(prefab);
             self.addScorePool.add(
@@ -198,7 +198,7 @@ class GameFactory {
         cc.Prefab,
         (err, prefabRes) => {
           if (err) {
-            console.error(err);
+            console.error("load red scoreLabel err:", err);
           } else {
             //let cube = cc.instantiate(prefab);
             self.subScorePool.add(

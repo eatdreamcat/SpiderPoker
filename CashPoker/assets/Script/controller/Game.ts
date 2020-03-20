@@ -123,14 +123,7 @@ class GameMgr {
       ((this.flipCounts / 30) * (1.2 / 0.5) + 0.3) * this.gameTime;
 
     this.timeBonus = Math.floor(this.timeBonus);
-    console.error(
-      "this.flipCounts: ",
-      this.flipCounts,
-      ", this.gameTime:",
-      this.gameTime,
-      ",this.timbonus:",
-      this.timeBonus
-    );
+
     Game.addScore(this.timeBonus);
   }
 
@@ -182,9 +175,6 @@ class GameMgr {
   public addRemovePokerCount(count: number) {
     this.removePokerCount += count;
     if (this.removePokerCount == 52) {
-      console.error(
-        " ---------------- addRemovePokerCount -----------------------"
-      );
       this.calTimeBonus();
       gEventMgr.emit(GlobalEvent.OPEN_RESULT);
     }
@@ -229,15 +219,8 @@ class GameMgr {
     if (!this.isGameStarted()) return;
     this.flipCounts += count;
     this.flipCounts = Math.max(this.flipCounts, 0);
-    console.error(
-      "-----------------------------------flipCounts:",
-      this.flipCounts
-    );
+
     if (this.isComplete()) {
-      console.error(
-        "-------------emit Complete!!!----------------------flipCounts:",
-        this.flipCounts
-      );
       gEventMgr.emit(GlobalEvent.COMPLETE);
     }
   }
@@ -334,7 +317,11 @@ class GameMgr {
 
       let poker = node.getComponent(Poker);
 
-      if (parent.name == "PokerClip" || parent.name == "PokerFlipRoot" || (poker && poker.isCycled())) {
+      if (
+        parent.name == "PokerClip" ||
+        parent.name == "PokerFlipRoot" ||
+        (poker && poker.isCycled())
+      ) {
         let selfPos = CMath.ConvertToNodeSpaceAR(node, parent);
         node.setPosition(selfPos);
       } else {
@@ -349,8 +336,6 @@ class GameMgr {
       node.setParent(parent);
 
       node.group = "top";
-
-      
 
       if (poker) {
         let returnPos =

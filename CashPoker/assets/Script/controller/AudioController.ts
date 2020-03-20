@@ -34,7 +34,7 @@ class AudioController {
       urls
     ) {
       if (err) {
-        console.error(err);
+        console.error("load bgm fail, err:", err);
       } else {
         for (let clip of clips) {
           self.clips.add(clip.name, clip);
@@ -209,7 +209,7 @@ class AudioController {
       let now = Date.now();
       cc.loader.loadRes("sounds/" + clipName, cc.AudioClip, (err, clip) => {
         if (err) {
-          console.error(err);
+          console.error("load sounds " + clipName + " fail, err:", err);
         } else {
           this.clips.add(clip.name, clip);
           let pass = (Date.now() - now) / 1000;

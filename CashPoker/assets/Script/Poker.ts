@@ -84,7 +84,7 @@ export default class Poker extends cc.Component {
     this.isReadyAutoComplete = false;
     let pokerInfo: string = arguments[0][0][0];
     this.isguide = arguments[0][0][1];
-    
+
     this.value = parseInt(pokerInfo.split(",")[1]);
     let type = pokerInfo.split(",")[0];
     this.pokerColer =
@@ -108,7 +108,10 @@ export default class Poker extends cc.Component {
       pokerInfo.split(",")[0] + this.value
     );
     if (!this.frontCard.spriteFrame) {
-      console.error(pokerInfo.split(",")[0] + this.value);
+      console.error(
+        "poker card spriteFrame is null, err:",
+        pokerInfo.split(",")[0] + this.value
+      );
     }
     this.setCardState(CardState.Back);
     this.initEvent();
@@ -123,7 +126,7 @@ export default class Poker extends cc.Component {
   }
 
   unuse() {
-    console.log(' poker unuse ')
+    console.log(" poker unuse ");
     this.node.targetOff(this);
     gEventMgr.targetOff(this);
     this.cycled = false;
@@ -199,8 +202,6 @@ export default class Poker extends cc.Component {
     gEventMgr.once(GlobalEvent.COMPLETE, this.autoComplete, this);
 
     gEventMgr.once(GlobalEvent.AUTO_COMPLETE_DONE, this.autoCompleteDone, this);
-
-    
   }
 
   autoCompleteDone() {
@@ -229,7 +230,7 @@ export default class Poker extends cc.Component {
           cc.delayTime((13 - this.value) / 10 + CMath.getRandom(0, 2)),
           cc.callFunc(() => {
             this.frontCard.node.opacity = 255;
-            this.node.group = this.isguide ? "top-guide" : "top"
+            this.node.group = this.isguide ? "top-guide" : "top";
             this.node.zIndex = this.value;
             gEventMgr.emit(GlobalEvent.PLAY_POKER_FLY);
           }, this),
@@ -336,7 +337,6 @@ export default class Poker extends cc.Component {
     if (!Game.isGameStarted()) Game.start();
 
     gEventMgr.emit(GlobalEvent.PLAY_POKER_PLACE);
-    
   }
 
   checkAutoRecycle() {
@@ -374,7 +374,6 @@ export default class Poker extends cc.Component {
     if (index >= 0) {
       // console.log(" recycle count auto place to recycled root:", index);
       this.placeToNewCycleNode(index);
-      
     }
 
     return index >= 0;
@@ -385,7 +384,7 @@ export default class Poker extends cc.Component {
     Game.resetFreeTime();
     if (Game.isTimeOver() || Game.isComplete()) return;
     if (!this.canMove) {
-      console.log(' cant move ')
+      console.log(" cant move ");
       return;
     }
 
@@ -394,7 +393,7 @@ export default class Poker extends cc.Component {
     let action = this.node.getActionByTag(ACTION_TAG.RECYCLE);
     if (action && !action.isDone()) return;
 
-    this.node.group = this.isguide ? "top-guide" : "top"
+    this.node.group = this.isguide ? "top-guide" : "top";
     let move = e.getDelta();
     this.node.x += move.x;
     this.node.y += move.y;
@@ -439,7 +438,7 @@ export default class Poker extends cc.Component {
               cc.sequence(
                 cc.moveTo(0.1, this.defaultPos.x, this.defaultPos.y),
                 cc.callFunc(() => {
-                  this.node.group = this.isguide ? "guide" : "default"
+                  this.node.group = this.isguide ? "guide" : "default";
                 }, this)
               )
             );
@@ -627,7 +626,7 @@ export default class Poker extends cc.Component {
 
     this.setDefaultPosition(cc.v2(0, offset));
     gEventMgr.emit(GlobalEvent.DEV_POKERS);
-    gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP)
+    gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
     this.node.runAction(
       cc.sequence(
         cc.moveTo(0.1, 0, offset),
@@ -635,7 +634,7 @@ export default class Poker extends cc.Component {
           if (addFlip) {
             Game.addFlipCounts(1);
           }
-          this.node.group = this.isguide ? "guide" : "default"
+          this.node.group = this.isguide ? "guide" : "default";
         }, this)
       )
     );
@@ -646,8 +645,7 @@ export default class Poker extends cc.Component {
   }
 
   placeToNewCycleNode(index: number, delay: number = 0) {
-
-    console.log(' guide;', this.isguide)
+    console.log(" guide;", this.isguide);
     let root = Game.getCycledPokerRoot().get(index);
     if (this.node.getParent() == root) {
       console.error(" click too quick recycle count");
@@ -735,21 +733,20 @@ export default class Poker extends cc.Component {
     this.setKey(null);
     this.setNext(null);
     Game.addCycledPokerRoot(index, this.node);
-    
+
     this.setDefaultPosition(cc.v2(0, 0));
 
     let action = cc.sequence(
       cc.delayTime(delay),
-      
-      cc.callFunc(()=>{
-        this.node.group = this.isguide ? "top-guide" : "top"
+
+      cc.callFunc(() => {
+        this.node.group = this.isguide ? "top-guide" : "top";
       }),
       cc.moveTo(time, 0, 0),
       cc.callFunc(() => {
-        
         gEventMgr.emit(GlobalEvent.DEV_POKERS);
         gEventMgr.emit(GlobalEvent.PLAY_RECYCLE);
-        gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP)
+        gEventMgr.emit(GlobalEvent.POP_GUIDE_STEP);
       }),
       cc.delayTime(0),
       cc.callFunc(() => {
@@ -789,7 +786,7 @@ export default class Poker extends cc.Component {
 
   shake() {
     if (this.isCycled()) return;
-    this.node.group = this.isguide ? "guide" : "default"
+    this.node.group = this.isguide ? "guide" : "default";
     let pos = this.getDefaultPosition();
     let shake = cc.sequence(
       cc.repeat(
