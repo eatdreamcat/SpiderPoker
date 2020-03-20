@@ -1,0 +1,89 @@
+{
+  "__type__": "cc.AnimationClip",
+  "_name": "addwild",
+  "_objFlags": 0,
+  "_native": "",
+  "_duration": 0.7166666666666667,
+  "sample": 60,
+  "speed": 1,
+  "wrapMode": 1,
+  "curveData": {
+    "props": {
+      "opacity": [
+        {
+          "frame": 0,
+          "value": 255
+        },
+        {
+          "frame": 0.6666666666666666,
+          "value": 255
+        },
+        {
+          "frame": 0.7166666666666667,
+          "value": 0
+        }
+      ]
+    },
+    "comps": {
+      "cc.Sprite": {
+        "spriteFrame": [
+          {
+            "frame": 0,
+            "value": {
+              "__uuid__": "12c115be-c980-42b4-92db-f5c720f7e849"
+            }
+          },
+          {
+            "frame": 0.08333333333333333,
+            "value": {
+              "__uuid__": "8b9e959c-3328-4124-845f-8aa8eeb8dfee"
+            }
+          },
+          {
+            "frame": 0.16666666666666666,
+            "value": {
+              "__uuid__": "de4c643e-1bff-4676-84d9-6a7e35a51e91"
+            }
+          },
+          {
+            "frame": 0.25,
+            "value": {
+              "__uuid__": "5a64000f-f13d-4ece-9dca-ac0f92a6faf1"
+            }
+          },
+          {
+            "frame": 0.3333333333333333,
+            "value": {
+              "__uuid__": "ee7201e2-3b04-4ea2-8eed-11c666aae501"
+            }
+          },
+          {
+            "frame": 0.4166666666666667,
+            "value": {
+              "__uuid__": "597fd735-07c3-44a5-94fb-89d4725f4340"
+            }
+          },
+          {
+            "frame": 0.5,
+            "value": {
+              "__uuid__": "dd0cf92c-e4b3-4741-8db2-e96d22bde6ec"
+            }
+          },
+          {
+            "frame": 0.5833333333333334,
+            "value": {
+              "__uuid__": "e29f6a85-7e82-4806-bc29-bb710e3750fe"
+            }
+          },
+          {
+            "frame": 0.6666666666666666,
+            "value": {
+              "__uuid__": "8dc77dda-d63a-4505-b8f7-a5f44c49006a"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "events": []
+}

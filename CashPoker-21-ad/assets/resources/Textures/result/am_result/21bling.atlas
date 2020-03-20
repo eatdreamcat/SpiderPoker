@@ -1,0 +1,41 @@
+
+21bling.png
+size: 1024,1024
+format: RGBA8888
+filter: Linear,Linear
+repeat: none
+resultlight1
+  rotate: false
+  xy: 713, 510
+  size: 106, 226
+  orig: 106, 226
+  offset: 0, 0
+  index: -1
+resultlight2
+  rotate: false
+  xy: 246, 89
+  size: 152, 215
+  orig: 152, 215
+  offset: 0, 0
+  index: -1
+resultlightbg
+  rotate: false
+  xy: 2, 306
+  size: 709, 709
+  orig: 709, 709
+  offset: 0, 0
+  index: -1
+resultlightc1
+  rotate: false
+  xy: 713, 738
+  size: 216, 277
+  orig: 216, 277
+  offset: 0, 0
+  index: -1
+resultlightc2
+  rotate: false
+  xy: 2, 2
+  size: 242, 302
+  orig: 242, 302
+  offset: 0, 0
+  index: -1
