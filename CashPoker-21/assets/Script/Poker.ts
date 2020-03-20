@@ -717,9 +717,16 @@ export default class Poker extends cc.Component {
   shake() {
     if (this.isCycled()) return;
     if (
-      ["0", "1", "2", "3", "RemoveCardNode", "RemoveCardNodeBust"].indexOf(
-        this.node.parent.name
-      ) >= 0
+      [
+        "0",
+        "1",
+        "2",
+        "3",
+        "RemoveCardNode",
+        "RemoveCardNodeBust",
+        "PokerDevl",
+        "PokerClip"
+      ].indexOf(this.node.parent.name) >= 0
     )
       return;
     console.error(" shake:", this.node.parent.name);
