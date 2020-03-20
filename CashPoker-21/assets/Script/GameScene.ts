@@ -1229,10 +1229,10 @@ export default class GameScene extends cc.Component {
       this.Guide.startGuide(() => {
         this.nextStep(LOAD_STEP.GUIDE);
       });
-    });
+    }, 0);
   }
 
-  startDevPoker(callback: Function) {
+  startDevPoker(callback: Function, delay: number = 0.05) {
     let count = 1;
     let totalCount = this.PokerDevl.childrenCount;
 
@@ -1249,19 +1249,24 @@ export default class GameScene extends cc.Component {
         poker.setLastPosition(targetPos);
         pokerNode.setParent(this.PokerClip);
         pokerNode.zIndex = this.PokerClip.childrenCount;
-        pokerNode.setPosition(selfPos);
-        pokerNode.group = "top";
-        gEventMgr.emit(GlobalEvent.DEV_POKERS);
-        pokerNode.runAction(
-          cc.sequence(
-            cc.moveTo(0.05, targetPos.x, targetPos.y),
-            cc.callFunc(() => {
-              pokerNode.group = "default";
-              poker.setLastPosition();
-              func2();
-            }, this)
-          )
-        );
+        if (delay > 0) {
+          pokerNode.setPosition(selfPos);
+          pokerNode.group = "top";
+          gEventMgr.emit(GlobalEvent.DEV_POKERS);
+          pokerNode.runAction(
+            cc.sequence(
+              cc.moveTo(delay, targetPos.x, targetPos.y),
+              cc.callFunc(() => {
+                pokerNode.group = "default";
+                poker.setLastPosition();
+                func2();
+              }, this)
+            )
+          );
+        } else {
+          pokerNode.setPosition(targetPos);
+          func2();
+        }
       } else {
         // console.log(this.PokerDevl.children);
         this.canDispatchPoker = true;

@@ -41,8 +41,8 @@
     },
     "_scale": {
       "__type__": "cc.Vec3",
-      "x": 0.4502438412271246,
-      "y": 0.4502438412271246,
+      "x": 0.37591145833333334,
+      "y": 0.37591145833333334,
       "z": 1
     },
     "_quat": {
@@ -7186,7 +7186,7 @@
         "__id__": 187
       }
     ],
-    "_active": true,
+    "_active": false,
     "_level": 2,
     "_components": [
       {
@@ -8772,7 +8772,7 @@
       "__uuid__": "7b32d929-21cf-46b3-9bae-284ddaee659e"
     },
     "_type": 0,
-    "_sizeMode": 1,
+    "_sizeMode": 2,
     "_fillType": 0,
     "_fillCenter": {
       "__type__": "cc.Vec2",
@@ -8781,7 +8781,7 @@
     },
     "_fillStart": 0,
     "_fillRange": 0,
-    "_isTrimmedMode": true,
+    "_isTrimmedMode": false,
     "_state": 0,
     "_atlas": {
       "__uuid__": "41ef5652-cb40-4f82-ad1d-02d9cf34833b"
