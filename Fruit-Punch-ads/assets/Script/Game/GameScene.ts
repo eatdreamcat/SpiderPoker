@@ -227,6 +227,7 @@ export default class GameScene extends cc.Component {
     }
   }
 
+  private isrestart = false;
   initGamePanel() {
     this.ADNode.active = false;
     this.Hand.active = false;
@@ -282,6 +283,7 @@ export default class GameScene extends cc.Component {
       GlobalEvent.GAME_RESTART,
       () => {
         //this.onCubePlaceDone(true);
+        this.isrestart = true;
         this.initGamePanel();
       },
       this
@@ -349,7 +351,7 @@ export default class GameScene extends cc.Component {
     if (aniState.name == "rainbow" || aniState.name == "hourse") {
       this.RainbowScoreBg.string = "";
       this.RainbowScore.string = this.RainbowScoreBg.string;
-      this.ADNode.active = true;
+      if (!this.isrestart) this.ADNode.active = true;
       if (this.rainbowEffectArray.length > 0) {
         let ani = this.rainbowEffectArray.shift();
         let score = this.rainbowScoreArray.shift();
@@ -776,6 +778,7 @@ export default class GameScene extends cc.Component {
     }
 
     this.playHandAction();
+    this.isrestart = false;
   }
 
   /** 检测是否还有位置可以放置 */
