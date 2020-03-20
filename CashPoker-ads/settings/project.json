@@ -40,7 +40,7 @@
     "guide",
     "top-guide"
   ],
-  "last-module-event-record-time": 1582262806447,
+  "last-module-event-record-time": 1584676133555,
   "simulator-orientation": false,
   "simulator-resolution": {
     "height": 640,
@@ -48,6 +48,5 @@
   },
   "start-scene": "current",
   "use-customize-simulator": true,
-  "use-project-simulator-setting": false,
-  "assets-sort-type": "name"
+  "use-project-simulator-setting": false
 }

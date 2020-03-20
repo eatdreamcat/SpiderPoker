@@ -37,6 +37,9 @@ class AudioController {
         console.error(err);
       } else {
         for (let clip of clips) {
+          if (typeof clip["_audio"] == "string") {
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"];
+          }
           self.clips.add(clip.name, clip);
         }
         self.initEvent();
@@ -151,14 +154,28 @@ class AudioController {
       this
     );
 
-    gEventMgr.on(GlobalEvent.PLAY_BUST, ()=>{this.play("bust", false, 2.5)}, this);
+    gEventMgr.on(
+      GlobalEvent.PLAY_BUST,
+      () => {
+        this.play("bust", false, 2.5);
+      },
+      this
+    );
 
-    gEventMgr.on(GlobalEvent.PLAY_CHANGE_2_WILD, ()=>{
-      this.play("change2wild")
-    }, this)
-    gEventMgr.on(GlobalEvent.PLAY_WILD_ANI, ()=>{
-      this.play("wild_ani")
-    }, this);
+    gEventMgr.on(
+      GlobalEvent.PLAY_CHANGE_2_WILD,
+      () => {
+        this.play("change2wild");
+      },
+      this
+    );
+    gEventMgr.on(
+      GlobalEvent.PLAY_WILD_ANI,
+      () => {
+        this.play("wild_ani");
+      },
+      this
+    );
   }
 
   stop(audioID: number, clipName?: string) {
@@ -220,6 +237,9 @@ class AudioController {
         if (err) {
           console.error(err);
         } else {
+          if (typeof clip["_audio"] == "string") {
+            clip["_audio"] = cc.loader["_cache"][clip["_audio"]]["buffer"];
+          }
           this.clips.add(clip.name, clip);
           let pass = (Date.now() - now) / 1000;
           this.audioID[clipName] = this.play(

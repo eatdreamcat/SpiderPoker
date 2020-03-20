@@ -1129,13 +1129,7 @@ export default class GameScene extends cc.Component {
       CMath.randomSeed = Math.random();
     }
 
-    if ((match && match.shouldLaunchTutorial) || CC_DEBUG) {
-      this.isNewPlayer = true;
-    } else {
-      this.isNewPlayer = false;
-      this.Guide.hide();
-      this.nextStep(LOAD_STEP.GUIDE);
-    }
+    this.isNewPlayer = true;
 
     let takeImage = false;
     const canvas = document.getElementsByTagName("canvas")[0];
@@ -1167,7 +1161,7 @@ export default class GameScene extends cc.Component {
     } else if (this.step >= LOAD_STEP.CELER_READY && !this.isCeler) {
       celerx.ready();
       this.isCeler = true;
-      CC_DEBUG && this.celerStart();
+      this.celerStart();
     } else if (
       this.step >= LOAD_STEP.GUIDE_READY &&
       this.isNewPlayer &&
