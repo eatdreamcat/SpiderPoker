@@ -280,6 +280,7 @@ export default class Guide extends cc.Component {
 
   showEnd() {
     console.log(" show end ");
+    this.guideSteps.length = 0;
     this.Corn.node.active = true;
     this.Corn.node.position = cc.v2(0, 150);
     this.Corn.spriteFrame = this.GuideEnd;

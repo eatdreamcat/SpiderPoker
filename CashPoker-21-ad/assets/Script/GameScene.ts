@@ -1064,8 +1064,8 @@ export default class GameScene extends cc.Component {
     if (this.node.getChildByName("Result")) return;
 
     if (!this.isStart) {
-      this.Guide.hide();
-      this.nextStep(LOAD_STEP.GUIDE);
+      this.Guide.showEnd();
+      // this.nextStep(LOAD_STEP.GUIDE);
       return;
     }
 
