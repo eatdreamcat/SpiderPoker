@@ -64,6 +64,12 @@ export default class Guide extends cc.Component {
   @property(cc.Node)
   GuideBlock: cc.Node = null;
 
+  @property(cc.Node)
+  Download: cc.Node = null;
+
+  @property(cc.Node)
+  Replay: cc.Node = null;
+
   private callback: Function = null;
 
   private guideSteps: GuideStep[] = [];
@@ -91,6 +97,22 @@ export default class Guide extends cc.Component {
       cc.Node.EventType.TOUCH_END,
       () => {
         this.hide();
+      },
+      this
+    );
+
+    this.Replay.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        this.hide();
+      },
+      this
+    );
+
+    this.Download.on(
+      cc.Node.EventType.TOUCH_END,
+      () => {
+        FbPlayableAd.onCTAClick();
       },
       this
     );
@@ -259,23 +281,26 @@ export default class Guide extends cc.Component {
   showEnd() {
     console.log(" show end ");
     this.Corn.node.active = true;
-    this.Corn.node.position = cc.v2(0, 100);
+    this.Corn.node.position = cc.v2(0, 150);
     this.Corn.spriteFrame = this.GuideEnd;
-    this.OK.node.active = true;
+    // this.OK.node.active = true;
 
-    this.OK.node.targetOff(this);
-    this.OK.node.on(
-      cc.Node.EventType.TOUCH_END,
-      () => {
-        this.hide();
-      },
-      this
-    );
+    // this.OK.node.targetOff(this);
+    // this.OK.node.on(
+    //   cc.Node.EventType.TOUCH_END,
+    //   () => {
+    //     this.hide();
+    //   },
+    //   this
+    // );
 
+    this.Corn.node.getChildByName("ads").active = true;
     this.GuideHand.node.active = false;
     if (Game.getCurSelectPoker()) {
       Game.getCurSelectPoker().node.group = "default";
     }
+
+    this.Block.children[0].active = true;
   }
 
   onBlockTouchMove(e: cc.Event.EventTouch) {
@@ -310,9 +335,9 @@ export default class Guide extends cc.Component {
     this.GuideView.node.active = false;
     // this.Resume.node.active = false;
     this.GuideBlock.active = false;
-    this.Skip.node.active = true;
+    //this.Skip.node.active = true;
     this.callback = closeCallback;
-
+    this.Block.children[0].active = false;
     this.nextGuide();
   }
 
@@ -332,6 +357,8 @@ export default class Guide extends cc.Component {
     }
 
     this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("new" + this.index);
+    this.Corn.node.active = this.index <= 1;
+    this.Corn.node.getChildByName("ads").active = false;
     this.index++;
     let curStep = this.guideSteps[0];
     let actions: cc.FiniteTimeAction[] = [];
@@ -378,20 +405,23 @@ export default class Guide extends cc.Component {
   }
 
   hide() {
-    console.error(" hide ");
+    console.error(" hide=========================== ", this.callback);
     if (!this.node.active) return;
     this.clearStep();
     this.node.active = false;
     this.callback && this.callback();
-    this.callback = null;
   }
 
   showBlock() {
+    this.index = 1;
+    console.log(" show blockl");
     this.Block.active = true;
     this.Corn.node.active = true;
     this.OK.node.active = false;
     this.Skip.node.active = false;
     this.node.active = true;
+    this.Corn.spriteFrame = this.GuideAtlas.getSpriteFrame("new1");
+    this.Corn.node.position = cc.v2(252, -48);
   }
 
   show(closeCallback: Function) {

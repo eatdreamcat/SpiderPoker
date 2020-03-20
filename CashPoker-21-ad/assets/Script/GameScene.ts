@@ -1209,6 +1209,9 @@ export default class GameScene extends cc.Component {
   }
 
   startGuide() {
+    console.error(" start guide =========================================");
+    Game.initData();
+    this.prepareGame();
     let pokers = GuidePokers.concat();
     Game.allPokers.length = 0;
 
@@ -1226,9 +1229,7 @@ export default class GameScene extends cc.Component {
 
     this.startDevPoker(() => {
       this.registerGuide();
-      this.Guide.startGuide(() => {
-        this.nextStep(LOAD_STEP.GUIDE);
-      });
+      this.Guide.startGuide(this.startGuide.bind(this));
     });
   }
 
@@ -1249,19 +1250,20 @@ export default class GameScene extends cc.Component {
         poker.setLastPosition(targetPos);
         pokerNode.setParent(this.PokerClip);
         pokerNode.zIndex = this.PokerClip.childrenCount;
-        pokerNode.setPosition(selfPos);
-        pokerNode.group = "top";
-        gEventMgr.emit(GlobalEvent.DEV_POKERS);
-        pokerNode.runAction(
-          cc.sequence(
-            cc.moveTo(0.05, targetPos.x, targetPos.y),
-            cc.callFunc(() => {
-              pokerNode.group = "default";
-              poker.setLastPosition();
-              func2();
-            }, this)
-          )
-        );
+        pokerNode.setPosition(targetPos);
+        func2();
+        // pokerNode.group = "top";
+        // gEventMgr.emit(GlobalEvent.DEV_POKERS);
+        // pokerNode.runAction(
+        //   cc.sequence(
+        //     cc.moveTo(0.05, targetPos.x, targetPos.y),
+        //     cc.callFunc(() => {
+        //       pokerNode.group = "default";
+        //       poker.setLastPosition();
+
+        //     }, this)
+        //   )
+        // );
       } else {
         // console.log(this.PokerDevl.children);
         this.canDispatchPoker = true;
